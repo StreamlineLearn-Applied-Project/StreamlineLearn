@@ -1,0 +1,32 @@
+# Name of the application
+spring:
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false # Disable Eureka service discovery
+      routes:
+        - id: Course-Management
+          uri: http://localhost:8080
+          predicates:
+            - Path=/courses/**
+
+# Server configurations
+server:
+  port: 9292
+
+# Management configurations
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+
+# Logging configurations
+logging:
+  level:
+    root: info
+    org.springframework.cloud.gateway.route.RouteDefinitionLocator: INFO
+    org.springframework.cloud.gateway: TRACE
+
