@@ -3,58 +3,39 @@ package com.StreamlineLearn.UserManagement.model;
 import java.util.Map;
 
 public class UserWithRoleRequest {
-    private String firstName;
-    private String lastName;
-    private String userName;
-    private String password;
+    private User user;
     private String role;
-    private Map<String, String> roleDetails;
+    private Student student;
+    private Instructor instructor;
+    private Administrative administrative;
 
-    public UserWithRoleRequest(String firstName,
-                               String lastName,
-                               String userName,
-                               String password,
-                               String role,
-                               Map<String,
-                                       String> roleDetails) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.userName = userName;
-        this.password = password;
+    public UserWithRoleRequest() {
+    }
+
+    public UserWithRoleRequest(User user, String role, Student student) {
+        this.user = user;
         this.role = role;
-        this.roleDetails = roleDetails;
+        this.student = student;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public UserWithRoleRequest(User user, String role, Instructor instructor) {
+        this.user = user;
+        this.role = role;
+        this.instructor = instructor;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public UserWithRoleRequest(User user, String role, Administrative administrative) {
+        this.user = user;
+        this.role = role;
+        this.administrative = administrative;
     }
 
-    public String getLastName() {
-        return lastName;
+    public User getUser() {
+        return user;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getRole() {
@@ -65,12 +46,28 @@ public class UserWithRoleRequest {
         this.role = role;
     }
 
-    public Map<String, String> getRoleDetails() {
-        return roleDetails;
+    public Student getStudent() {
+        return student;
     }
 
-    public void setRoleDetails(Map<String, String> roleDetails) {
-        this.roleDetails = roleDetails;
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+    public Instructor getInstructor() {
+        return instructor;
+    }
+
+    public void setInstructor(Instructor instructor) {
+        this.instructor = instructor;
+    }
+
+    public Administrative getAdministrative() {
+        return administrative;
+    }
+
+    public void setAdministrative(Administrative administrative) {
+        this.administrative = administrative;
     }
 }
 
