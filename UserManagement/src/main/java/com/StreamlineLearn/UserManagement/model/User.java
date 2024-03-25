@@ -27,10 +27,6 @@ public  class User {
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TeachingAssistant> teachingAssistants;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Administrative> administrative;
 
     public Long getId() {
@@ -87,14 +83,6 @@ public  class User {
 
     public void setInstructors(List<Instructor> instructors) {
         this.instructors = instructors;
-    }
-
-    public List<TeachingAssistant> getTeachingAssistants() {
-        return teachingAssistants;
-    }
-
-    public void setTeachingAssistants(List<TeachingAssistant> teachingAssistants) {
-        this.teachingAssistants = teachingAssistants;
     }
 
     public List<Administrative> getAdministrative() {
