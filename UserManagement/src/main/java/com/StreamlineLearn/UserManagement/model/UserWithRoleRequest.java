@@ -1,6 +1,6 @@
 package com.StreamlineLearn.UserManagement.model;
 
-import java.util.Map;
+
 
 public class UserWithRoleRequest {
     private User user;
