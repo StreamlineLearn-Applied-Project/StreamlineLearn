@@ -27,7 +27,7 @@ public class StudentServiceImplementation implements StudentService {
     @Override
     public void createStudent(Student student) {
 
-        userService.createUser(student.getUser());
+        student.setUser(userService.setUserDetails(student.getUser()));
 
         studentRepository.save(student);
     }
@@ -55,7 +55,7 @@ public class StudentServiceImplementation implements StudentService {
             userRepository.save(userToUpdate);
 
             Student student = optionalStudent.get();
-            student.setMajor(updateStudent.getMajor());
+//            student.setMajor(updateStudent.getMajor());
 
             studentRepository.save(student);
 

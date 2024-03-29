@@ -1,28 +1,21 @@
-package com.StreamlineLearn.CourseManagement.model;
+//Testing Purpose
 
-import jakarta.persistence.*;
+package com.StreamlineLearn.UserManagement.Dto;
+
 import java.math.BigDecimal;
 
-@Entity
-@Table(name = "courses")
-public class Course {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+public class CourseDto {
     private String title;
     private String description;
     private BigDecimal price;
     private Long instructorId;
 
-    public Course() {
+    public Long getInstructorId() {
+        return instructorId;
     }
 
-    public Long getId() {
-        return Id;
-    }
-
-    public void setId(Long id) {
-        Id = id;
+    public void setInstructorId(Long instructorId) {
+        this.instructorId = instructorId;
     }
 
     public String getTitle() {
@@ -49,11 +42,6 @@ public class Course {
         this.price = price;
     }
 
-    public Long getInstructorId() {
-        return instructorId;
-    }
 
-    public void setInstructorId(Long instructorId) {
-        this.instructorId = instructorId;
-    }
 }
+

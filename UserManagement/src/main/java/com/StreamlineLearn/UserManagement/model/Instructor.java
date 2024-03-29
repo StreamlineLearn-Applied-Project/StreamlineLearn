@@ -13,8 +13,12 @@ public class Instructor {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String department;
-    private String expertise;
+    @Enumerated(value = EnumType.STRING)
+    private Department department;
+
+    @Enumerated(value = EnumType.STRING)
+    private Expertise expertise;
+
 
     public Long getId() {
         return id;
@@ -32,19 +36,19 @@ public class Instructor {
         this.user = user;
     }
 
-    public String getDepartment() {
+    public Department getDepartment() {
         return department;
     }
 
-    public void setDepartment(String department) {
+    public void setDepartment(Department department) {
         this.department = department;
     }
 
-    public String getExpertise() {
+    public Expertise getExpertise() {
         return expertise;
     }
 
-    public void setExpertise(String expertise) {
+    public void setExpertise(Expertise expertise) {
         this.expertise = expertise;
     }
 }

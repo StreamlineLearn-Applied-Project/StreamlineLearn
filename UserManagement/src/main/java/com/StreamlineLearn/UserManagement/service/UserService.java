@@ -1,10 +1,13 @@
 package com.StreamlineLearn.UserManagement.service;
 
 import com.StreamlineLearn.UserManagement.model.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
 public interface UserService {
+
+    User setUserDetails(User user);
 
     public void createUser(User newUser);
 

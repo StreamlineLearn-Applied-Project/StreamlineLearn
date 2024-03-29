@@ -26,7 +26,8 @@ public class AdministrativeServiceImplementation implements AdministrativeServic
 
     @Override
     public void createAdministrative(Administrative newAdministrative) {
-        userService.createUser(newAdministrative.getUser());
+
+        newAdministrative.setUser(userService.setUserDetails(newAdministrative.getUser()));
 
         administrativeRepository.save(newAdministrative);
     }
@@ -56,7 +57,7 @@ public class AdministrativeServiceImplementation implements AdministrativeServic
             userRepository.save(userToUpdate);
 
             Administrative administrative = optionalAdministrative.get();
-            administrative.setResponsibilities(updateAdministrative.getResponsibilities());
+            administrative.setPosition(updateAdministrative.getPosition());
 
             administrativeRepository.save(administrative);
 

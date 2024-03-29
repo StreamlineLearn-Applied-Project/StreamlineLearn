@@ -13,8 +13,11 @@ public class Student {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String studentId;
-    private String major;
+    @Enumerated(value = EnumType.STRING)
+    private Education education;
+
+    @Enumerated(value = EnumType.STRING)
+    private Field  field;
 
 
     public Long getId() {
@@ -33,19 +36,19 @@ public class Student {
         this.user = user;
     }
 
-    public String getStudentId() {
-        return studentId;
+    public Education getEducation() {
+        return education;
     }
 
-    public void setStudentId(String studentId) {
-        this.studentId = studentId;
+    public void setEducation(Education education) {
+        this.education = education;
     }
 
-    public String getMajor() {
-        return major;
+    public Field getField() {
+        return field;
     }
 
-    public void setMajor(String major) {
-        this.major = major;
+    public void setField(Field field) {
+        this.field = field;
     }
 }

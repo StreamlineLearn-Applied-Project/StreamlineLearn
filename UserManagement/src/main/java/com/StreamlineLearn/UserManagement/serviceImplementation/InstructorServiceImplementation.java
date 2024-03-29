@@ -27,7 +27,7 @@ public class InstructorServiceImplementation implements InstructorService {
 
     @Override
     public void createInstructor(Instructor newInstructor) {
-        userService.createUser(newInstructor.getUser());
+        newInstructor.setUser(userService.setUserDetails(newInstructor.getUser()));
 
         instructorRepository.save(newInstructor);
     }

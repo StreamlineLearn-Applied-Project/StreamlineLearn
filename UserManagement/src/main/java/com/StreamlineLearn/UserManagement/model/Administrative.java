@@ -13,7 +13,8 @@ public class Administrative  {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String responsibilities;
+    @Enumerated(EnumType.STRING)
+    private AdministrativePosition position;
 
     public Long getId() {
         return id;
@@ -31,11 +32,11 @@ public class Administrative  {
         this.user = user;
     }
 
-    public String getResponsibilities() {
-        return responsibilities;
+    public AdministrativePosition getPosition() {
+        return position;
     }
 
-    public void setResponsibilities(String responsibilities) {
-        this.responsibilities = responsibilities;
+    public void setPosition(AdministrativePosition position) {
+        this.position = position;
     }
 }
