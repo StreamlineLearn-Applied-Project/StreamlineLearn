@@ -27,7 +27,7 @@ public class InstructorController {
     @PostMapping("/creates")
     public ResponseEntity<String> createInstructor(@RequestBody Instructor newInstructor){
         instructorService.createInstructor(newInstructor);
-        return new ResponseEntity<>("Instructor created successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>("Instructor created successfully" , HttpStatus.CREATED);
     }
 
     @GetMapping()

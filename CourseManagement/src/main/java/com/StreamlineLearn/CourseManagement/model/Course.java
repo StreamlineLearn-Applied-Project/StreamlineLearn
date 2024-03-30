@@ -12,7 +12,11 @@ public class Course {
     private String title;
     private String description;
     private BigDecimal price;
-    private Long instructorId;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "instructor_id")
+    private Instructor instructor;
+
 
     public Course() {
     }
@@ -49,11 +53,11 @@ public class Course {
         this.price = price;
     }
 
-    public Long getInstructorId() {
-        return instructorId;
+    public Instructor getInstructor() {
+        return instructor;
     }
 
-    public void setInstructorId(Long instructorId) {
-        this.instructorId = instructorId;
+    public void setInstructor(Instructor instructor) {
+        this.instructor = instructor;
     }
 }

@@ -1,8 +1,11 @@
 package com.StreamlineLearn.CourseManagement.ServiceImplementation;
 
 import com.StreamlineLearn.CourseManagement.model.Course;
+import com.StreamlineLearn.CourseManagement.model.Instructor;
 import com.StreamlineLearn.CourseManagement.repository.CourseRepository;
 import com.StreamlineLearn.CourseManagement.service.CourseService;
+import com.StreamlineLearn.CourseManagement.service.InstructorService;
+import com.StreamlineLearn.CourseManagement.utility.JwtService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,13 +14,21 @@ import java.util.Optional;
 @Service
 public class CourseServiceImplementation implements CourseService {
     private final CourseRepository courseRepository;
+    private final InstructorService instructorService;
+    private final JwtService jwtService;
 
-    public CourseServiceImplementation(CourseRepository courseRepository) {
+    public CourseServiceImplementation(CourseRepository courseRepository, InstructorService instructorService, JwtService jwtService) {
         this.courseRepository = courseRepository;
+        this.instructorService = instructorService;
+        this.jwtService = jwtService;
     }
 
     @Override
-    public void createCourse(Course course) {
+    public void createCourse(Course course, String token) {
+       Instructor instructor = instructorService.saveInstructor(token);
+
+       course.setInstructor(instructor);
+
         courseRepository.save(course);
 
     }

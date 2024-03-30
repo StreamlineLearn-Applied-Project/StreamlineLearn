@@ -5,7 +5,7 @@ import com.StreamlineLearn.CourseManagement.model.Course;
 import java.util.List;
 
 public interface CourseService {
-    void createCourse(Course course);
+    void createCourse(Course course, String token);
 
     List<Course> getAllTheCourse();
 

@@ -19,6 +19,9 @@ public class Student {
     @Enumerated(value = EnumType.STRING)
     private Field  field;
 
+    public Student() {
+
+    }
 
     public Long getId() {
         return id;

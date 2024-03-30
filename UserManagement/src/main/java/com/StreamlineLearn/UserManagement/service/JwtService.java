@@ -57,10 +57,11 @@ public class JwtService {
         return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
-    public String extractUserRoleId(String token){
-        token = token.substring(7).trim();
-        return extractClaim(token, claims -> claims.get("roleId", String.class));
+    public Long extractRoleId(String token) {
+        token = token.substring(7).trim(); // Remove "Bearer " prefix
+        return extractClaim(token, claims -> claims.get("roleId", Long.class));
     }
+
 
     public boolean isValid(String token, UserDetails userDetails){
         String username = extractUserName(token);

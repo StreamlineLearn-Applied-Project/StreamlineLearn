@@ -26,6 +26,7 @@ public class UserServiceImplementation implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+
     public User setUserDetails(User userDetails){
         User setUser = new User();
         setUser.setFirstName(userDetails.getFirstName());
@@ -55,7 +56,7 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public boolean updateUser(Long id, User updateUser) {
+    public User updateUser(Long id, User updateUser) {
         Optional<User> userOptional = userRepository.findById(id);
         if(userOptional.isPresent()){
             User userToUpdate = userOptional.get();
@@ -67,9 +68,9 @@ public class UserServiceImplementation implements UserService {
 
             userRepository.save(userToUpdate);
 
-            return true;
+            return userToUpdate;
         }
-        else return false;
+        else return null;
     }
 
     @Override

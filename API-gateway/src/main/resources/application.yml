@@ -4,14 +4,18 @@ spring:
     name: API-GATEWAY
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: false # Disable Eureka service discovery
       routes:
         - id: Course-Management
-          uri: http://localhost:8080
+          uri: http://localhost:8282
           predicates:
             - Path=/courses/**
+          filters:
+            - AuthenticationFilter
+        - id: User-Management
+          uri: http://localhost:8080
+          predicates:
+            - Path=/authentication/**
+
 
 # Server configurations
 server:

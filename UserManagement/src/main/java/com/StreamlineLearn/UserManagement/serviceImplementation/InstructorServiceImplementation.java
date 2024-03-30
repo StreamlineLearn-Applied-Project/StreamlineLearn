@@ -6,6 +6,7 @@ import com.StreamlineLearn.UserManagement.repository.InstructorRepository;
 import com.StreamlineLearn.UserManagement.repository.UserRepository;
 import com.StreamlineLearn.UserManagement.service.InstructorService;
 import com.StreamlineLearn.UserManagement.service.UserService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,13 +17,16 @@ public class InstructorServiceImplementation implements InstructorService {
     private final InstructorRepository instructorRepository;
     private final UserService userService;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public InstructorServiceImplementation(InstructorRepository instructorRepository,
                                            UserService userService,
-                                           UserRepository userRepository) {
+                                           UserRepository userRepository,
+                                           PasswordEncoder passwordEncoder) {
         this.instructorRepository = instructorRepository;
         this.userService = userService;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -50,7 +54,7 @@ public class InstructorServiceImplementation implements InstructorService {
             userToUpdate.setFirstName(updateInstructor.getUser().getFirstName());
             userToUpdate.setLastName(updateInstructor.getUser().getLastName());
             userToUpdate.setUserName(updateInstructor.getUser().getUserName());
-            userToUpdate.setPassword(updateInstructor.getUser().getPassword());
+            userToUpdate.setPassword(passwordEncoder.encode(updateInstructor.getUser().getPassword()));
 
             userRepository.save(userToUpdate);
 

@@ -36,7 +36,9 @@ public class SecurityConfig {
                                         "/authentication/register",
                                         "/authentication/login",
                                         "/users/**",
-                                        "/student/**").permitAll()
+                                        "/student/**",
+                                        "/instructor/**",
+                                        "/administrative/**").permitAll()
                                 .anyRequest()
                                 .authenticated())
                 .sessionManagement(session->session

@@ -7,6 +7,7 @@ import com.StreamlineLearn.UserManagement.repository.AdministrativeRepository;
 import com.StreamlineLearn.UserManagement.repository.UserRepository;
 import com.StreamlineLearn.UserManagement.service.AdministrativeService;
 import com.StreamlineLearn.UserManagement.service.UserService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,11 +18,16 @@ public class AdministrativeServiceImplementation implements AdministrativeServic
     private final UserService userService;
     private final AdministrativeRepository administrativeRepository;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AdministrativeServiceImplementation(UserService userService, AdministrativeRepository administrativeRepository, UserRepository userRepository) {
+    public AdministrativeServiceImplementation(UserService userService,
+                                               AdministrativeRepository administrativeRepository,
+                                               UserRepository userRepository,
+                                               PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.administrativeRepository = administrativeRepository;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -52,7 +58,7 @@ public class AdministrativeServiceImplementation implements AdministrativeServic
             userToUpdate.setFirstName(updateAdministrative.getUser().getFirstName());
             userToUpdate.setLastName(updateAdministrative.getUser().getLastName());
             userToUpdate.setUserName(updateAdministrative.getUser().getUserName());
-            userToUpdate.setPassword(updateAdministrative.getUser().getPassword());
+            userToUpdate.setPassword(passwordEncoder.encode(updateAdministrative.getUser().getPassword()));
 
             userRepository.save(userToUpdate);
 

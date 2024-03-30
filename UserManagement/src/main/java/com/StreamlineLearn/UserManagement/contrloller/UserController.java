@@ -40,8 +40,8 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateUserById(@PathVariable Long id,@RequestBody User updateUser){
-       boolean userUpdated = userService.updateUser(id, updateUser);
-       if(userUpdated) {
+       User userUpdated = userService.updateUser(id, updateUser);
+       if(userUpdated!=null) {
             return new ResponseEntity<>("user details updated!", HttpStatus.OK);
         }
        else return new ResponseEntity<>(HttpStatus.NOT_FOUND);

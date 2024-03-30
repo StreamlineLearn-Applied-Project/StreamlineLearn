@@ -22,7 +22,9 @@ public class UserWithRoleRequestController {
     public ResponseEntity<String> registerUserWithRole(@RequestBody UserWithRoleRequest userRequest) {
         userWithRoleRequestService.registerUserWithRole(userRequest);
 
-        return new ResponseEntity<>("Account created successfully", HttpStatus.CREATED);
+        String field = String.valueOf(userRequest.getStudent().getField());
+
+        return new ResponseEntity<>("Account created successfully " + field, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")

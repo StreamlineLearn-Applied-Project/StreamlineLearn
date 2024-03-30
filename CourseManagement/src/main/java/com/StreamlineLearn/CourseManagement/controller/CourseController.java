@@ -3,6 +3,8 @@ package com.StreamlineLearn.CourseManagement.controller;
 
 import com.StreamlineLearn.CourseManagement.model.Course;
 import com.StreamlineLearn.CourseManagement.service.CourseService;
+import com.StreamlineLearn.CourseManagement.service.InstructorService;
+import com.StreamlineLearn.CourseManagement.utility.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,15 +15,22 @@ import java.util.List;
 @RequestMapping("/courses")
 public class CourseController {
     private final CourseService courseService;
+    private final JwtService jwtService;
+    private final InstructorService instructorService;
 
-    public CourseController(CourseService courseService) {
+    public CourseController(CourseService courseService, JwtService jwtService, InstructorService instructorService) {
         this.courseService = courseService;
+        this.jwtService = jwtService;
+        this.instructorService = instructorService;
     }
 
     @PostMapping
-    public ResponseEntity<String> createCourse(@RequestBody Course course){
-        courseService.createCourse(course);
-        return new ResponseEntity<>("Course Created Successfully", HttpStatus.CREATED);
+    public ResponseEntity<String> createCourse(@RequestBody Course course,
+                                               @RequestHeader("Authorization") String authorizationHeader){
+
+
+        courseService.createCourse(course, authorizationHeader );
+        return new ResponseEntity<>("added the Course Successfully", HttpStatus.CREATED);
     }
 
     @GetMapping

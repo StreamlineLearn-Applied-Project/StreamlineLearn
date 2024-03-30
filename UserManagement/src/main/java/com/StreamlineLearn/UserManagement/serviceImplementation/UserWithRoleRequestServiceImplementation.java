@@ -34,7 +34,8 @@ public class UserWithRoleRequestServiceImplementation implements UserWithRoleReq
                                                     StudentRepository studentRepository,
                                                     InstructorRepository instructorRepository,
                                                     AdministrativeRepository administrativeRepository,
-                                                    JwtService jwtService, AuthenticationManager authenticationManager
+                                                    JwtService jwtService
+//                                                    AuthenticationManager authenticationManager
     ) {
 
         this.studentService = studentService;
