@@ -12,6 +12,24 @@ public class UserWithRoleRequest {
     public UserWithRoleRequest() {
     }
 
+    public UserWithRoleRequest(User user, String role, Student student) {
+        this.user = user;
+        this.role = role;
+        this.student = student;
+    }
+
+    public UserWithRoleRequest(User user, String role, Instructor instructor) {
+        this.user = user;
+        this.role = role;
+        this.instructor = instructor;
+    }
+
+    public UserWithRoleRequest(User user, String role, Administrative administrative) {
+        this.user = user;
+        this.role = role;
+        this.administrative = administrative;
+    }
+
     public User getUser() {
         return user;
     }

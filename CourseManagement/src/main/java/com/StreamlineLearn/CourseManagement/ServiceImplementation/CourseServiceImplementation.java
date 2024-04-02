@@ -15,12 +15,12 @@ import java.util.Optional;
 public class CourseServiceImplementation implements CourseService {
     private final CourseRepository courseRepository;
     private final InstructorService instructorService;
-    private final JwtService jwtService;
 
-    public CourseServiceImplementation(CourseRepository courseRepository, InstructorService instructorService, JwtService jwtService) {
+    public CourseServiceImplementation(CourseRepository courseRepository,
+                                       InstructorService instructorService) {
+
         this.courseRepository = courseRepository;
         this.instructorService = instructorService;
-        this.jwtService = jwtService;
     }
 
     @Override
@@ -30,6 +30,11 @@ public class CourseServiceImplementation implements CourseService {
        course.setInstructor(instructor);
 
         courseRepository.save(course);
+
+    }
+
+    @Override
+    public void enrollStudent() {
 
     }
 

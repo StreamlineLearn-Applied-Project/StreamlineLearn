@@ -34,10 +34,10 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     public GatewayFilter apply(Config config) {
         return (((exchange, chain) -> {
             if (routeValidator.isSecured.test(exchange.getRequest())) {
-                if (exchange.getRequest().getPath().toString().equals("/companies") &&
+                if (exchange.getRequest().getPath().toString().equals("/courses") &&
                         exchange.getRequest().getMethod() == HttpMethod.POST) {
                     if (!isInstructor(exchange)) {
-                        return unauthorizedResponse(exchange, "Only INSTRUCTORS can add companies");
+                        return unauthorizedResponse(exchange, "Only INSTRUCTORS can add courses");
                     }
                 }
             }

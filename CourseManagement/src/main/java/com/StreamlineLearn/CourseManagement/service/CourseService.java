@@ -7,6 +7,8 @@ import java.util.List;
 public interface CourseService {
     void createCourse(Course course, String token);
 
+    void enrollStudent();
+
     List<Course> getAllTheCourse();
 
     Course getCourseById(Long id);

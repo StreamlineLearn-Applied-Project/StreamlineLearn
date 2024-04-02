@@ -15,13 +15,11 @@ import java.util.List;
 @RequestMapping("/courses")
 public class CourseController {
     private final CourseService courseService;
-    private final JwtService jwtService;
-    private final InstructorService instructorService;
 
-    public CourseController(CourseService courseService, JwtService jwtService, InstructorService instructorService) {
+
+    public CourseController(CourseService courseService) {
         this.courseService = courseService;
-        this.jwtService = jwtService;
-        this.instructorService = instructorService;
+
     }
 
     @PostMapping

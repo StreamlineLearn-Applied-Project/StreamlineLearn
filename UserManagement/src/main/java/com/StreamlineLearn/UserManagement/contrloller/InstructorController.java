@@ -1,7 +1,6 @@
 package com.StreamlineLearn.UserManagement.contrloller;
 
-import com.StreamlineLearn.UserManagement.Dto.CourseDto;
-import com.StreamlineLearn.UserManagement.external.Course;
+
 import com.StreamlineLearn.UserManagement.model.Instructor;
 import com.StreamlineLearn.UserManagement.service.InstructorService;
 import org.springframework.http.HttpStatus;
@@ -16,12 +15,12 @@ import java.util.List;
 public class InstructorController {
 
     private final InstructorService instructorService;
-    private final RestTemplate restTemplate; //Testing Purpose
 
-    public InstructorController(InstructorService instructorService,
-                                RestTemplate restTemplate ) {
+
+    public InstructorController(InstructorService instructorService
+                               ) {
         this.instructorService = instructorService;
-        this.restTemplate = restTemplate; //Testing Purpose
+
     }
 
     @PostMapping("/creates")
@@ -60,17 +59,6 @@ public class InstructorController {
         return new ResponseEntity<>("instructor not found", HttpStatus.NOT_FOUND);
     }
 
-    //Testing Purpose
-    @PostMapping("/postCourses")
-    public ResponseEntity<String> postACourse(@RequestBody CourseDto courseDto){
 
-        Course course = new Course();
-        course.setTitle(courseDto.getTitle());
-        course.setDescription(courseDto.getDescription());
-        course.setPrice(courseDto.getPrice());
-        course.setInstructorId(courseDto.getInstructorId());
 
-        // Make HTTP POST request to Course Management service
-        return restTemplate.postForEntity("http://localhost:8282/courses", course, String.class);
-    }
 }

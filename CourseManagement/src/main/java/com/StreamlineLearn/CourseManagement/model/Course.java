@@ -2,6 +2,7 @@ package com.StreamlineLearn.CourseManagement.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "courses")
@@ -12,10 +13,20 @@ public class Course {
     private String title;
     private String description;
     private BigDecimal price;
+//    private boolean isPaid;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "instructor_id")
     private Instructor instructor;
+
+    // Many-to-many relationship with Student
+    @ManyToMany
+    @JoinTable(
+            name = "course_student",
+            joinColumns = @JoinColumn(name = "course_id"),
+            inverseJoinColumns = @JoinColumn(name = "student_id")
+    )
+    private List<Student> students;
 
 
     public Course() {
@@ -60,4 +71,12 @@ public class Course {
     public void setInstructor(Instructor instructor) {
         this.instructor = instructor;
     }
+
+    public List<Student> getStudents() {return students;}
+
+    public void setStudents(List<Student> students) {this.students = students;}
+
+//    public boolean isPaid() {return isPaid;}
+//
+//    public void setPaid(boolean paid) {isPaid = paid;}
 }

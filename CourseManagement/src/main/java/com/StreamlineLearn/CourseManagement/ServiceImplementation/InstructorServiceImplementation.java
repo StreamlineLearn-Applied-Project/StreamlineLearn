@@ -40,7 +40,7 @@ public class InstructorServiceImplementation implements InstructorService {
             Instructor instructor = new Instructor();
             instructor.setInstructorId(instructorId); // Assuming you set the ID here, adjust as necessary
             instructor.setUsername(username); // Assuming you set the username here, adjust as necessary
-            // You can set other properties if needed
+            instructor.setRole(role);
 
             // Save the new instructor
             return instructorRepository.save(instructor);

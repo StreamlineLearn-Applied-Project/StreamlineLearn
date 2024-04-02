@@ -8,6 +8,10 @@
         <option value="$PROJECT_DIR$/CourseManagement/pom.xml" />
         <option value="$PROJECT_DIR$/UserManagement/UserManagement/pom.xml" />
         <option value="$PROJECT_DIR$/UserManagement/pom.xml" />
+        <option value="$PROJECT_DIR$/AssessmentManagement/pom.xml" />
+        <option value="$PROJECT_DIR$/FeedbackManagment/pom.xml" />
+        <option value="$PROJECT_DIR$/DiscussionService/pom.xml" />
+        <option value="$PROJECT_DIR$/Notification/pom.xml" />
       </list>
     </option>
   </component>
