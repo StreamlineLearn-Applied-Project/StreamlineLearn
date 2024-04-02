@@ -1,5 +1,6 @@
 package com.StreamlineLearn.CourseManagement.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,6 +27,7 @@ public class Course {
             joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
+    @JsonIgnore // Ignore this field during serialization to break the infinite loop
     private List<Student> students;
 
 

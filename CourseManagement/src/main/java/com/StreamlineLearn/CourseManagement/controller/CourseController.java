@@ -26,9 +26,24 @@ public class CourseController {
     public ResponseEntity<String> createCourse(@RequestBody Course course,
                                                @RequestHeader("Authorization") String authorizationHeader){
 
-
         courseService.createCourse(course, authorizationHeader );
         return new ResponseEntity<>("added the Course Successfully", HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{courseId}/enroll")
+    public ResponseEntity<String> enrollStudent(@PathVariable Long courseId,
+                                                @RequestHeader("Authorization") String authorizationHeader) {
+
+        courseService.enrollStudent(courseId, authorizationHeader);
+        return new ResponseEntity<>("Enrolled student in the course successfully", HttpStatus.OK);
+    }
+
+    @GetMapping("/{courseId}/content")
+    public ResponseEntity<Course> getCourseContent(@PathVariable Long courseId,
+                                                   @RequestHeader("Authorization") String authorizationHeader) {
+
+        Course course = courseService.getCourseContent(courseId, authorizationHeader);
+        return new ResponseEntity<>(course, HttpStatus.OK);
     }
 
     @GetMapping

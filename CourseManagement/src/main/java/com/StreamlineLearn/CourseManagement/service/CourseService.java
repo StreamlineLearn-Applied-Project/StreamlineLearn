@@ -7,7 +7,11 @@ import java.util.List;
 public interface CourseService {
     void createCourse(Course course, String token);
 
-    void enrollStudent();
+    void enrollStudent(Long courseId, String token);
+
+    Course getCourseContent(Long courseId, String token);
+
+    public boolean isStudentEnrolled(Long courseId, Long studentId);
 
     List<Course> getAllTheCourse();
 
@@ -16,4 +20,5 @@ public interface CourseService {
     boolean updateCourseById(Long id,Course course);
 
     boolean deleteCourseById(Long id);
+
 }

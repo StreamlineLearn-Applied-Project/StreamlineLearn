@@ -14,7 +14,6 @@ public class Instructor {
     private Long id;
     private String username;
     private String role;
-
     private Long instructorId;
 
     @JsonIgnore
