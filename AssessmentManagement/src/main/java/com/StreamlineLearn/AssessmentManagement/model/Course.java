@@ -9,7 +9,7 @@ public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title;
+    private Long courseId;
 
     @OneToMany(mappedBy = "course")
     private Set<Assessment> assessments;
@@ -23,12 +23,12 @@ public class Course {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public Long getCourseId() {
+        return courseId;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
     }
 
     public Set<Assessment> getAssessments() {

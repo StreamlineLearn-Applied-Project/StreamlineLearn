@@ -11,7 +11,7 @@ public interface CourseService {
 
     Course getCourseContent(Long courseId, String token);
 
-    public boolean isStudentEnrolled(Long courseId, Long studentId);
+    boolean isStudentEnrolled(Long courseId, Long studentId);
 
     List<Course> getAllTheCourse();
 

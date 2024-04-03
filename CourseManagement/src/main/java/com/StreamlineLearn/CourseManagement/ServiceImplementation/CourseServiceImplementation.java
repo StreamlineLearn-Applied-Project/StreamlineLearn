@@ -43,7 +43,7 @@ public class CourseServiceImplementation implements CourseService {
 
     @Override
     public void enrollStudent(Long courseId, String token) {
-        Course course = courseRepository.findById(courseId)
+        Course course = courseRepository.findById(courseId) // repeating same block of code
                 .orElseThrow(() -> new RuntimeException("Course not found"));
 
         Student student = studentService.saveStudent(token);
@@ -74,7 +74,7 @@ public class CourseServiceImplementation implements CourseService {
         boolean isStudentEnrolled = isStudentEnrolled(courseId, studentId);
 
         if (isStudentEnrolled){
-            Course course = courseRepository.findById(courseId)
+            Course course = courseRepository.findById(courseId) // repeating same block of code
                     .orElseThrow(() -> new RuntimeException("Course not found"));;
 
                     return course;
@@ -85,7 +85,7 @@ public class CourseServiceImplementation implements CourseService {
 
     @Override
     public boolean isStudentEnrolled(Long courseId, Long studentId) {
-        Optional<Course> optionalCourse = courseRepository.findById(courseId);
+        Optional<Course> optionalCourse = courseRepository.findById(courseId); // repeating same block of code
         if (optionalCourse.isPresent()) {
             Course course = optionalCourse.get();
             List<Student> students = course.getStudents();
@@ -112,7 +112,7 @@ public class CourseServiceImplementation implements CourseService {
 
     @Override
     public boolean updateCourseById(Long id,Course course) {
-        Optional<Course> courseOptional = courseRepository.findById(id);
+        Optional<Course> courseOptional = courseRepository.findById(id); // repeating same block of code
         if(courseOptional.isPresent()){
            Course updateCourse = courseOptional.get();
            updateCourse.setTitle(course.getTitle());
