@@ -1,15 +1,14 @@
 package com.StreamlineLearn.UserManagement.serviceImplementation;
 
+
+import com.StreamlineLearn.SharedModule.dto.UserDto;
+import com.StreamlineLearn.UserManagement.kafka.UserProducer;
 import com.StreamlineLearn.UserManagement.model.*;
 import com.StreamlineLearn.UserManagement.repository.AdministrativeRepository;
 import com.StreamlineLearn.UserManagement.repository.InstructorRepository;
 import com.StreamlineLearn.UserManagement.repository.StudentRepository;
 import com.StreamlineLearn.UserManagement.repository.UserRepository;
 import com.StreamlineLearn.UserManagement.service.*;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 
@@ -23,6 +22,7 @@ public class UserWithRoleRequestServiceImplementation implements UserWithRoleReq
     private final StudentRepository studentRepository;
     private final InstructorRepository instructorRepository;
     private final AdministrativeRepository administrativeRepository;
+    private final UserProducer userProducer;
     private final JwtService jwtService;
 //    private final AuthenticationManager authenticationManager;
 
@@ -34,6 +34,7 @@ public class UserWithRoleRequestServiceImplementation implements UserWithRoleReq
                                                     StudentRepository studentRepository,
                                                     InstructorRepository instructorRepository,
                                                     AdministrativeRepository administrativeRepository,
+                                                    UserProducer userProducer,
                                                     JwtService jwtService
 //                                                    AuthenticationManager authenticationManager
     ) {
@@ -45,6 +46,7 @@ public class UserWithRoleRequestServiceImplementation implements UserWithRoleReq
         this.studentRepository = studentRepository;
         this.instructorRepository = instructorRepository;
         this.administrativeRepository = administrativeRepository;
+        this.userProducer = userProducer;
         this.jwtService = jwtService;
 //        this.authenticationManager = authenticationManager;
     }
@@ -64,6 +66,14 @@ public class UserWithRoleRequestServiceImplementation implements UserWithRoleReq
                     newStudent.setField(student.getField());
 
                     studentService.createStudent(newStudent);
+
+                    //Kafka
+                    UserDto userDto = new UserDto();
+                    userDto.setId(newStudent.getId());
+                    userDto.setUserName(userRequest.getUser().getUserName());
+                    userDto.setRole(userRequest.getRole());
+                    userProducer.sendMessage(userDto);
+
                 } else {
                     throw new IllegalArgumentException("Student object is null in the request");
                 }
@@ -79,6 +89,15 @@ public class UserWithRoleRequestServiceImplementation implements UserWithRoleReq
                     newInstructor.setDepartment(instructor.getDepartment());
 
                     instructorService.createInstructor(newInstructor);
+
+                    //Kafka
+                    UserDto userDto = new UserDto();
+                    userDto.setId(newInstructor.getId());
+                    userDto.setUserName(userRequest.getUser().getUserName());
+                    userDto.setRole(userRequest.getRole());
+                    userProducer.sendMessage(userDto);
+
+
                 } else {
                     throw new IllegalArgumentException("Instructor object is null in the request");
                 }
