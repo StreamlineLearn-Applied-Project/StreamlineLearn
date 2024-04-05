@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class CourseServiceImplementation implements CourseService {
@@ -33,7 +34,8 @@ public class CourseServiceImplementation implements CourseService {
 
     @Override
     public void createCourse(Course course, String token) {
-       Instructor instructor = instructorService.saveInstructor(token);
+
+      Instructor instructor = instructorService.findInstructorByInstructorId(jwtService.extractRoleId(token));
 
        course.setInstructor(instructor);
 
@@ -43,10 +45,10 @@ public class CourseServiceImplementation implements CourseService {
 
     @Override
     public void enrollStudent(Long courseId, String token) {
-        Course course = courseRepository.findById(courseId) // repeating same block of code
+        Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("Course not found"));
 
-        Student student = studentService.saveStudent(token);
+        Student student = studentService.findStudentByStudentId(jwtService.extractRoleId(token));
 
         if (student == null) {
             throw new RuntimeException("Student not found");
@@ -56,12 +58,7 @@ public class CourseServiceImplementation implements CourseService {
         if (course.getStudents().contains(student)) {
             throw new RuntimeException("Student is already enrolled in the course");
         }
-
-        // Add the student to the course's list of students
-        List<Student> students = course.getStudents();
-        students.add(student);
-        course.setStudents(students);
-
+        course.setStudent(student);
         // Save the updated course
         courseRepository.save(course);
 
@@ -88,7 +85,7 @@ public class CourseServiceImplementation implements CourseService {
         Optional<Course> optionalCourse = courseRepository.findById(courseId); // repeating same block of code
         if (optionalCourse.isPresent()) {
             Course course = optionalCourse.get();
-            List<Student> students = course.getStudents();
+            Set<Student> students = course.getStudents();
             for (Student student : students) {
                 if (student.getId().equals(studentId)) {
                     return true; // Student is enrolled

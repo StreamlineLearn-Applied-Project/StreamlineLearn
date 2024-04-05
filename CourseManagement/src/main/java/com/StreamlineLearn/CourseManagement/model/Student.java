@@ -1,8 +1,10 @@
 package com.StreamlineLearn.CourseManagement.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Student {
@@ -10,13 +12,14 @@ public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Long studentId;
     private String userName;
     private String role;
-    private Long studentId;
 
     // Many-to-many relationship with Course
     @ManyToMany(mappedBy = "students")
-    private List<Course> courses;
+    @JsonIgnore // Ignore this field during serialization to break the infinite loop
+    private Set<Course> courses = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -25,6 +28,15 @@ public class Student {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public Long getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(Long studentId) {
+        this.studentId = studentId;
+    }
+
 
     public String getUserName() {
         return userName;
@@ -42,19 +54,12 @@ public class Student {
         this.role = role;
     }
 
-    public Long getStudentId() {
-        return studentId;
-    }
 
-    public void setStudentId(Long studentId) {
-        this.studentId = studentId;
-    }
-
-    public List<Course> getCourses() {
+    public Set<Course> getCourses() {
         return courses;
     }
 
-    public void setCourses(List<Course> courses) {
+    public void setCourses(Set<Course> courses) {
         this.courses = courses;
     }
 }

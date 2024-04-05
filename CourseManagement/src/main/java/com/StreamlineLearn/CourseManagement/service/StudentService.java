@@ -1,10 +1,10 @@
 package com.StreamlineLearn.CourseManagement.service;
 
-import com.StreamlineLearn.CourseManagement.model.Instructor;
+
 import com.StreamlineLearn.CourseManagement.model.Student;
+import com.StreamlineLearn.SharedModule.dto.UserDto;
 
 public interface StudentService {
-    public Student findStudentByInstructorId(Long studentId);
-
-    Student saveStudent(String token);
+    public Student findStudentByStudentId(Long studentId);
+    public Student saveStudent(UserDto userDtoEvent);
 }

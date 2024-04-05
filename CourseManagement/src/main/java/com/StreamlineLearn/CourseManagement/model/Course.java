@@ -3,7 +3,8 @@ package com.StreamlineLearn.CourseManagement.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "courses")
@@ -14,7 +15,7 @@ public class Course {
     private String title;
     private String description;
     private BigDecimal price;
-//    private boolean isPaid;
+
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "instructor_id")
@@ -27,8 +28,7 @@ public class Course {
             joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
-    @JsonIgnore // Ignore this field during serialization to break the infinite loop
-    private List<Student> students;
+    private Set<Student> students = new HashSet<>();
 
 
     public Course() {
@@ -74,11 +74,15 @@ public class Course {
         this.instructor = instructor;
     }
 
-    public List<Student> getStudents() {return students;}
+    public Set<Student> getStudents() {
+        return students;
+    }
 
-    public void setStudents(List<Student> students) {this.students = students;}
+    public void setStudents(Set<Student> students) {
+        this.students = students;
+    }
 
-//    public boolean isPaid() {return isPaid;}
-//
-//    public void setPaid(boolean paid) {isPaid = paid;}
+    public void setStudent(Student student) {
+        students.add(student);
+    }
 }
