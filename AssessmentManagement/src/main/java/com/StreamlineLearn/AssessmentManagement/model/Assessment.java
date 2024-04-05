@@ -17,7 +17,7 @@ public class Assessment {
     @JoinColumn(name = "course_id")
     private Course course;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(
             name = "assessment_student",
             joinColumns = @JoinColumn(name = "assessment_id"),
@@ -64,5 +64,9 @@ public class Assessment {
 
     public void setStudents(Set<Student> students) {
         this.students = students;
+    }
+
+    public void setStudent(Student student) {
+        students.add(student);
     }
 }
