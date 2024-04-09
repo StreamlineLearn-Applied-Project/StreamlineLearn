@@ -33,7 +33,7 @@ public class StudentServiceImplementation implements StudentService {
     @Override
     public void createStudent(Student student) {
 
-       student.setUser(userService.setUserDetails(student.getUser()));
+       student.setUser(userService.createUser(student.getUser()));
 
         studentRepository.save(student);
     }
@@ -56,7 +56,7 @@ public class StudentServiceImplementation implements StudentService {
 
             userToUpdate.setFirstName(updateStudent.getUser().getFirstName());
             userToUpdate.setLastName(updateStudent.getUser().getLastName());
-            userToUpdate.setUserName(updateStudent.getUser().getUserName());
+            userToUpdate.setUsername(updateStudent.getUser().getUsername());
             userToUpdate.setPassword(passwordEncoder.encode(updateStudent.getUser().getPassword()));
 
             userRepository.save(userToUpdate);

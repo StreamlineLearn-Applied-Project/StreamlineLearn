@@ -1,9 +1,17 @@
 package com.StreamlineLearn.UserManagement.model;
 
+import com.StreamlineLearn.UserManagement.enums.AdministrativePosition;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "administrative")
 public class Administrative  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,27 +24,4 @@ public class Administrative  {
     @Enumerated(EnumType.STRING)
     private AdministrativePosition position;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public AdministrativePosition getPosition() {
-        return position;
-    }
-
-    public void setPosition(AdministrativePosition position) {
-        this.position = position;
-    }
 }

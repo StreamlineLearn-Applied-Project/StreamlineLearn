@@ -31,7 +31,7 @@ public class InstructorServiceImplementation implements InstructorService {
 
     @Override
     public void createInstructor(Instructor newInstructor) {
-        newInstructor.setUser(userService.setUserDetails(newInstructor.getUser()));
+        newInstructor.setUser(userService.createUser(newInstructor.getUser()));
 
         instructorRepository.save(newInstructor);
     }
@@ -53,7 +53,7 @@ public class InstructorServiceImplementation implements InstructorService {
             User userToUpdate = optionalInstructor.get().getUser();
             userToUpdate.setFirstName(updateInstructor.getUser().getFirstName());
             userToUpdate.setLastName(updateInstructor.getUser().getLastName());
-            userToUpdate.setUserName(updateInstructor.getUser().getUserName());
+            userToUpdate.setUsername(updateInstructor.getUser().getUsername());
             userToUpdate.setPassword(passwordEncoder.encode(updateInstructor.getUser().getPassword()));
 
             userRepository.save(userToUpdate);

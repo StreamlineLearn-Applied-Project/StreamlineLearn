@@ -1,4 +1,4 @@
-package com.StreamlineLearn.UserManagement.model;
+package com.StreamlineLearn.UserManagement.enums;
 
 public enum Field {
     BUSINESS,

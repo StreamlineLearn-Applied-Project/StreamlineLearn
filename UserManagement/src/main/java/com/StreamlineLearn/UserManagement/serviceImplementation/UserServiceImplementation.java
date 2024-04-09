@@ -26,24 +26,18 @@ public class UserServiceImplementation implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-
-    public User setUserDetails(User userDetails){
+    @Override
+    public User createUser(User userDetails){
         User setUser = new User();
         setUser.setFirstName(userDetails.getFirstName());
         setUser.setLastName(userDetails.getLastName());
-        setUser.setUserName(userDetails.getUserName());
+        setUser.setUsername(userDetails.getUsername());
         setUser.setPassword(passwordEncoder.encode((userDetails.getPassword())));
+        setUser.setRole(userDetails.getRole());
 
         return setUser;
     }
 
-    @Override
-    public void createUser(User newUser) {
-
-       User addedUser =  setUserDetails(newUser);
-
-        userRepository.save(addedUser);
-    }
 
     @Override
     public List<User> getAllUser() {
@@ -61,7 +55,7 @@ public class UserServiceImplementation implements UserService {
         if(userOptional.isPresent()){
             User userToUpdate = userOptional.get();
 
-            userToUpdate.setUserName(updateUser.getUserName());
+            userToUpdate.setUsername(updateUser.getUsername());
             userToUpdate.setFirstName(updateUser.getFirstName());
             userToUpdate.setLastName(updateUser.getLastName());
             userToUpdate.setPassword(passwordEncoder.encode(updateUser.getPassword()));
