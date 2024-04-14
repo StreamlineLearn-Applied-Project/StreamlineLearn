@@ -4,13 +4,11 @@ import com.StreamlineLearn.UserManagement.dto.AuthenticationResponse;
 import com.StreamlineLearn.UserManagement.model.User;
 import com.StreamlineLearn.UserManagement.service.AuthenticationService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/login")
+@CrossOrigin(origins = "*")
 public class UserLoginController {
     private final AuthenticationService authService;
 

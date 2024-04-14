@@ -50,22 +50,40 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public User updateUser(Long id, User updateUser) {
+    public Optional<User> updateUser(Long id, User updateUser) {
         Optional<User> userOptional = userRepository.findById(id);
-        if(userOptional.isPresent()){
+        if (userOptional.isPresent()) {
             User userToUpdate = userOptional.get();
 
-            userToUpdate.setUsername(updateUser.getUsername());
-            userToUpdate.setFirstName(updateUser.getFirstName());
-            userToUpdate.setLastName(updateUser.getLastName());
-            userToUpdate.setPassword(passwordEncoder.encode(updateUser.getPassword()));
+            // Update username if provided and validate uniqueness
+            String newUsername = updateUser.getUsername();
+            if (newUsername != null && !newUsername.equals(userToUpdate.getUsername())) {
+                // Check if new username is unique
+                if (userRepository.existsByUsername(newUsername)) {
+                    throw new IllegalArgumentException("Username already exists");
+                }
+                userToUpdate.setUsername(newUsername);
+            }
+
+            // Update other fields if provided
+            if (updateUser.getFirstName() != null) {
+                userToUpdate.setFirstName(updateUser.getFirstName());
+            }
+            if (updateUser.getLastName() != null) {
+                userToUpdate.setLastName(updateUser.getLastName());
+            }
+            if (updateUser.getPassword() != null && !updateUser.getPassword().isEmpty()) {
+                userToUpdate.setPassword(passwordEncoder.encode(updateUser.getPassword()));
+            }
 
             userRepository.save(userToUpdate);
 
-            return userToUpdate;
+            return Optional.of(userToUpdate);
+        } else {
+            return Optional.empty();
         }
-        else return null;
     }
+
 
     @Override
     public boolean deleteUser(Long id) {

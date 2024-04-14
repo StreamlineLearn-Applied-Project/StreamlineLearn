@@ -92,12 +92,20 @@
 <!--			<scope>test</scope>-->
 <!--		</dependency>-->
 
-		<!--Shared Module dependency-->
-<!--		<dependency>-->
-<!--			<groupId>com.StreamlineLearn</groupId>-->
-<!--			<artifactId>Shared-Module</artifactId>-->
-<!--			<version>0.0.1-SNAPSHOT</version>-->
-<!--		</dependency>-->
+<!--		Shared Module dependency-->
+		<dependency>
+			<groupId>com.StreamlineLearn</groupId>
+			<artifactId>Shared-Module</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.9.21</version>
+		</dependency>
+
 
 	</dependencies>
 

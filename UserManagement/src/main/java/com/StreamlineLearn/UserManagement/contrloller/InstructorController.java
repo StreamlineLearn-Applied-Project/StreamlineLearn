@@ -1,6 +1,7 @@
 package com.StreamlineLearn.UserManagement.contrloller;
 
 
+import com.StreamlineLearn.UserManagement.annotation.IsAdministrative;
 import com.StreamlineLearn.UserManagement.model.Instructor;
 import com.StreamlineLearn.UserManagement.service.InstructorService;
 import org.springframework.http.HttpStatus;
@@ -12,27 +13,25 @@ import java.util.List;
 @RestController
 @RequestMapping("/instructor")
 public class InstructorController {
-
     private final InstructorService instructorService;
-
-
-    public InstructorController(InstructorService instructorService
-                               ) {
+    public InstructorController(InstructorService instructorService) {
         this.instructorService = instructorService;
-
     }
 
+    @IsAdministrative
     @PostMapping("/creates")
     public ResponseEntity<String> createInstructor(@RequestBody Instructor newInstructor){
         instructorService.createInstructor(newInstructor);
         return new ResponseEntity<>("Instructor created successfully" , HttpStatus.CREATED);
     }
 
+    @IsAdministrative
     @GetMapping()
     public ResponseEntity<List<Instructor>> getAllInstructor(){
         return new ResponseEntity<>(instructorService.getAllInstructor(), HttpStatus.OK);
     }
 
+    @IsAdministrative
     @GetMapping("/{id}")
     public ResponseEntity<Instructor> getUserById(@PathVariable Long id){
         return new ResponseEntity<>(instructorService.getInstructorById(id), HttpStatus.OK);

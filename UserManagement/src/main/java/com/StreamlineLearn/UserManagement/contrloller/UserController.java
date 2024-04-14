@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -29,30 +30,28 @@ public class UserController {
         return new ResponseEntity<>(userService.getAllUser(), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/")
     public ResponseEntity<User> getUserById(@PathVariable Long id){
         User user = userService.getUserById(id);
-        if(user != null) {
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        }
-        else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return user != null ? new ResponseEntity<>(user, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateUserById(@PathVariable Long id,@RequestBody User updateUser){
-       User userUpdated = userService.updateUser(id, updateUser);
-       if(userUpdated!=null) {
-            return new ResponseEntity<>("user details updated!", HttpStatus.OK);
-        }
-       else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<User> updateUserById(@PathVariable Long id,
+                                                 @RequestBody User updateUser){
+
+       Optional<User> userUpdated = userService.updateUser(id, updateUser);
+        // If the user is found and updated, return the updated user with status OK
+        return userUpdated.map(user -> new ResponseEntity<>(user, HttpStatus.OK)).orElseGet(() ->
+                new ResponseEntity<>(HttpStatus.NOT_FOUND)); // If the user is not found, return NOT_FOUND status
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUserById(@PathVariable Long id){
-        boolean userDeleted = userService.deleteUser(id);
-        if(userDeleted){
-            return new ResponseEntity<>("user deleted successfully!", HttpStatus.OK);
-        }
-        else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<Void> deleteUserById(@PathVariable Long id){
+        boolean isDeleted = userService.deleteUser(id);
+        return isDeleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
 }

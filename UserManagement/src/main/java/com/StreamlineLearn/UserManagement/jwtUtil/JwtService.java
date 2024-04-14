@@ -25,10 +25,17 @@ public class JwtService {
         this.tokenRepository = tokenRepository;
     }
 
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public String generateToken(User user) {
+        return Jwts
+                .builder()
+                .subject(user.getUsername())
+                .claim("role", user.getRole().name())
+                .claim("roleId", getRoleId(user))
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 24*60*60*1000 ))
+                .signWith(getSignInKey())
+                .compact();
     }
-
 
     public boolean isValid(String token, UserDetails user) {
         String username = extractUsername(token);
@@ -41,8 +48,16 @@ public class JwtService {
         return (username.equals(user.getUsername())) && !isTokenExpired(token) && validToken;
     }
 
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
+    }
+
+    public Long extractRoleId(String token) {
+        return extractClaim(token, claims -> claims.get("roleId", Long.class));
     }
 
     private Date extractExpiration(String token) {
@@ -63,22 +78,39 @@ public class JwtService {
                 .getPayload();
     }
 
-
-    public String generateToken(User user) {
-
-        return Jwts
-                .builder()
-                .subject(user.getUsername())
-                .claim("role", user.getRole().name())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 24*60*60*1000 ))
-                .signWith(getSignInKey())
-                .compact();
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
     }
 
     private SecretKey getSignInKey() {
         byte[] keyBytes = Decoders.BASE64URL.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public boolean isValidRole(String token, String requiredRole) {
+        String tokenRole = extractRole(token);
+
+        // Compare the extracted role with the required role
+        return tokenRole != null && tokenRole.equals(requiredRole);
+    }
+
+    // need to move the code into separate service or file
+    public Long getRoleId(User user) {
+        Long userId = user.getId();
+        // Check if the user is a student or an instructor
+        Long studentId = null;
+        Long instructorId = null;
+        if (!user.getStudents().isEmpty()) {
+            return user.getStudents().getFirst().getId();
+        }
+        if (!user.getInstructors().isEmpty()) {
+            return user.getInstructors().getFirst().getId();
+        }
+        if (!user.getAdministrative().isEmpty()) {
+            return user.getAdministrative().getFirst().getId();
+        }
+
+        return null;
     }
 
 }
