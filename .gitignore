@@ -3,6 +3,7 @@
 .idea/misc.xml
 
 #dependencies
-/node_modules
+React/node_modules
+React-frontend/node_modules
 
 
