@@ -1,0 +1,48 @@
+.grid-container {
+  width: 350px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background-color: #f0f0f0; /* Light grey */
+  border-radius: 0.8rem;
+  border: 2px solid #ccc; /* Dark grey */
+  cursor: pointer;
+  padding: 1rem;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Add shadows for 3D effect */
+}
+
+.grid-container:hover {
+  border: 2px solid #4CAF50; /* Green */
+  transition: all 0.3s;
+}
+
+.name-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.course_name {
+  margin: 0;
+  font-weight: bold; /* Make course name bold */
+  color: #333; /* Dark grey */
+  font-size: 3rem; /* Increase font size */
+}
+
+.course_description {
+  color: #666; /* Medium grey */
+  font-size: 1rem;
+}
+
+.course_instructor {
+  color: #999; /* Light grey */
+  font-size: 1rem;
+}
+
+.course_price {
+  color: #4CAF50; /* Green */
+  font-size: 1rem;
+  font-weight: bold; /* Make price bold */
+}
