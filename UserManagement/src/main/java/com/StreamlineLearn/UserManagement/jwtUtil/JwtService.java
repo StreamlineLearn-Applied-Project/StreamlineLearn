@@ -29,6 +29,7 @@ public class JwtService {
         return Jwts
                 .builder()
                 .subject(user.getUsername())
+                .claim("userId",user.getId())
                 .claim("role", user.getRole().name())
                 .claim("roleId", getRoleId(user))
                 .issuedAt(new Date(System.currentTimeMillis()))
@@ -50,6 +51,10 @@ public class JwtService {
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public Long extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("userId", Long.class));
     }
 
     public String extractRole(String token) {
