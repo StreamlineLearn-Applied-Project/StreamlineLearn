@@ -1,0 +1,45 @@
+# Server configurations
+server:
+  port: 8686
+
+# Spring application configurations
+spring:
+  application:
+    # Name of the application
+    name: Content-Management
+
+  # Database source configurations
+  datasource:
+    # Database URL
+    url: jdbc:mysql://localhost:3306/content_database
+    # Database username
+    username: root
+    # Database password
+    password: Pqr#^(XYZ&*(!
+    # Driver class name
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # JPA configurations
+  jpa:
+    # Hibernate configurations
+    hibernate:
+      # DDL auto setting
+      ddl-auto: create-drop
+    # Show SQL queries
+    show-sql: true
+    # Hibernate properties
+    properties:
+      hibernate:
+        # Format SQL queries
+        format_sql: true
+        # Database type
+        database: mysql
+        # Database dialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+
+
+
+
+
+
