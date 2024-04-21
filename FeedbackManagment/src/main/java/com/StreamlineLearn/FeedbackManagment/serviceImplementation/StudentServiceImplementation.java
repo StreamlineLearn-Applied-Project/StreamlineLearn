@@ -1,13 +1,11 @@
 package com.StreamlineLearn.FeedbackManagment.serviceImplementation;
 
 
-
-
+import com.StreamlineLearn.FeedbackManagment.jwtUtil.JwtService;
 import com.StreamlineLearn.FeedbackManagment.model.Student;
 import com.StreamlineLearn.FeedbackManagment.repository.StudentRepository;
 import com.StreamlineLearn.FeedbackManagment.service.StudentService;
-import com.StreamlineLearn.FeedbackManagment.utility.JwtService;
-import com.StreamlineLearn.SharedModule.dto.UserDto;
+import com.StreamlineLearn.SharedModule.dto.UserSharedDto;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,7 +25,7 @@ public class StudentServiceImplementation implements StudentService {
     }
 
     @Override
-    public Student saveStudent(UserDto userDtoEvent) {
+    public Student saveStudent(UserSharedDto userDtoEvent) {
 
         // Check if the student already exists
         Student existingStudent = findStudentByStudentId(userDtoEvent.getId());
@@ -38,8 +36,8 @@ public class StudentServiceImplementation implements StudentService {
         } else {
             // Create a new student object
             Student student = new Student();
-            student.setStudentId(userDtoEvent.getId()); // Assuming you set the ID here, adjust as necessary
-            student.setUserName(userDtoEvent.getUserName()); // Assuming you set the username here, adjust as necessary
+            student.setId(userDtoEvent.getId()); // Assuming you set the ID here, adjust as necessary
+            student.setUsername(userDtoEvent.getUserName()); // Assuming you set the username here, adjust as necessary
             student.setRole(userDtoEvent.getRole());
 
             // Save the new instructor
