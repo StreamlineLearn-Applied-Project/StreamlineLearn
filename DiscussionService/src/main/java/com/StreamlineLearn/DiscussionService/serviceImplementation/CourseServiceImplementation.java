@@ -1,5 +1,7 @@
 package com.StreamlineLearn.DiscussionService.serviceImplementation;
 
+
+
 import com.StreamlineLearn.DiscussionService.model.Course;
 import com.StreamlineLearn.DiscussionService.repository.CourseRepository;
 import com.StreamlineLearn.DiscussionService.service.CourseService;
@@ -15,6 +17,6 @@ public class CourseServiceImplementation implements CourseService {
 
     @Override
     public Course getCourseByCourseId(Long id) {
-        return courseRepository.findByCourseId(id);
+        return courseRepository.findById(id).orElseThrow(null);
     }
 }

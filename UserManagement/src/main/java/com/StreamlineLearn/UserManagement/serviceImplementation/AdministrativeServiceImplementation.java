@@ -54,13 +54,6 @@ public class AdministrativeServiceImplementation implements AdministrativeServic
     public boolean updateAdministrative(Long id, Administrative updateAdministrative) {
         Optional<Administrative> optionalAdministrative = administrativeRepository.findById(id);
         if(optionalAdministrative.isPresent()){
-            User userToUpdate = optionalAdministrative.get().getUser();
-            userToUpdate.setFirstName(updateAdministrative.getUser().getFirstName());
-            userToUpdate.setLastName(updateAdministrative.getUser().getLastName());
-            userToUpdate.setUsername(updateAdministrative.getUser().getUsername());
-            userToUpdate.setPassword(passwordEncoder.encode(updateAdministrative.getUser().getPassword()));
-
-            userRepository.save(userToUpdate);
 
             Administrative administrative = optionalAdministrative.get();
             administrative.setPosition(updateAdministrative.getPosition());

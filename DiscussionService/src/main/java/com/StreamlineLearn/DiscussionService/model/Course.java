@@ -9,10 +9,8 @@ import java.util.Set;
 @Entity
 public class Course {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long courseId;
-    private String title;
+    private String courseName;
 
     // One-to-many relationship with Discussion
     @OneToMany(mappedBy = "course")
@@ -35,20 +33,12 @@ public class Course {
         this.id = id;
     }
 
-    public Long getCourseId() {
-        return courseId;
+    public String getCourseName() {
+        return courseName;
     }
 
-    public void setCourseId(Long courseId) {
-        this.courseId = courseId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
     }
 
     public List<Discussion> getDiscussions() {

@@ -4,5 +4,5 @@ import com.StreamlineLearn.CourseManagement.model.Instructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface InstructorRepository extends JpaRepository<Instructor, Long> {
-    boolean existsByInstructorId(Long instructorId);
+
 }

@@ -73,7 +73,7 @@ public class AuthorizationAspect {
     public void deleteStudentPointcut() {}
 
 
-    //    <--Instructor-->
+    //    <--ADMINISTRATIVE-->
 
     @Before("administrativePointcut()")
     public void checkAdminAuthorization(JoinPoint joinPoint) {

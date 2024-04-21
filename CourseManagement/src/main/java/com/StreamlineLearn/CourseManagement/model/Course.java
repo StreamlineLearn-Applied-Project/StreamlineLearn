@@ -1,6 +1,5 @@
 package com.StreamlineLearn.CourseManagement.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -12,7 +11,7 @@ public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
-    private String title;
+    private String courseName;
     private String description;
     private BigDecimal price;
 
@@ -20,15 +19,6 @@ public class Course {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "instructor_id")
     private Instructor instructor;
-
-    // Many-to-many relationship with Student
-    @ManyToMany
-    @JoinTable(
-            name = "course_student",
-            joinColumns = @JoinColumn(name = "course_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
-    private Set<Student> students = new HashSet<>();
 
 
     public Course() {
@@ -42,12 +32,12 @@ public class Course {
         Id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getCourseName() {
+        return courseName;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
     }
 
     public String getDescription() {
@@ -74,15 +64,4 @@ public class Course {
         this.instructor = instructor;
     }
 
-    public Set<Student> getStudents() {
-        return students;
-    }
-
-    public void setStudents(Set<Student> students) {
-        this.students = students;
-    }
-
-    public void setStudent(Student student) {
-        students.add(student);
-    }
 }

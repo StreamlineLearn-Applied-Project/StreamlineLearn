@@ -1,9 +1,6 @@
 package com.StreamlineLearn.UserManagement.contrloller;
 
 import com.StreamlineLearn.UserManagement.annotation.IsAdministrative;
-import com.StreamlineLearn.UserManagement.annotation.IsAuthorizedToDeleteStudent;
-import com.StreamlineLearn.UserManagement.annotation.IsAuthorizedToUpdateStudent;
-import com.StreamlineLearn.UserManagement.annotation.IsStudent;
 import com.StreamlineLearn.UserManagement.jwtUtil.JwtService;
 import com.StreamlineLearn.UserManagement.model.Student;
 import com.StreamlineLearn.UserManagement.service.StudentService;
@@ -26,44 +23,37 @@ public class StudentController {
         this.jwtService = jwtService;
     }
 
-    @IsAdministrative
-    @PostMapping("/creates")
-    public ResponseEntity<String> createStudent(@RequestBody Student student){
-        studentService.createStudent(student);
-        return new ResponseEntity<>(" student created successfully" , HttpStatus.CREATED);
-    }
-
-    @IsAdministrative
     @GetMapping()
+    @IsAdministrative
     public ResponseEntity<List<Student>> getAllStudent(){
-        return new ResponseEntity<>(studentService.getAllUser(), HttpStatus.OK);
+        return new ResponseEntity<>(studentService.getAllStudent(), HttpStatus.OK);
     }
 
-    @GetMapping("/account-profile")
-    public ResponseEntity<Student> getUserById(@RequestHeader("Authorization") String token){
+    @GetMapping("/student-profile")
+    public ResponseEntity<Student> getStudentById(@RequestHeader("Authorization") String token){
         return new ResponseEntity<>(studentService
-                .getUserById(jwtService
+                .getStudentById(jwtService
                         .extractRoleId(token.substring(7)))
                 , HttpStatus.OK);
     }
 
-    @PutMapping("/account-profile/edit")
-    @IsAuthorizedToUpdateStudent
+    @PutMapping("/student-profile/update")
     public ResponseEntity<String> updateStudent(@RequestHeader("Authorization") String token,
                                                 @RequestBody Student updateStudent ) {
         boolean studentUpdated = studentService.updateStudent(jwtService
                 .extractRoleId(token.substring(7)), updateStudent);
-
+        // If the Student is found and updated, return a response indicating that the student profile has been updated
         if(studentUpdated) {
             return new ResponseEntity<>("student updated successfully", HttpStatus.OK);
         }
+        // If the student is not found, return NOT_FOUND status
         return new ResponseEntity<>("student did not found", HttpStatus.NOT_FOUND);
     }
 
-    @IsAuthorizedToDeleteStudent
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteStudentById(@PathVariable Long id) {
-        boolean studentDeleted = studentService.deleteStudentById(id);
+    @DeleteMapping("/student-profile/delete")
+    public ResponseEntity<String> deleteStudentById(@RequestHeader("Authorization") String token) {
+        boolean studentDeleted = studentService.deleteStudentById(jwtService
+                .extractRoleId(token.substring(7)));
         if(studentDeleted) {
             return new ResponseEntity<>("Student deleted successfully", HttpStatus.OK);
         }
@@ -71,3 +61,5 @@ public class StudentController {
     }
 
 }
+
+

@@ -50,13 +50,6 @@ public class InstructorServiceImplementation implements InstructorService {
     public boolean updateInstructor(Long id, Instructor updateInstructor) {
         Optional<Instructor> optionalInstructor = instructorRepository.findById(id);
         if(optionalInstructor.isPresent()){
-            User userToUpdate = optionalInstructor.get().getUser();
-            userToUpdate.setFirstName(updateInstructor.getUser().getFirstName());
-            userToUpdate.setLastName(updateInstructor.getUser().getLastName());
-            userToUpdate.setUsername(updateInstructor.getUser().getUsername());
-            userToUpdate.setPassword(passwordEncoder.encode(updateInstructor.getUser().getPassword()));
-
-            userRepository.save(userToUpdate);
 
             Instructor instructor = optionalInstructor.get();
             instructor.setDepartment(updateInstructor.getDepartment());

@@ -1,19 +1,19 @@
 package com.StreamlineLearn.DiscussionService.serviceImplementation;
 
+import com.StreamlineLearn.DiscussionService.jwtUtil.JwtService;
 import com.StreamlineLearn.DiscussionService.model.Course;
 import com.StreamlineLearn.DiscussionService.model.Discussion;
 import com.StreamlineLearn.DiscussionService.model.Student;
 import com.StreamlineLearn.DiscussionService.repository.CourseRepository;
 import com.StreamlineLearn.DiscussionService.repository.DiscussionRepository;
+import com.StreamlineLearn.DiscussionService.repository.StudentRepository;
 import com.StreamlineLearn.DiscussionService.service.CourseService;
 import com.StreamlineLearn.DiscussionService.service.DiscussionService;
 import com.StreamlineLearn.DiscussionService.service.StudentService;
-import com.StreamlineLearn.DiscussionService.utility.JwtService;
+
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class DiscussionServiceImplementation implements DiscussionService {
@@ -22,16 +22,39 @@ public class DiscussionServiceImplementation implements DiscussionService {
     private final DiscussionRepository discussionRepository;
     private final JwtService jwtService;
     private final StudentService studentService;
+    private final StudentRepository studentRepository;
 
     public DiscussionServiceImplementation(CourseRepository courseRepository, CourseService courseService,
                                            DiscussionRepository discussionRepository,
                                            JwtService jwtService,
-                                           StudentService studentService) {
+                                           StudentService studentService, StudentRepository studentRepository) {
         this.courseService = courseService;
         this.courseRepository = courseRepository;
         this.discussionRepository = discussionRepository;
         this.jwtService = jwtService;
         this.studentService = studentService;
+        this.studentRepository = studentRepository;
+    }
+
+    @Override
+    public void createDiscussion(Long courseId, Discussion discussion, String authorizationHeader) {
+
+        Student student = new Student();
+        student.setId(1L);
+        student.setUsername("johnDarwin");
+        student.setRole("STUDENT");
+        studentRepository.save(student);
+
+        Course course = new Course();
+        course.setId(1L);
+        course.setCourseName("Course Title");
+        course.setStudent(student);
+        courseRepository.save(course);
+
+        discussion.setCourse(course);
+        discussion.setStudent(student);
+        discussionRepository.save(discussion);
+
     }
 
     public List<Discussion> getAllDiscussions(Long courseId) {

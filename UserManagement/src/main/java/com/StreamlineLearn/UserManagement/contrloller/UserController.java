@@ -1,5 +1,7 @@
 package com.StreamlineLearn.UserManagement.contrloller;
 
+import com.StreamlineLearn.UserManagement.annotation.IsAdministrative;
+import com.StreamlineLearn.UserManagement.jwtUtil.JwtService;
 import com.StreamlineLearn.UserManagement.model.User;
 import com.StreamlineLearn.UserManagement.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -12,46 +14,39 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/users")
 public class UserController {
+    private final UserService userService;
+    private final JwtService jwtService;
 
-    UserService userService;
-
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtService jwtService) {
         this.userService = userService;
-    }
-
-    @PostMapping("/creates")
-    public ResponseEntity<String> createUser(@RequestBody User newUser){
-        userService.createUser(newUser);
-        return new ResponseEntity<>("User created successfully", HttpStatus.CREATED);
+        this.jwtService = jwtService;
     }
 
     @GetMapping()
+    @IsAdministrative
     public ResponseEntity<List<User>> getAllUser(){
         return new ResponseEntity<>(userService.getAllUser(), HttpStatus.OK);
     }
 
-    @GetMapping("/")
-    public ResponseEntity<User> getUserById(@PathVariable Long id){
-        User user = userService.getUserById(id);
-        return user != null ? new ResponseEntity<>(user, HttpStatus.OK) :
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @GetMapping("/profile")
+    public ResponseEntity<User> getUserById(@RequestHeader("Authorization") String token){
+        return new ResponseEntity<>(userService
+                .getUserById(jwtService
+                        .extractUserId(token.substring(7)))
+                , HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUserById(@PathVariable Long id,
+    @PutMapping("/profile/update")
+    public ResponseEntity<String> updateUserById(@RequestHeader("Authorization") String token,
                                                  @RequestBody User updateUser){
 
-       Optional<User> userUpdated = userService.updateUser(id, updateUser);
-        // If the user is found and updated, return the updated user with status OK
-        return userUpdated.map(user -> new ResponseEntity<>(user, HttpStatus.OK)).orElseGet(() ->
+        Optional<User> userUpdated = userService.updateUser(jwtService
+                .extractUserId(token.substring(7)), updateUser);
+
+        // If the user is found and updated, return a response indicating that the user profile has been updated
+        return userUpdated.map(user -> new ResponseEntity<>("User profile updated successfully", HttpStatus.OK)).orElseGet(() ->
                 new ResponseEntity<>(HttpStatus.NOT_FOUND)); // If the user is not found, return NOT_FOUND status
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUserById(@PathVariable Long id){
-        boolean isDeleted = userService.deleteUser(id);
-        return isDeleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
 
 }

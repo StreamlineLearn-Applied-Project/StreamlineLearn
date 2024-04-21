@@ -1,5 +1,8 @@
 package com.StreamlineLearn.UserManagement.dto;
 
-public record AuthenticationResponse(String token) {
+import com.StreamlineLearn.UserManagement.enums.Role;
+
+public record AuthenticationResponse(String token, Role role) {
 
 }
+

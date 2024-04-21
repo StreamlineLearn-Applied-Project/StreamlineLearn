@@ -7,12 +7,6 @@ import java.util.List;
 public interface CourseService {
     void createCourse(Course course, String token);
 
-    void enrollStudent(Long courseId, String token);
-
-    Course getCourseContent(Long courseId, String token);
-
-    boolean isStudentEnrolled(Long courseId, Long studentId);
-
     List<Course> getAllTheCourse();
 
     Course getCourseById(Long id);

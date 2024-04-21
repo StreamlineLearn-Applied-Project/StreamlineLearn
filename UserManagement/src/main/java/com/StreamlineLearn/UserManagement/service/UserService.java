@@ -10,13 +10,11 @@ public interface UserService {
 
     User createUser(User user);
 
-
     List<User> getAllUser();
 
     public User getUserById(Long id);
 
     public Optional<User> updateUser(Long id, User updateUser);
 
-    public boolean deleteUser(Long id);
 
 }

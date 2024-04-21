@@ -3,8 +3,6 @@ package com.StreamlineLearn.CourseManagement.controller;
 
 import com.StreamlineLearn.CourseManagement.model.Course;
 import com.StreamlineLearn.CourseManagement.service.CourseService;
-import com.StreamlineLearn.CourseManagement.service.InstructorService;
-import com.StreamlineLearn.CourseManagement.utility.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/courses")
+@CrossOrigin(origins = "*")
 public class CourseController {
     private final CourseService courseService;
 
@@ -22,28 +21,12 @@ public class CourseController {
 
     }
 
-    @PostMapping
+    @PostMapping("/create-course")
     public ResponseEntity<String> createCourse(@RequestBody Course course,
                                                @RequestHeader("Authorization") String authorizationHeader){
 
         courseService.createCourse(course, authorizationHeader );
         return new ResponseEntity<>("added the Course Successfully", HttpStatus.CREATED);
-    }
-
-    @PostMapping("/{courseId}/enroll")
-    public ResponseEntity<String> enrollStudent(@PathVariable Long courseId,
-                                                @RequestHeader("Authorization") String authorizationHeader) {
-
-        courseService.enrollStudent(courseId, authorizationHeader);
-        return new ResponseEntity<>("Enrolled student in the course successfully", HttpStatus.OK);
-    }
-
-    @GetMapping("/{courseId}/content")
-    public ResponseEntity<Course> getCourseContent(@PathVariable Long courseId,
-                                                   @RequestHeader("Authorization") String authorizationHeader) {
-
-        Course course = courseService.getCourseContent(courseId, authorizationHeader);
-        return new ResponseEntity<>(course, HttpStatus.OK);
     }
 
     @GetMapping

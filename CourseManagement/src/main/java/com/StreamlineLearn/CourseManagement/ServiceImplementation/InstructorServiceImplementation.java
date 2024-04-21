@@ -3,7 +3,8 @@ package com.StreamlineLearn.CourseManagement.ServiceImplementation;
 import com.StreamlineLearn.CourseManagement.model.Instructor;
 import com.StreamlineLearn.CourseManagement.repository.InstructorRepository;
 import com.StreamlineLearn.CourseManagement.service.InstructorService;
-import com.StreamlineLearn.SharedModule.dto.UserDto;
+import com.StreamlineLearn.SharedModule.dto.UserSharedDto;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,26 +18,20 @@ public class InstructorServiceImplementation implements InstructorService {
     }
 
     @Override
-    public Instructor findInstructorByInstructorId(Long instructorId) {
-        return instructorRepository.findById(instructorId).orElse(null);
+    public Instructor findInstructorById(Long id) {
+        return instructorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Instructor not found with id: " + id));
     }
 
-    public void saveInstructor(UserDto userDtoEvent) {
-        // Check if the instructor already exists
-        Instructor existingInstructor = findInstructorByInstructorId(userDtoEvent.getId());
+    public void saveInstructor(UserSharedDto userDtoEvent) {
+        // Create a new instructor object
+        Instructor instructor = new Instructor();
+        instructor.setId(userDtoEvent.getId());
+        instructor.setUsername(userDtoEvent.getUserName());
+        instructor.setRole(userDtoEvent.getRole());
 
-        if (existingInstructor != null) {
-            // If instructor already exists, return existingInstructor or handle the case accordingly
-        } else {
-            // Create a new instructor object
-            Instructor instructor = new Instructor();
-            instructor.setInstructorId(userDtoEvent.getId()); // Assuming you set the ID here, adjust as necessary
-            instructor.setUsername(userDtoEvent.getUserName()); // Assuming you set the username here, adjust as necessary
-            instructor.setRole(userDtoEvent.getRole());
+        instructorRepository.save(instructor);
 
-            // Save the new instructor
-             instructorRepository.save(instructor);
-        }
     }
 
 

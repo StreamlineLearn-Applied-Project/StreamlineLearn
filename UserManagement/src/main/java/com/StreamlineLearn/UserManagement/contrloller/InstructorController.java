@@ -2,6 +2,7 @@ package com.StreamlineLearn.UserManagement.contrloller;
 
 
 import com.StreamlineLearn.UserManagement.annotation.IsAdministrative;
+import com.StreamlineLearn.UserManagement.jwtUtil.JwtService;
 import com.StreamlineLearn.UserManagement.model.Instructor;
 import com.StreamlineLearn.UserManagement.service.InstructorService;
 import org.springframework.http.HttpStatus;
@@ -14,43 +15,47 @@ import java.util.List;
 @RequestMapping("/instructor")
 public class InstructorController {
     private final InstructorService instructorService;
-    public InstructorController(InstructorService instructorService) {
+    private final JwtService jwtService;
+    public InstructorController(InstructorService instructorService,
+                                JwtService jwtService) {
         this.instructorService = instructorService;
+        this.jwtService = jwtService;
     }
 
-    @IsAdministrative
-    @PostMapping("/creates")
-    public ResponseEntity<String> createInstructor(@RequestBody Instructor newInstructor){
-        instructorService.createInstructor(newInstructor);
-        return new ResponseEntity<>("Instructor created successfully" , HttpStatus.CREATED);
-    }
-
-    @IsAdministrative
     @GetMapping()
+    @IsAdministrative
     public ResponseEntity<List<Instructor>> getAllInstructor(){
         return new ResponseEntity<>(instructorService.getAllInstructor(), HttpStatus.OK);
     }
 
-    @IsAdministrative
-    @GetMapping("/{id}")
-    public ResponseEntity<Instructor> getUserById(@PathVariable Long id){
-        return new ResponseEntity<>(instructorService.getInstructorById(id), HttpStatus.OK);
+
+    @GetMapping("/instructor-profile")
+    public ResponseEntity<Instructor> getInstructorById(@RequestHeader("Authorization") String token){
+        return new ResponseEntity<>(instructorService
+                .getInstructorById(jwtService
+                        .extractRoleId(token.substring(7)))
+                , HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateInstructor(@PathVariable Long id,
+    @PutMapping("/instructor-profile/update")
+    public ResponseEntity<String> updateInstructor(@RequestHeader("Authorization") String token,
                                                    @RequestBody Instructor updateInstructor ) {
 
-        boolean instructorUpdated = instructorService.updateInstructor(id, updateInstructor);
+        boolean instructorUpdated = instructorService.updateInstructor(jwtService
+                .extractRoleId(token.substring(7)), updateInstructor);
+
+        // If the Instructor is found and updated, return a response indicating that the instructor profile has been updated
         if(instructorUpdated) {
             return new ResponseEntity<>("instructor updated successfully", HttpStatus.OK);
         }
+        // If the instructor is not found, return NOT_FOUND status
         return new ResponseEntity<>("instructor did not found", HttpStatus.NOT_FOUND);
     }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteInstructorById(@PathVariable Long id) {
+    @DeleteMapping("/instructor-profile/delete")
+    public ResponseEntity<String> deleteInstructorById(@RequestHeader("Authorization") String token) {
 
-        boolean instructorDeleted = instructorService.deleteInstructorById(id);
+        boolean instructorDeleted = instructorService.deleteInstructorById(jwtService
+                .extractRoleId(token.substring(7)));
         if(instructorDeleted) {
             return new ResponseEntity<>("instructorDeleted deleted successfully", HttpStatus.OK);
         }

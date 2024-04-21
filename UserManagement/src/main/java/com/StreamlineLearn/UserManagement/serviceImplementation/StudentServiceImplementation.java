@@ -6,6 +6,7 @@ import com.StreamlineLearn.UserManagement.repository.StudentRepository;
 import com.StreamlineLearn.UserManagement.repository.UserRepository;
 import com.StreamlineLearn.UserManagement.service.StudentService;
 import com.StreamlineLearn.UserManagement.service.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,16 +18,13 @@ public class StudentServiceImplementation implements StudentService {
 
     private final StudentRepository studentRepository;
     private final UserService userService;
-    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     public StudentServiceImplementation(StudentRepository studentRepository,
                                         UserService userService,
-                                        UserRepository userRepository,
                                         PasswordEncoder passwordEncoder) {
         this.studentRepository = studentRepository;
         this.userService = userService;
-        this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -39,28 +37,20 @@ public class StudentServiceImplementation implements StudentService {
     }
 
     @Override
-    public List<Student> getAllUser() {
+    public List<Student> getAllStudent() {
         return studentRepository.findAll();
     }
 
     @Override
-    public Student getUserById(Long id) {
+    public Student getStudentById(Long id) {
         return studentRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional
     public boolean updateStudent(Long id, Student updateStudent) {
         Optional<Student> optionalStudent = studentRepository.findById(id);
         if(optionalStudent.isPresent()){
-            User userToUpdate = optionalStudent.get().getUser();
-
-            userToUpdate.setFirstName(updateStudent.getUser().getFirstName());
-            userToUpdate.setLastName(updateStudent.getUser().getLastName());
-            userToUpdate.setUsername(updateStudent.getUser().getUsername());
-            userToUpdate.setPassword(passwordEncoder.encode(updateStudent.getUser().getPassword()));
-
-            userRepository.save(userToUpdate);
-
             Student student = optionalStudent.get();
             student.setEducation(updateStudent.getEducation());
             student.setField(updateStudent.getField());

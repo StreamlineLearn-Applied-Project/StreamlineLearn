@@ -7,9 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/courses/{courseId}/assessments")
+@CrossOrigin(origins = "*")
 public class AssessmentController {
     private final AssessmentService assessmentService;
 
@@ -22,30 +24,19 @@ public class AssessmentController {
                                                    @RequestBody Assessment assessment,
                                                    @RequestHeader("Authorization") String authorizationHeader){
 
-       String response =  assessmentService.createAssessment(courseId,assessment, authorizationHeader );
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        assessmentService.createAssessment(courseId, assessment, authorizationHeader );
+        return new ResponseEntity<>("Assessment Added successfully.", HttpStatus.CREATED);
     }
 
-//    @PostMapping("/{courseId}/enroll")
-//    public ResponseEntity<String> enrollStudent(@PathVariable Long courseId,
-//                                                @RequestHeader("Authorization") String authorizationHeader) {
-//
-//        courseService.enrollStudent(courseId, authorizationHeader);
-//        return new ResponseEntity<>("Enrolled student in the course successfully", HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/{courseId}/content")
-//    public ResponseEntity<CourseExternal> getCourseContent(@PathVariable Long courseId,
-//                                                   @RequestHeader("Authorization") String authorizationHeader) {
-//
-//        CourseExternal course = courseService.getCourseContent(courseId, authorizationHeader);
-//        return new ResponseEntity<>(course, HttpStatus.OK);
-//    }
-//
-//    @GetMapping
-//    public ResponseEntity <List<CourseExternal>> getAllTheCourse(){
-//        return new ResponseEntity<>(courseService.getAllTheCourse(),HttpStatus.OK);
-//    }
+    @GetMapping
+    public ResponseEntity<Set<Assessment>> getAssessmentByCourseId(@PathVariable Long courseId){
+        Set<Assessment> assessments = assessmentService.getAssessmentByCourseId(courseId);
+        if(assessments != null && !assessments.isEmpty()){
+            return new ResponseEntity<>(assessments, HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Assessment> getAssessmentById(@PathVariable Long id){

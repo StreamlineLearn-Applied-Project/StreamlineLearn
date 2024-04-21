@@ -1,30 +1,23 @@
 package com.StreamlineLearn.AssessmentManagement.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 public class Course {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long courseId;
-    private String title;
+    private String courseName;
 
-    @OneToMany(mappedBy = "course")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "instructor_id")
+    private Instructor instructor;
+
+    // Updated @OneToMany annotation
+    @JsonIgnore
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Assessment> assessments;
-
-    // Many-to-many relationship with Student
-    @ManyToMany
-    @JoinTable(
-            name = "course_student",
-            joinColumns = @JoinColumn(name = "course_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
-    private Set<Student> students = new HashSet<>();
-
 
     public Long getId() {
         return id;
@@ -34,20 +27,20 @@ public class Course {
         this.id = id;
     }
 
-    public Long getCourseId() {
-        return courseId;
+    public String getCourseName() {
+        return courseName;
     }
 
-    public void setCourseId(Long courseId) {
-        this.courseId = courseId;
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
     }
 
-    public String getTitle() {
-        return title;
+    public Instructor getInstructor() {
+        return instructor;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setInstructor(Instructor instructor) {
+        this.instructor = instructor;
     }
 
     public Set<Assessment> getAssessments() {
@@ -57,16 +50,5 @@ public class Course {
     public void setAssessments(Set<Assessment> assessments) {
         this.assessments = assessments;
     }
-
-    public Set<Student> getStudents() {
-        return students;
-    }
-
-    public void setStudents(Set<Student> students) {
-        this.students = students;
-    }
-
-    public void setStudent(Student student) {
-        students.add(student);
-    }
 }
+

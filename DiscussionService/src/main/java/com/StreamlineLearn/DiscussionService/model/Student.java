@@ -10,10 +10,8 @@ import java.util.Set;
 @Entity
 public class Student {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long studentId;
-    private String userName;
+    private String username;
     private String role;
 
     // Many-to-many relationship with Course
@@ -34,20 +32,13 @@ public class Student {
         this.id = id;
     }
 
-    public Long getStudentId() {
-        return studentId;
+
+    public String getUsername() {
+        return username;
     }
 
-    public void setStudentId(Long studentId) {
-        this.studentId = studentId;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getRole() {

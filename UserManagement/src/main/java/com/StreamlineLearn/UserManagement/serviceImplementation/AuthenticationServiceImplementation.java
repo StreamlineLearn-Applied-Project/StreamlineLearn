@@ -65,7 +65,7 @@ public class AuthenticationServiceImplementation implements AuthenticationServic
         revokeAllTokenByUser(user);
         saveUserToken(token, user);
 
-        return new AuthenticationResponse(token);
+        return new AuthenticationResponse(token, user.getRole());
 
     }
 }

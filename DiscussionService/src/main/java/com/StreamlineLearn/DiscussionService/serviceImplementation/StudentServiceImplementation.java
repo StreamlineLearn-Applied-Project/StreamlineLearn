@@ -1,10 +1,10 @@
 package com.StreamlineLearn.DiscussionService.serviceImplementation;
 
+import com.StreamlineLearn.DiscussionService.jwtUtil.JwtService;
 import com.StreamlineLearn.DiscussionService.model.Student;
 import com.StreamlineLearn.DiscussionService.repository.StudentRepository;
 import com.StreamlineLearn.DiscussionService.service.StudentService;
-import com.StreamlineLearn.DiscussionService.utility.JwtService;
-import com.StreamlineLearn.SharedModule.dto.UserDto;
+import com.StreamlineLearn.SharedModule.dto.UserSharedDto;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,7 +24,7 @@ public class StudentServiceImplementation implements StudentService {
     }
 
     @Override
-    public Student saveStudent(UserDto userDtoEvent) {
+    public Student saveStudent(UserSharedDto userDtoEvent) {
 
         // Check if the student already exists
         Student existingStudent = findStudentByStudentId(userDtoEvent.getId());
@@ -35,8 +35,8 @@ public class StudentServiceImplementation implements StudentService {
         } else {
             // Create a new student object
             Student student = new Student();
-            student.setStudentId(userDtoEvent.getId()); // Assuming you set the ID here, adjust as necessary
-            student.setUserName(userDtoEvent.getUserName()); // Assuming you set the username here, adjust as necessary
+            student.setId(userDtoEvent.getId()); // Assuming you set the ID here, adjust as necessary
+            student.setUsername(userDtoEvent.getUserName()); // Assuming you set the username here, adjust as necessary
             student.setRole(userDtoEvent.getRole());
 
             // Save the new instructor
@@ -45,4 +45,3 @@ public class StudentServiceImplementation implements StudentService {
         }
     }
 }
-

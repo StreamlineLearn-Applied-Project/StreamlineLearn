@@ -5,19 +5,18 @@ import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Instructor {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long instructorId;
     private String username;
     private String role;
 
     @JsonIgnore
     @OneToMany(mappedBy = "instructor", cascade = CascadeType.ALL)
-    private List<Course> courses = new ArrayList<>();
+    private Set<Course> courses;
 
     public Instructor() {
     }
@@ -28,14 +27,6 @@ public class Instructor {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getInstructorId() {
-        return instructorId;
-    }
-
-    public void setInstructorId(Long instructorId) {
-        this.instructorId = instructorId;
     }
 
     public String getUsername() {
@@ -54,13 +45,12 @@ public class Instructor {
         this.role = role;
     }
 
-    public List<Course> getCourses() {
+    public Set<Course> getCourses() {
         return courses;
     }
 
-    public void setCourses(List<Course> courses) {
+    public void setCourses(Set<Course> courses) {
         this.courses = courses;
     }
-
 }
 

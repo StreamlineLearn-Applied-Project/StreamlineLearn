@@ -17,6 +17,16 @@ public class DiscussionController {
         this.discussionService = discussionService;
     }
 
+    @PostMapping
+    public ResponseEntity<String> createDiscussion(@PathVariable Long courseId,
+                                                   @RequestBody Discussion discussion,
+                                                   @RequestHeader("Authorization") String authorizationHeader){
+
+        discussionService.createDiscussion(courseId, discussion, authorizationHeader );
+
+        return new ResponseEntity<>("Discussion added to the course",HttpStatus.CREATED);
+    }
+
     // Get all discussions for a specific course
     @GetMapping
     public ResponseEntity<List<Discussion>> getAllDiscussions(@PathVariable Long courseId) {

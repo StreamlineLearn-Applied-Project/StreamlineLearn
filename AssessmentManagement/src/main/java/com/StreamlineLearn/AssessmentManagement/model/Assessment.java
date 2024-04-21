@@ -2,11 +2,9 @@ package com.StreamlineLearn.AssessmentManagement.model;
 
 import jakarta.persistence.*;
 
-import java.util.Set;
 
 @Entity
 public class Assessment {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,14 +14,6 @@ public class Assessment {
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
-
-    @ManyToMany
-    @JoinTable(
-            name = "assessment_student",
-            joinColumns = @JoinColumn(name = "assessment_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
-    private Set<Student> students;
 
 
     public Long getId() {
@@ -56,17 +46,5 @@ public class Assessment {
 
     public void setCourse(Course course) {
         this.course = course;
-    }
-
-    public Set<Student> getStudents() {
-        return students;
-    }
-
-    public void setStudents(Set<Student> students) {
-        this.students = students;
-    }
-
-    public void setStudent(Student student) {
-        students.add(student);
     }
 }

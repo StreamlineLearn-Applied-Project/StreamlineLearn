@@ -5,6 +5,7 @@ import com.StreamlineLearn.UserManagement.model.User;
 import com.StreamlineLearn.UserManagement.repository.StudentRepository;
 import com.StreamlineLearn.UserManagement.repository.UserRepository;
 import com.StreamlineLearn.UserManagement.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,13 +17,12 @@ import java.util.Optional;
 @Service
 public class UserServiceImplementation implements UserService {
     private final UserRepository userRepository;
-    private final StudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;
 
 
-    public UserServiceImplementation(UserRepository userRepository, StudentRepository studentRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImplementation(UserRepository userRepository,
+                                     PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.studentRepository = studentRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -46,7 +46,8 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id)
+                .orElseThrow(()->new EntityNotFoundException("User not Found"));
     }
 
     @Override
@@ -84,27 +85,5 @@ public class UserServiceImplementation implements UserService {
         }
     }
 
-
-    @Override
-    public boolean deleteUser(Long id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        if(userOptional.isPresent()){
-            User user = userOptional.get();
-
-            // Get associated student and delete them
-            List<Student> students = user.getStudents();
-            for (Student student : students) {
-                studentRepository.deleteById(student.getId());
-            }
-
-            // Now delete the user
-            userRepository.deleteById(id);
-
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
 
 }
