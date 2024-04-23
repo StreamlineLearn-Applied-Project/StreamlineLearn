@@ -1,11 +1,13 @@
 package com.StreamlineLearn.ContentManagement.controller;
 
+import com.StreamlineLearn.ContentManagement.dto.ContentDto;
 import com.StreamlineLearn.ContentManagement.model.Content;
 import com.StreamlineLearn.ContentManagement.service.ContentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -28,8 +30,8 @@ public class ContentController {
     }
 
     @GetMapping
-    public ResponseEntity<Set<Content>> getContentByCourseId(@PathVariable Long courseId){
-        Set<Content> contents = contentService.getContentByCourseId(courseId);
+    public ResponseEntity<Set<Content>> getContentsByCourseId(@PathVariable Long courseId){
+        Set<Content> contents = contentService.getContentsByCourseId(courseId);
         if(contents != null && !contents.isEmpty()){
             return new ResponseEntity<>(contents, HttpStatus.OK);
         }else {
@@ -37,20 +39,21 @@ public class ContentController {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Content> getContentById(@PathVariable Long id){
-        Content content = contentService.getContentById(id);
-        if(content != null){
-            return new ResponseEntity<>(content, HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @GetMapping("/{contentId}")
+    public ResponseEntity<ContentDto> getContentById(@PathVariable Long courseId,
+                                                  @PathVariable Long contentId,
+                                                  @RequestHeader("Authorization") String authorizationHeader){
+
+        Optional<ContentDto> content = contentService.getContentById(courseId,contentId, authorizationHeader);
+
+        return content.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateContentById(@PathVariable Long id, @RequestBody Content content,
+    @PutMapping("/{contentId}")
+    public ResponseEntity<String> updateContentById(@PathVariable Long courseId, @PathVariable Long contentId, @RequestBody Content content,
                                                     @RequestHeader("Authorization") String authorizationHeader){
-        boolean contentUpdated = contentService.updateContentById(id, content);
+        boolean contentUpdated = contentService.updateContentById(courseId ,contentId, content, authorizationHeader);
         if(contentUpdated){
             return new ResponseEntity<>("Content updated Successfully", HttpStatus.OK);
         }else {
@@ -58,9 +61,9 @@ public class ContentController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteContentById(@PathVariable Long id){
-        boolean contentDeleted = contentService.deleteContentById(id);
+    @DeleteMapping("/{contentId}")
+    public ResponseEntity<String> deleteContentById(@PathVariable Long courseId, @PathVariable Long contentId, @RequestHeader("Authorization") String authorizationHeader){
+        boolean contentDeleted = contentService.deleteContentById(courseId , contentId, authorizationHeader);
         if(contentDeleted){
             return new ResponseEntity<>("Content deleted Successfully", HttpStatus.OK);
         } else {

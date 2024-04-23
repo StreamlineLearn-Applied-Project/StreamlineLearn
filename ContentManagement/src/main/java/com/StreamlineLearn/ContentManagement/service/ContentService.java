@@ -1,19 +1,22 @@
 package com.StreamlineLearn.ContentManagement.service;
 
 
+import com.StreamlineLearn.ContentManagement.dto.ContentDto;
 import com.StreamlineLearn.ContentManagement.model.Content;
 
+import java.util.Optional;
 import java.util.Set;
 
 public interface ContentService {
     void createContent(Long courseId, Content content, String authorizationHeader);
 
-    Content getContentById(Long id);
+    Set<Content> getContentsByCourseId(Long id);
 
-    boolean updateContentById(Long id, Content content);
+    Optional<ContentDto> getContentById(Long courseId, Long contentId, String authorizationHeader);
 
-    boolean deleteContentById(Long id);
+    boolean updateContentById(Long courseId, Long contentId, Content content, String authorizationHeader);
 
-    Set<Content> getContentByCourseId(Long id);
+    boolean deleteContentById(Long courseId, Long contentId, String authorizationHeader);
+
 }
 

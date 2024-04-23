@@ -9,7 +9,7 @@ public class Content {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-    private Integer percentage;
+    private String image;
 
     @ManyToOne
     @JoinColumn(name = "course_id")
@@ -32,12 +32,12 @@ public class Content {
         this.title = title;
     }
 
-    public Integer getPercentage() {
-        return percentage;
+    public String getImage() {
+        return image;
     }
 
-    public void setPercentage(Integer percentage) {
-        this.percentage = percentage;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public Course getCourse() {
