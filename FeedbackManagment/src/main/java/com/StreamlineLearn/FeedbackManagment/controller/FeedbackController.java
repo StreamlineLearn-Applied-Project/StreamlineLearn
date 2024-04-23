@@ -18,7 +18,6 @@ public class FeedbackController {
 
     }
 
-
     @PostMapping
     public ResponseEntity<String> createFeedback(@PathVariable Long courseId,
                                                  @RequestBody Feedback feedback,
@@ -29,7 +28,6 @@ public class FeedbackController {
         return new ResponseEntity<>("Discussion added to the course", HttpStatus.CREATED);
     }
 
-    // Get all discussions for a specific course
     @GetMapping
     public ResponseEntity<List<Feedback>> getAllFeedbacks(@PathVariable Long courseId) {
         List<Feedback> feedbacks = feedbackService.getAllFeedbacks(courseId);
@@ -37,19 +35,10 @@ public class FeedbackController {
     }
 
 
-    // Update an existing discussion in a specific course
-    @PutMapping("/{feedbackId}")
-    public ResponseEntity<Feedback> updateFeedback(@PathVariable Long courseId,
-                                                   @PathVariable Long feedbackId,
-                                                   @RequestBody Feedback feedback) {
-        Feedback updatedFeedback = feedbackService.updateFeedback(courseId, feedbackId, feedback);
-        return ResponseEntity.ok().body(updatedFeedback);
-    }
-
-    // Delete a discussion from a specific course
     @DeleteMapping("/{feedbackId}")
     public ResponseEntity<?> deleteFeedback(@PathVariable Long courseId,
-                                            @PathVariable Long feedbackId) {
+                                            @PathVariable Long feedbackId,
+                                            @RequestHeader("Authorization") String authorizationHeader) {
         feedbackService.deleteFeedbck(courseId, feedbackId);
         return ResponseEntity.noContent().build();
     }

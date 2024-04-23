@@ -105,9 +105,14 @@
 			<artifactId>aspectjweaver</artifactId>
 			<version>1.9.21</version>
 		</dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
 
 
-	</dependencies>
+    </dependencies>
 
 	<build>
 		<plugins>
