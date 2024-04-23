@@ -1,17 +1,19 @@
 package com.StreamlineLearn.AssessmentManagement.service;
 
+import com.StreamlineLearn.AssessmentManagement.dto.AssessmentDto;
 import com.StreamlineLearn.AssessmentManagement.model.Assessment;
 
+import java.util.Optional;
 import java.util.Set;
 
 public interface AssessmentService {
     void createAssessment(Long courseId, Assessment assessment, String authorizationHeader);
 
-    Assessment getAssessmentById(Long id);
+    Set<Assessment> getAssessmentsByCourseId(Long courseId);
 
-    boolean updateAssessmentById(Long id, Assessment assessment);
+    Optional<AssessmentDto> getAssessmentById(Long courseId, Long assessmentId, String authorizationHeader);
 
-    boolean deleteAssessmentById(Long id);
+    boolean updateAssessmentById(Long courseId, Long assessmentId,Assessment assessment, String authorizationHeader);
 
-    Set<Assessment> getAssessmentByCourseId(Long id);
+    boolean deleteAssessmentById(Long courseId, Long assessmentId, String authorizationHeader);
 }

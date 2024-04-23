@@ -1,5 +1,6 @@
 package com.StreamlineLearn.AssessmentManagement.serviceImplementation;
 
+import com.StreamlineLearn.AssessmentManagement.dto.AssessmentDto;
 import com.StreamlineLearn.AssessmentManagement.jwtUtil.JwtService;
 import com.StreamlineLearn.AssessmentManagement.model.Assessment;
 import com.StreamlineLearn.AssessmentManagement.model.Course;
@@ -9,8 +10,10 @@ import com.StreamlineLearn.AssessmentManagement.service.AssessmentService;
 import com.StreamlineLearn.AssessmentManagement.service.CourseService;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -19,6 +22,7 @@ public class AssessmentServiceImplementation implements AssessmentService {
     private final CourseService courseService;
     private final AssessmentRepository assessmentRepository;
     private final CourseRepository courseRepository;
+    private static final int TOKEN_PREFIX_LENGTH = 7;
     public AssessmentServiceImplementation(JwtService jwtService,
                                            CourseService courseService,
                                            AssessmentRepository assessmentRepository, CourseRepository courseRepository) {
@@ -30,37 +34,152 @@ public class AssessmentServiceImplementation implements AssessmentService {
     }
 
     @Override
-    public void createAssessment(Long courseId,
-                                   Assessment assessment,
-                                   String authorizationHeader) {
+    public void createAssessment(Long courseId, Assessment assessment, String authorizationHeader) {
 
         Course course = courseService.getCourseByCourseId(courseId);
+        Long instructorId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
-        assessment.setCourse(course);
-
-        assessmentRepository.save(assessment);
+        // Check if the course exists and if the logged-in instructor owns the course
+        if (course != null && course.getInstructor().getId().equals(instructorId)) {
+            assessment.setCourse(course);
+            assessmentRepository.save(assessment);
+        } else {
+        // Handle the case where the course doesn't exist or the instructor doesn't own the course
+        throw new RuntimeException("Instructor is not authorized to create Assessment for this course");
+        }
 
     }
 
     @Override
-    public Assessment getAssessmentById(Long id) {
-        return null;
-    }
-
-
-    @Override
-    public boolean updateAssessmentById(Long id, Assessment assessment) {
-        return false;
-    }
-
-    @Override
-    public boolean deleteAssessmentById(Long id) {
-        return false;
-    }
-
-    @Override
-    public Set<Assessment> getAssessmentByCourseId(Long id) {
-        Course course = courseRepository.findById(id).orElseThrow(null);
+    public Set<Assessment> getAssessmentsByCourseId(Long courseId) {
+        Course course = courseRepository.findById(courseId).orElseThrow(null);
         return course.getAssessments();
     }
+
+    @Override
+    public Optional<AssessmentDto> getAssessmentById(Long courseId, Long assessmentId, String authorizationHeader) {
+        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+
+        Optional<Course> optionalCourse = courseRepository.findById(courseId);
+        if (optionalCourse.isPresent()) {
+            Course course = optionalCourse.get();
+
+            // Check if the owner of the course is the instructor
+            if ("INSTRUCTOR".equals(role) && Objects.equals(course.getInstructor().getId(), roleId)) {
+                Optional<Assessment> optionalAssessment = course.getAssessments()
+                        .stream()
+                        .filter(assessment -> assessment.getId().equals(assessmentId))
+                        .findFirst();
+                if (optionalAssessment.isPresent()) {
+                    Assessment assessment = optionalAssessment.get();
+                    return Optional.of(new AssessmentDto(assessment.getTitle(), assessment.getPercentage()));
+                } else {
+                    return Optional.empty(); // Assessment not found
+                }
+            }
+
+            // Check if the role is student
+            if ("STUDENT".equals(role)) {
+                RestTemplate restTemplate = new RestTemplate();
+                String enrolmentApiUrl = "http://localhost:9090/courses/" + courseId + "/enrollments/check/" + roleId;
+                String apiResponse = restTemplate.getForObject(enrolmentApiUrl, String.class);
+                System.out.println("API Response: " + apiResponse);
+
+                // Assuming the API response indicates whether the student has paid for the course
+                if ("PAID".equals(apiResponse)) {
+                    Optional<Assessment> optionalAssessment = course.getAssessments()
+                            .stream()
+                            .filter(assessment -> assessment.getId().equals(assessmentId))
+                            .findFirst();
+                    if (optionalAssessment.isPresent()) {
+                        Assessment assessment = optionalAssessment.get();
+                        return Optional.of(new AssessmentDto(assessment.getTitle(), assessment.getPercentage()));
+                    } else {
+                        return Optional.empty(); // Assessment not found
+                    }
+                } else {
+                    return Optional.empty(); // Student has not paid for the course
+                }
+            }
+        }
+
+        return Optional.empty(); // Course not found, or unauthorized access
+    }
+
+
+
+    @Override
+    public boolean updateAssessmentById(Long courseId, Long assessmentId, Assessment assessment, String authorizationHeader) {
+        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+
+        Optional<Course> optionalCourse = courseRepository.findById(courseId);
+        if (optionalCourse.isPresent()) {
+            Course course = optionalCourse.get();
+
+            // Check if the owner of the course is the instructor
+            if ("INSTRUCTOR".equals(role) && Objects.equals(course.getInstructor().getId(), roleId)) {
+                Optional<Assessment> optionalAssessment = course.getAssessments()
+                        .stream()
+                        .filter(a -> a.getId().equals(assessmentId))
+                        .findFirst();
+                if (optionalAssessment.isPresent()) {
+                    Assessment existingAssessment = optionalAssessment.get();
+                    existingAssessment.setTitle(assessment.getTitle());
+                    existingAssessment.setPercentage(assessment.getPercentage());
+                    assessmentRepository.save(existingAssessment);
+                    return true;
+                } else {
+                    // Assessment not found in the course
+                    return false;
+                }
+            } else {
+                // Instructor is not authorized to update assessment for this course
+                return false;
+            }
+        } else {
+            // Course not found
+            return false;
+        }
+    }
+
+    @Override
+    public boolean deleteAssessmentById(Long courseId, Long assessmentId, String authorizationHeader) {
+        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+
+        Optional<Course> optionalCourse = courseRepository.findById(courseId);
+        if (optionalCourse.isPresent()) {
+            Course course = optionalCourse.get();
+
+            // Check if the owner of the course is the instructor
+            if ("INSTRUCTOR".equals(role) && Objects.equals(course.getInstructor().getId(), roleId)) {
+                Optional<Assessment> optionalAssessment = course.getAssessments()
+                        .stream()
+                        .filter(a -> a.getId().equals(assessmentId))
+                        .findFirst();
+                if (optionalAssessment.isPresent()) {
+                    // Remove the announcement from the course's list of announcements
+                    Assessment assessmentToRemove = optionalAssessment.get();
+                    course.getAssessments().remove(assessmentToRemove);
+
+                    courseRepository.save(course); // Save the course to update the changes
+                    assessmentRepository.deleteById(assessmentId);
+                    return true;
+                } else {
+                    // Assessment not found in the course
+                    return false;
+                }
+            } else {
+                // Instructor is not authorized to delete assessment for this course
+                return false;
+            }
+        } else {
+            // Course not found
+            return false;
+        }
+    }
+
+
 }
