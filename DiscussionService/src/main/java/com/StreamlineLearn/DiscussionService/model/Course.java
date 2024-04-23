@@ -17,13 +17,17 @@ public class Course {
     private List<Discussion> discussions;
 
     // Many-to-many relationship with Student
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "course_student",
             joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
     private Set<Student> students = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "instructor_id")
+    private Instructor instructor;
 
     public Long getId() {
         return id;
@@ -59,6 +63,14 @@ public class Course {
 
     public void setStudent(Student student) {
         students.add(student);
+    }
+
+    public Instructor getInstructor() {
+        return instructor;
+    }
+
+    public void setInstructor(Instructor instructor) {
+        this.instructor = instructor;
     }
 }
 

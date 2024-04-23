@@ -7,10 +7,14 @@ import java.util.List;
 public interface DiscussionService {
     void createDiscussion(Long courseId, Discussion discussion, String authorizationHeader);
 
-    List<Discussion> getAllDiscussions(Long courseId);
+    Discussion addThread(Long courseId, Long discussionId, String thread, String authorizationHeader);
 
-    Discussion updateDiscussion(Long courseId, Long discussionId, Discussion discussion);
+    List<Discussion> getAllDiscussions(Long courseId, String authorizationHeader);
 
-    void deleteDiscussion(Long courseId, Long discussionId);
+    Boolean updateDiscussion(Long courseId, Long discussionId, Discussion discussion, String authorizationHeader);
+
+    Boolean deleteDiscussion(Long courseId, Long discussionId, String authorizationHeader);
+
+
 }
  

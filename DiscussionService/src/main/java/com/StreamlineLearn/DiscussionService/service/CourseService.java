@@ -1,8 +1,14 @@
 package com.StreamlineLearn.DiscussionService.service;
 
 import com.StreamlineLearn.DiscussionService.model.Course;
+import com.StreamlineLearn.SharedModule.dto.CourseSharedDto;
 
 public interface CourseService {
     Course getCourseByCourseId(Long courseId);
 
+    void saveCourse(CourseSharedDto courseDtoEvent);
+
+    boolean isStudentEnrolled(Long courseId, Long studentId);
+
+    boolean isInstructorOfCourse(Long instructorId, Long courseId);
 }

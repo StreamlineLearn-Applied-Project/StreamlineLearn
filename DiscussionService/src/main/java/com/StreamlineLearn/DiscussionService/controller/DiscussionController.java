@@ -27,28 +27,41 @@ public class DiscussionController {
         return new ResponseEntity<>("Discussion added to the course",HttpStatus.CREATED);
     }
 
+    // Add a thread to an existing discussion
+    @PostMapping("/{discussionId}/threads")
+    public ResponseEntity<Discussion> addThread(@PathVariable Long courseId,
+                                                @PathVariable Long discussionId,
+                                                @RequestBody String thread,
+                                                @RequestHeader("Authorization") String authorizationHeader) {
+        Discussion updatedDiscussion = discussionService.addThread(courseId, discussionId, thread, authorizationHeader);
+        return ResponseEntity.ok().body(updatedDiscussion);
+    }
+
     // Get all discussions for a specific course
     @GetMapping
-    public ResponseEntity<List<Discussion>> getAllDiscussions(@PathVariable Long courseId) {
-        List<Discussion> discussions = discussionService.getAllDiscussions(courseId);
+    public ResponseEntity<List<Discussion>> getAllDiscussions(@PathVariable Long courseId,
+                                                              @RequestHeader("Authorization") String authorizationHeader) {
+        List<Discussion> discussions = discussionService.getAllDiscussions(courseId,authorizationHeader);
         return ResponseEntity.ok().body(discussions);
     }
 
 
     // Update an existing discussion in a specific course
     @PutMapping("/{discussionId}")
-    public ResponseEntity<Discussion> updateDiscussion(@PathVariable Long courseId,
+    public ResponseEntity<Boolean> updateDiscussion(@PathVariable Long courseId,
                                                        @PathVariable Long discussionId,
-                                                       @RequestBody Discussion discussion) {
-        Discussion updatedDiscussion = discussionService.updateDiscussion(courseId, discussionId, discussion);
+                                                       @RequestBody Discussion discussion,
+                                                       @RequestHeader("Authorization") String authorizationHeader) {
+        Boolean updatedDiscussion = discussionService.updateDiscussion(courseId, discussionId, discussion, authorizationHeader);
         return ResponseEntity.ok().body(updatedDiscussion);
     }
 
     // Delete a discussion from a specific course
     @DeleteMapping("/{discussionId}")
     public ResponseEntity<?> deleteDiscussion(@PathVariable Long courseId,
-                                              @PathVariable Long discussionId) {
-        discussionService.deleteDiscussion(courseId, discussionId);
+                                              @PathVariable Long discussionId,
+                                              @RequestHeader("Authorization") String authorizationHeader) {
+        Boolean isDeleted = discussionService.deleteDiscussion(courseId, discussionId, authorizationHeader);
         return ResponseEntity.noContent().build();
     }
 }

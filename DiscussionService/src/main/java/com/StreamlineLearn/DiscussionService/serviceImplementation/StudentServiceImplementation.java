@@ -1,21 +1,29 @@
 package com.StreamlineLearn.DiscussionService.serviceImplementation;
 
 import com.StreamlineLearn.DiscussionService.jwtUtil.JwtService;
+import com.StreamlineLearn.DiscussionService.model.Course;
 import com.StreamlineLearn.DiscussionService.model.Student;
+import com.StreamlineLearn.DiscussionService.repository.CourseRepository;
 import com.StreamlineLearn.DiscussionService.repository.StudentRepository;
+import com.StreamlineLearn.DiscussionService.service.CourseService;
 import com.StreamlineLearn.DiscussionService.service.StudentService;
+import com.StreamlineLearn.SharedModule.dto.EnrolledStudentDto;
 import com.StreamlineLearn.SharedModule.dto.UserSharedDto;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 public class StudentServiceImplementation implements StudentService {
     private final StudentRepository studentRepository;
-    private final JwtService jwtService;
+    private final CourseService courseService;
+    private final CourseRepository courseRepository;
 
     public StudentServiceImplementation(StudentRepository studentRepository,
-                                        JwtService jwtService) {
+                                        CourseService courseService,
+                                        CourseRepository courseRepository) {
         this.studentRepository = studentRepository;
-        this.jwtService = jwtService;
+        this.courseService = courseService;
+        this.courseRepository = courseRepository;
     }
 
     @Override
@@ -44,4 +52,28 @@ public class StudentServiceImplementation implements StudentService {
 
         }
     }
+
+    @Override
+    public void enrollStudent(EnrolledStudentDto enrolledStudentDto) {
+
+        UserSharedDto userSharedDto = new UserSharedDto();
+        userSharedDto.setId(enrolledStudentDto.getId());
+        userSharedDto.setUserName(enrolledStudentDto.getUserName());
+        userSharedDto.setRole(enrolledStudentDto.getRole());
+
+        Student student = saveStudent(userSharedDto);
+
+        // Associate the student with the course if the course exists
+        Course course = courseService.getCourseByCourseId(enrolledStudentDto.getCourseId());
+
+        if (course != null) {
+            // Add the student to the course's students collection
+            course.getStudents().add(student);
+            // Save the course to persist the association
+            courseRepository.save(course);
+        } else {
+            throw new EntityNotFoundException("Course not found with ID: " + enrolledStudentDto.getCourseId());
+        }
+    }
+
 }

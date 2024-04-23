@@ -1,7 +1,9 @@
 package com.StreamlineLearn.DiscussionService.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,11 +14,14 @@ public class Discussion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String topic;
+    private String discussion;
+
+    private String discussionTitle;
 
     // Many-to-one relationship with Course
     @ManyToOne
     @JoinColumn(name = "course_id")
+    @JsonIgnore
     private Course course;
 
     // Many-to-many relationship with Student
@@ -28,6 +33,9 @@ public class Discussion {
     )
     private Set<Student> students = new HashSet<>();
 
+    @ElementCollection
+    private List<String> discussionThreads = new ArrayList<>();
+
     public Long getId() {
         return id;
     }
@@ -36,12 +44,20 @@ public class Discussion {
         this.id = id;
     }
 
-    public String getTopic() {
-        return topic;
+    public String getDiscussion() {
+        return discussion;
     }
 
-    public void setTopic(String topic) {
-        this.topic = topic;
+    public void setDiscussion(String discussion) {
+        this.discussion = discussion;
+    }
+
+    public String getDiscussionTitle() {
+        return discussionTitle;
+    }
+
+    public void setDiscussionTitle(String discussionTitle) {
+        this.discussionTitle = discussionTitle;
     }
 
     public Course getCourse() {
@@ -62,6 +78,13 @@ public class Discussion {
 
     public void setStudent(Student student) {
         students.add(student);
+    }
+
+    public List<String> getDiscussionThreads() {
+        return discussionThreads;
+    }
+    public void setDiscussionThreads(List<String> discussionThreads) {
+        this.discussionThreads = discussionThreads;
     }
 }
 
