@@ -18,14 +18,11 @@ public class StudentServiceImplementation implements StudentService {
 
     private final StudentRepository studentRepository;
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
 
     public StudentServiceImplementation(StudentRepository studentRepository,
-                                        UserService userService,
-                                        PasswordEncoder passwordEncoder) {
+                                        UserService userService) {
         this.studentRepository = studentRepository;
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override

@@ -16,8 +16,7 @@ import java.util.Optional;
 public class InstructorServiceImplementation implements InstructorService {
     private final InstructorRepository instructorRepository;
     private final UserService userService;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+
 
     public InstructorServiceImplementation(InstructorRepository instructorRepository,
                                            UserService userService,
@@ -25,8 +24,6 @@ public class InstructorServiceImplementation implements InstructorService {
                                            PasswordEncoder passwordEncoder) {
         this.instructorRepository = instructorRepository;
         this.userService = userService;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override

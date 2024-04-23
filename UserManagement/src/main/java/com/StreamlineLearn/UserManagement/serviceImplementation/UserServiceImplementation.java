@@ -6,6 +6,7 @@ import com.StreamlineLearn.UserManagement.repository.StudentRepository;
 import com.StreamlineLearn.UserManagement.repository.UserRepository;
 import com.StreamlineLearn.UserManagement.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,14 +29,8 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public User createUser(User userDetails){
-        User setUser = new User();
-        setUser.setFirstName(userDetails.getFirstName());
-        setUser.setLastName(userDetails.getLastName());
-        setUser.setUsername(userDetails.getUsername());
-        setUser.setPassword(passwordEncoder.encode((userDetails.getPassword())));
-        setUser.setRole(userDetails.getRole());
-
-        return setUser;
+        userDetails.setPassword(passwordEncoder.encode(userDetails.getPassword()));
+        return userRepository.save(userDetails);
     }
 
 
@@ -51,39 +46,24 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
+    @Transactional
     public Optional<User> updateUser(Long id, User updateUser) {
-        Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isPresent()) {
-            User userToUpdate = userOptional.get();
+        return Optional.ofNullable(userRepository.findById(id).map(userToUpdate -> {
+            Optional.ofNullable(updateUser.getUsername())
+                    .filter(username -> !username.equals(userToUpdate.getUsername()))
+                    .map(userRepository::existsByUsername)
+                    .filter(exists -> !exists)
+                    .orElseThrow(() -> new IllegalArgumentException("Username already exists"));
 
-            // Update username if provided and validate uniqueness
-            String newUsername = updateUser.getUsername();
-            if (newUsername != null && !newUsername.equals(userToUpdate.getUsername())) {
-                // Check if new username is unique
-                if (userRepository.existsByUsername(newUsername)) {
-                    throw new IllegalArgumentException("Username already exists");
-                }
-                userToUpdate.setUsername(newUsername);
-            }
+            Optional.ofNullable(updateUser.getFirstName()).ifPresent(userToUpdate::setFirstName);
+            Optional.ofNullable(updateUser.getLastName()).ifPresent(userToUpdate::setLastName);
+            Optional.ofNullable(updateUser.getPassword())
+                    .filter(password -> !password.isEmpty())
+                    .map(passwordEncoder::encode)
+                    .ifPresent(userToUpdate::setPassword);
 
-            // Update other fields if provided
-            if (updateUser.getFirstName() != null) {
-                userToUpdate.setFirstName(updateUser.getFirstName());
-            }
-            if (updateUser.getLastName() != null) {
-                userToUpdate.setLastName(updateUser.getLastName());
-            }
-            if (updateUser.getPassword() != null && !updateUser.getPassword().isEmpty()) {
-                userToUpdate.setPassword(passwordEncoder.encode(updateUser.getPassword()));
-            }
-
-            userRepository.save(userToUpdate);
-
-            return Optional.of(userToUpdate);
-        } else {
-            return Optional.empty();
-        }
+            return userRepository.save(userToUpdate);
+        }).orElseThrow(() -> new EntityNotFoundException("User not Found")));
     }
-
 
 }
