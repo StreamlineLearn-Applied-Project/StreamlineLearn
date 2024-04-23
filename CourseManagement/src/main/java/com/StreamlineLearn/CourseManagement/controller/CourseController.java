@@ -1,6 +1,7 @@
 package com.StreamlineLearn.CourseManagement.controller;
 
 
+import com.StreamlineLearn.CourseManagement.dto.CourseDTO;
 import com.StreamlineLearn.CourseManagement.model.Course;
 import com.StreamlineLearn.CourseManagement.service.CourseService;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/courses")
@@ -34,19 +36,20 @@ public class CourseController {
         return new ResponseEntity<>(courseService.getAllTheCourse(),HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Course> getCourseById(@PathVariable Long id){
-        Course course = courseService.getCourseById(id);
-        if(course != null){
-        return new ResponseEntity<>(course, HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @GetMapping("/{courseId}")
+    public ResponseEntity<CourseDTO> getCourseById(@PathVariable Long courseId,
+                                                   @RequestHeader("Authorization") String authorizationHeader){
+        Optional<CourseDTO> course = courseService.getCourseById(courseId, authorizationHeader);
+
+        return course.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateCourseById(@PathVariable Long id, @RequestBody Course course){
-        boolean courseUpdated = courseService.updateCourseById(id, course);
+    @PutMapping("/{courseId}")
+    public ResponseEntity<String> updateCourseById(@PathVariable Long courseId,
+                                                   @RequestBody Course course,
+                                                   @RequestHeader("Authorization") String authorizationHeader){
+        boolean courseUpdated = courseService.updateCourseById(courseId, course, authorizationHeader );
         if(courseUpdated){
         return new ResponseEntity<>("Course updated Successfully", HttpStatus.OK);
         }else {
@@ -54,9 +57,10 @@ public class CourseController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCourseById(@PathVariable Long id){
-        boolean courseDeleted = courseService.deleteCourseById(id);
+    @DeleteMapping("/{courseId}")
+    public ResponseEntity<String> deleteCourseById(@PathVariable Long courseId,
+                                                   @RequestHeader("Authorization") String authorizationHeader){
+        boolean courseDeleted = courseService.deleteCourseById(courseId, authorizationHeader);
         if(courseDeleted){
         return new ResponseEntity<>("Course deleted Successfully", HttpStatus.OK);
         } else {

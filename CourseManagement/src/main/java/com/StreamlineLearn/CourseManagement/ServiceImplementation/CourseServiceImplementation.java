@@ -1,17 +1,19 @@
 package com.StreamlineLearn.CourseManagement.ServiceImplementation;
 
+import com.StreamlineLearn.CourseManagement.dto.CourseDTO;
 import com.StreamlineLearn.CourseManagement.jwtUtil.JwtService;
 import com.StreamlineLearn.CourseManagement.model.Course;
 import com.StreamlineLearn.CourseManagement.model.Instructor;
 import com.StreamlineLearn.CourseManagement.repository.CourseRepository;
-import com.StreamlineLearn.CourseManagement.repository.InstructorRepository;
 import com.StreamlineLearn.CourseManagement.service.CourseService;
 import com.StreamlineLearn.CourseManagement.service.InstructorService;
 import com.StreamlineLearn.CourseManagement.service.KafkaProducerService;
 import com.StreamlineLearn.SharedModule.dto.CourseSharedDto;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -20,6 +22,7 @@ public class CourseServiceImplementation implements CourseService {
     private final InstructorService instructorService;
     private final JwtService jwtService;
     private final KafkaProducerService kafkaProducerService;
+    private static final int TOKEN_PREFIX_LENGTH = 7;
 
 
     public CourseServiceImplementation(CourseRepository courseRepository,
@@ -36,60 +39,100 @@ public class CourseServiceImplementation implements CourseService {
 
     @Override
     public void createCourse(Course course, String token) {
-        Instructor instructor = instructorService
-                .findInstructorById(jwtService
-                        .extractRoleId(token
-                                .substring(7)));
+
+        Instructor instructor = instructorService.findInstructorById(jwtService.extractRoleId(token.substring(TOKEN_PREFIX_LENGTH)));
 
         if(instructor == null) {
             throw new IllegalArgumentException("Instructor not found");
-
-        } else {
-            course.setInstructor(instructor);
-            courseRepository.save(course);
-
-            CourseSharedDto courseSharedDto = new CourseSharedDto();
-            courseSharedDto.setId(course.getId());
-            courseSharedDto.setCourseName(course.getCourseName());
-            courseSharedDto.setInstructorId(course.getInstructor().getId());
-
-            kafkaProducerService.publishCourseDetails(courseSharedDto);
         }
+
+        course.setInstructor(instructor);
+        courseRepository.save(course);
+
+        CourseSharedDto courseSharedDto = new CourseSharedDto();
+        courseSharedDto.setId(course.getId());
+        courseSharedDto.setCourseName(course.getCourseName());
+        courseSharedDto.setInstructorId(course.getInstructor().getId());
+
+        kafkaProducerService.publishCourseDetails(courseSharedDto);
+
     }
 
     @Override
     public List<Course> getAllTheCourse() {
-
         return courseRepository.findAll();
     }
 
     @Override
-    public Course getCourseById(Long id) {
-        return courseRepository.findById(id).orElse(null);
+    public Optional<CourseDTO> getCourseById(Long id, String token) {
+        Optional<Course> course = courseRepository.findById(id);
+
+        if (course.isEmpty()) {
+            return Optional.empty();
+        }
+
+        String role = jwtService.extractRole(token.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = jwtService.extractRoleId(token.substring(TOKEN_PREFIX_LENGTH));
+
+        if ("INSTRUCTOR".equals(role) && Objects.equals(course.get().getInstructor().getId(), roleId)) {
+            return Optional.of(new CourseDTO(course.get().getCourseName(),
+                    course.get().getDescription(),
+                    course.get().getPrice()));
+        }
+
+        if ("STUDENT".equals(role)) {
+            RestTemplate restTemplate = new RestTemplate();
+            String enrolmentApiUrl = "http://localhost:9090/courses/" + id + "/enrollments/check/" + roleId;
+            String apiResponse = restTemplate.getForObject(enrolmentApiUrl, String.class);
+            System.out.println("API Response: " + apiResponse);
+
+            if ("PAID".equals(apiResponse)) {
+                return Optional.of(new CourseDTO(course.get().getCourseName(),
+                        course.get().getDescription()));
+            } else {
+                return Optional.of(new CourseDTO(course.get().getCourseName(),
+                        course.get().getDescription(),
+                        course.get().getPrice()));
+
+            }
+        }
+        return Optional.empty();
     }
 
+
+
     @Override
-    public boolean updateCourseById(Long id,Course course) {
-        Optional<Course> courseOptional = courseRepository.findById(id); // repeating same block of code
+    public boolean updateCourseById(Long id,Course course, String token) {
+        Optional<Course> courseOptional = courseRepository.findById(id);
+
+        Long instructorId = jwtService.extractRoleId(token.substring(TOKEN_PREFIX_LENGTH));
+
         if(courseOptional.isPresent()){
-           Course updateCourse = courseOptional.get();
-           updateCourse.setCourseName(course.getCourseName());
-           updateCourse.setDescription(course.getDescription());
-           updateCourse.setPrice(course.getPrice());
+            if (Objects.equals(courseOptional.get().getInstructor().getId(), instructorId)){
+                Course updateCourse = courseOptional.get();
+                updateCourse.setCourseName(course.getCourseName());
+                updateCourse.setDescription(course.getDescription());
+                updateCourse.setPrice(course.getPrice());
 
-           courseRepository.save(updateCourse);
-
-           return true;
+                courseRepository.save(updateCourse);
+                return true;
+            }
+           return false;
         }
         return false;
     }
 
     @Override
-    public boolean deleteCourseById(Long id) {
-        if(courseRepository.existsById(id)){
-            courseRepository.deleteById(id);
+    public boolean deleteCourseById(Long id, String token) {
+        Optional<Course> courseOptional = courseRepository.findById(id);
+        Long instructorId = jwtService.extractRoleId(token.substring(TOKEN_PREFIX_LENGTH));
 
-            return true;
+        if(courseOptional.isPresent()){
+            if (Objects.equals(courseOptional.get().getInstructor().getId(), instructorId)) {
+                courseRepository.deleteById(id);
+                return true;
+            }
+            return false;
         }
         return false;
     }
