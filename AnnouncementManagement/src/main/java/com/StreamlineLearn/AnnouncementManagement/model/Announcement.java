@@ -8,13 +8,12 @@ public class Announcement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title;
-    private Integer percentage;
+    private String announcementTile;
+    private String announcement;
 
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
-
 
     public Long getId() {
         return id;
@@ -24,20 +23,20 @@ public class Announcement {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getAnnouncementTile() {
+        return announcementTile;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setAnnouncementTile(String announcementTile) {
+        this.announcementTile = announcementTile;
     }
 
-    public Integer getPercentage() {
-        return percentage;
+    public String getAnnouncement() {
+        return announcement;
     }
 
-    public void setPercentage(Integer percentage) {
-        this.percentage = percentage;
+    public void setAnnouncement(String announcement) {
+        this.announcement = announcement;
     }
 
     public Course getCourse() {

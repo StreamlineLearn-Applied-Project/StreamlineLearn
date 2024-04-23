@@ -1,20 +1,26 @@
 package com.StreamlineLearn.AnnouncementManagement.service;
 
 
+import com.StreamlineLearn.AnnouncementManagement.dto.AnnouncementDto;
 import com.StreamlineLearn.AnnouncementManagement.model.Announcement;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
+import java.util.Optional;
 import java.util.Set;
 
 public interface AnnouncementService {
     void createAnnouncement(Long courseId, Announcement announcement, String authorizationHeader);
 
-    Announcement getAnnouncementById(Long id);
+    Set<Announcement> getAnnouncementsByCourseId(Long id);
 
-    boolean updateAnnouncementById(Long id, Announcement announcement);
+    Optional<AnnouncementDto> getAnnouncementById(Long courseId, Long announcementId, String authorizationHeader);
 
-    boolean deleteAnnouncementById(Long id);
+    boolean updateAnnouncementById(Long courseId, Long announcementId,Announcement announcement,String authorizationHeader);
 
-    Set<Announcement> getAnnouncementByCourseId(Long id);
+    boolean deleteAnnouncementById(Long courseId, Long announcementId,String authorizationHeader);
+
 }
 
 
