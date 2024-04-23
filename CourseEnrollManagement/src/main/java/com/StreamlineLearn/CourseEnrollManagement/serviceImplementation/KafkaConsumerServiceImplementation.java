@@ -34,7 +34,7 @@ public class KafkaConsumerServiceImplementation implements KafkaConsumerService 
     }
 
     @Override
-    @KafkaListener(topics = "instructor-details-topic", groupId = "assessment-management-group")
+    @KafkaListener(topics = "instructor-details-topic", groupId = "courseEnrollment-management-group")
     public void consumeInstructorDetails(UserSharedDto userDtoEvent) throws JsonProcessingException {
         logger.info("EventConsumer:: InstructorEvent consumed events {}",
                 new ObjectMapper().writeValueAsString(userDtoEvent));

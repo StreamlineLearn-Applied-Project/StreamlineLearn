@@ -30,6 +30,19 @@ public class EnrollmentController {
             return new ResponseEntity<>("Unable to enroll student", HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/check/{studentId}")
+    public ResponseEntity<String> checkEnrollment(@PathVariable("courseId") Long courseId,
+                                                  @PathVariable("studentId") Long studentId) {
+        Boolean isPaid = enrollmentService.isStudentPaid(studentId, courseId);
+        if (isPaid) {
+            return new ResponseEntity<>("PAID", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Student has not paid for this course", HttpStatus.NOT_FOUND);
+        }
+    }
+
+
 }
 
 
