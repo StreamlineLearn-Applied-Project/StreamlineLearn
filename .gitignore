@@ -1,6 +1,7 @@
 .idea/compiler.xml
 .idea/encodings.xml
 .idea/misc.xml
+.idea
 
 #dependencies
 React/node_modules
