@@ -8,7 +8,7 @@ public interface CourseService {
 
     void saveCourse(CourseSharedDto courseDtoEvent);
 
-    boolean isStudentEnrolled(Long courseId, Long studentId);
+    boolean isStudentEnrolled(Long studentId, Long courseId);
 
     boolean isInstructorOfCourse(Long instructorId, Long courseId);
 }

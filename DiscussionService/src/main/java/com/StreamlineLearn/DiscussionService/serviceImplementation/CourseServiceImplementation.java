@@ -53,7 +53,7 @@ public class CourseServiceImplementation implements CourseService {
     }
 
     @Override
-    public boolean isStudentEnrolled(Long courseId, Long studentId) {
+    public boolean isStudentEnrolled(Long studentId, Long courseId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
 

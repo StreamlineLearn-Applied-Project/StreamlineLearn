@@ -7,6 +7,5 @@ import com.StreamlineLearn.SharedModule.dto.UserSharedDto;
 public interface StudentService {
     public Student findStudentByStudentId(Long studentId);
     public Student saveStudent(UserSharedDto userDtoEvent);
-
     void enrollStudent(EnrolledStudentDto enrolledStudentDto);
 }

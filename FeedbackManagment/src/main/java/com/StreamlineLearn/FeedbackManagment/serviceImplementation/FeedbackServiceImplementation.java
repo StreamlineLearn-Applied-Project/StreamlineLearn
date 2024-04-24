@@ -10,6 +10,7 @@ import com.StreamlineLearn.FeedbackManagment.repository.StudentRepository;
 import com.StreamlineLearn.FeedbackManagment.service.CourseService;
 import com.StreamlineLearn.FeedbackManagment.service.FeedbackService;
 import com.StreamlineLearn.FeedbackManagment.service.StudentService;
+import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,57 +19,83 @@ import java.util.List;
 public class FeedbackServiceImplementation implements FeedbackService {
 
     private final CourseService courseService;
-    private final CourseRepository courseRepository;
     private final JwtService jwtService;
     private final StudentService studentService;
-    private final StudentRepository studentRepository;
     private final FeedbackRepository feedbackRepository;
+    private static final int TOKEN_PREFIX_LENGTH = 7;
 
-    public FeedbackServiceImplementation(CourseRepository courseRepository,
-                                         CourseService courseService,
+    public FeedbackServiceImplementation(CourseService courseService,
                                          JwtService jwtService,
                                          StudentService studentService,
-                                         StudentRepository studentRepository,
                                          FeedbackRepository feedbackRepository) {
         this.courseService = courseService;
-        this.courseRepository = courseRepository;
         this.jwtService = jwtService;
         this.studentService = studentService;
-        this.studentRepository = studentRepository;
         this.feedbackRepository = feedbackRepository;
     }
+
     @Override
     public void createFeedback(Long courseId, Feedback feedback, String authorizationHeader) {
-        Student student = new Student();
-        student.setId(1L);
-        student.setUsername("johnDarwin");
-        student.setRole("STUDENT");
-        studentRepository.save(student);
+        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long studentId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
-        Course course = new Course();
-        course.setId(1L);
-        course.setCourseName("Course Title");
-        course.setStudent(student);
-        courseRepository.save(course);
+        Student student = studentService.findStudentByStudentId(studentId);
+        Course course = courseService.getCourseByCourseId(courseId);
 
-        feedback.setCourse(course);
-        feedback.setStudent(student);
+        // Check if the user is a student who enrolled in the course
+        if ("STUDENT".equals(role) && courseService.isStudentEnrolled(studentId, courseId)) {
+            feedback.setCourse(course);
+            feedback.setStudent(student);
+            feedbackRepository.save(feedback);
+        }else {
+            throw new RuntimeException("Only Students who are enrolled in this course can post feedback");
+        }
 
-        feedbackRepository.save(feedback);
     }
 
     @Override
     public List<Feedback> getAllFeedbacks(Long courseId) {
-        return null;
+
+        return feedbackRepository.findByCourseId(courseId);
     }
 
     @Override
-    public Feedback updateFeedback(Long courseId, Long feedbackId, Feedback feedback) {
-        return null;
+    public boolean updateFeedback(Long courseId, Long feedbackId, Feedback updatedFeedback, String authorizationHeader) {
+        Long studentId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Student student = studentService.findStudentByStudentId(studentId);
+        if (student != null) {
+            Feedback existingFeedback = feedbackRepository.findById(feedbackId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Feedback not found"));
+
+            // Ensure that the student attempting to update the feedback is the same as the one who created it
+            if (existingFeedback.getStudent().getId().equals(studentId)) {
+                // Update feedback
+                existingFeedback.setFeedback(updatedFeedback.getFeedback());
+                existingFeedback.setDate(updatedFeedback.getDate());
+                existingFeedback.setRating(updatedFeedback.getRating());
+                feedbackRepository.save(existingFeedback); // Update existing feedback, not the updatedFeedback
+                return true;
+            } else {
+                throw new RuntimeException("Student is not enrolled in the course associated with this feedback");
+            }
+        } else {
+            throw new RuntimeException("Only students are authorized to update feedbacks");
+        }
     }
 
-    @Override
-    public void deleteFeedbck(Long courseId, Long feedbackId) {
 
+    @Override
+    public void deleteFeedback(Long courseId, Long feedbackId, String authorizationHeader) {
+        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+
+        Feedback feedback = feedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new ResourceNotFoundException("Feedback not found"));
+
+        // Check if the student attempting to delete the feedback is the same as the one who created it, or if they are an admin
+        if (feedback.getStudent().getId().equals(roleId) || courseService.isInstructorOfCourse(roleId, courseId)) {
+            feedbackRepository.deleteById(feedbackId);
+        } else {
+            throw new RuntimeException("You are not authorized to delete this feedback");
+        }
     }
 }

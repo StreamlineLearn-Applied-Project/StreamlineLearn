@@ -1,5 +1,6 @@
 package com.StreamlineLearn.FeedbackManagment.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -15,16 +16,22 @@ public class Course {
 
     // One-to-many relationship with Feedback
     @OneToMany(mappedBy = "course")
+    @JsonIgnore
     private List<Feedback> feedbackList;
 
     // Many-to-many relationship with Student
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "course_student",
             joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
+    @JsonIgnore
     private Set<Student> students = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "instructor_id")
+    private Instructor instructor;
 
     public Long getId() {
         return id;
@@ -60,5 +67,13 @@ public class Course {
 
     public void setStudent(Student student) {
         students.add(student);
+    }
+
+    public Instructor getInstructor() {
+        return instructor;
+    }
+
+    public void setInstructor(Instructor instructor) {
+        this.instructor = instructor;
     }
 }

@@ -16,6 +16,7 @@ public class Student {
 
     // One-to-many relationship with Feedback
     @OneToMany(mappedBy = "student")
+    @JsonIgnore // Ignore this field during serialization to break the infinite loop
     private List<Feedback> feedbackList;
 
     // Many-to-many relationship with Course

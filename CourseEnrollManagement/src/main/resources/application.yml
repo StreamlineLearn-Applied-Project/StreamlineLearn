@@ -1,6 +1,6 @@
 # Server configurations
 server:
-  port: 9090
+  port: 8484
 
 # Spring application configurations
 spring:

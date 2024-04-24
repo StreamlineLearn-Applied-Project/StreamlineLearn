@@ -1,6 +1,6 @@
 # Server configurations
 server:
-  port: 8888
+  port: 9292
 
 # Spring application configurations
 spring:

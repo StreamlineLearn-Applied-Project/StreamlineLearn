@@ -1,3 +1,7 @@
+# Server configurations
+server:
+  port: 8080
+
 # Spring application configurations
 spring:
   application:
@@ -34,9 +38,6 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
 
 
-# Server configurations
-server:
-  port: 8080
 
 # Management configurations
 management:

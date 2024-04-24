@@ -9,7 +9,7 @@ public interface FeedbackService {
 
     List<Feedback> getAllFeedbacks(Long courseId);
 
-    Feedback updateFeedback(Long courseId, Long feedbackId, Feedback feedback);
+    boolean updateFeedback(Long courseId, Long feedbackId, Feedback feedback, String authorizationHeader);
 
-    void deleteFeedbck(Long courseId, Long feedbackId);
+    void deleteFeedback(Long courseId, Long feedbackId, String authorizationHeader);
 }

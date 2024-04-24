@@ -41,13 +41,13 @@ public class DiscussionServiceImplementation implements DiscussionService {
     @Override
     public void createDiscussion(Long courseId, Discussion discussion, String authorizationHeader) {
         String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long studentId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
-        Student student = studentService.findStudentByStudentId(roleId);
+        Student student = studentService.findStudentByStudentId(studentId);
         Course course = courseService.getCourseByCourseId(courseId);
 
-        // Check if the user is an instructor of the course
-        if ("STUDENT".equals(role) && courseService.isStudentEnrolled(roleId, courseId)) {
+        // Check if the user is a student who enrolled in the course
+        if ("STUDENT".equals(role) && courseService.isStudentEnrolled(studentId, courseId)) {
             discussion.setCourse(course);
             discussion.setStudent(student);
             discussionRepository.save(discussion);
@@ -59,11 +59,11 @@ public class DiscussionServiceImplementation implements DiscussionService {
     @Override
     public List<Discussion> getAllDiscussions(Long courseId, String authorizationHeader) {
         String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long userId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         // Check if the user is a student enrolled in the course or an instructor of the course
-        if (("STUDENT".equals(role) && courseService.isStudentEnrolled(userId, courseId)) ||
-                ("INSTRUCTOR".equals(role) && courseService.isInstructorOfCourse(userId, courseId))) {
+        if (("STUDENT".equals(role) && courseService.isStudentEnrolled(roleId, courseId)) ||
+                ("INSTRUCTOR".equals(role) && courseService.isInstructorOfCourse(roleId, courseId))) {
             return discussionRepository.findByCourseId(courseId);
         } else {
             throw new RuntimeException("Unauthorized access to discussions");
@@ -73,23 +73,23 @@ public class DiscussionServiceImplementation implements DiscussionService {
     @Override
     public Discussion addThread(Long courseId, Long discussionId, String thread, String authorizationHeader) {
         String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long userId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         // Check if the user is a student enrolled in the course or an instructor of the course
-        if (("STUDENT".equals(role) && courseService.isStudentEnrolled(userId, courseId)) ||
-                ("INSTRUCTOR".equals(role) && courseService.isInstructorOfCourse(userId, courseId))) {
+        if (("STUDENT".equals(role) && courseService.isStudentEnrolled(roleId, courseId)) ||
+                ("INSTRUCTOR".equals(role) && courseService.isInstructorOfCourse(roleId, courseId))) {
             Discussion discussion = discussionRepository.findById(discussionId)
                     .orElseThrow(() -> new ResourceNotFoundException("Discussion not found"));
 
             if ("STUDENT".equals(role)) {
-                Student student = studentService.findStudentByStudentId(userId);
+                Student student = studentService.findStudentByStudentId(roleId);
 
                 String threadWithUserInfo = String.format("%s - %s: %s", student.getRole(), student.getUsername(), thread);
                 discussion.getDiscussionThreads().add(threadWithUserInfo);
 
                 return discussionRepository.save(discussion);
             } else {
-                Instructor instructor = instructorService.findInstructorById(userId);
+                Instructor instructor = instructorService.findInstructorById(roleId);
 
                 String threadWithUserInfo = String.format("%s - %s: %s", instructor.getRole(), instructor.getUsername(), thread);
                 discussion.getDiscussionThreads().add(threadWithUserInfo);
@@ -107,21 +107,29 @@ public class DiscussionServiceImplementation implements DiscussionService {
 
     @Override
     public Boolean updateDiscussion(Long courseId, Long discussionId, Discussion discussion, String authorizationHeader) {
-        Long instructorId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Course course = courseService.getCourseByCourseId(courseId);
+        Long studentId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
-        // Check if the course exists and if the logged-in instructor owns the course
-        if (course != null && courseService.isInstructorOfCourse(instructorId, courseId)) {
+        // Check if the user is a student
+        Student student = studentService.findStudentByStudentId(studentId);
+        if (student != null) {
             Discussion existingDiscussion = discussionRepository.findById(discussionId)
                     .orElseThrow(() -> new ResourceNotFoundException("Discussion not found"));
-            // Update discussion
-            existingDiscussion.setDiscussion(discussion.getDiscussion());
-            discussionRepository.save(existingDiscussion);
-            return true;
+
+            // Ensure that the student attempting to update the discussion is the same as the one who created it
+            if (existingDiscussion.getStudents().contains(student)) {
+                // Update discussion
+                existingDiscussion.setDiscussion(discussion.getDiscussion());
+                discussionRepository.save(existingDiscussion);
+                return true;
+            } else {
+                throw new RuntimeException("Student is not enrolled in the course associated with this discussion");
+            }
         } else {
-            throw new RuntimeException("Instructor is not authorized to update this discussion");
+            throw new RuntimeException("Only students are authorized to update discussions");
         }
     }
+
+
 
     @Override
     public Boolean deleteDiscussion(Long courseId, Long discussionId, String authorizationHeader) {

@@ -25,7 +25,7 @@ public class FeedbackController {
 
         feedbackService.createFeedback(courseId, feedback, authorizationHeader );
 
-        return new ResponseEntity<>("Discussion added to the course", HttpStatus.CREATED);
+        return new ResponseEntity<>("Feedback added to the course", HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -34,12 +34,20 @@ public class FeedbackController {
         return ResponseEntity.ok().body(feedbacks);
     }
 
+    @PutMapping("/{feedbackId}")
+    public ResponseEntity<?> updateFeedback(@PathVariable Long courseId,
+                                            @PathVariable Long feedbackId,
+                                            @RequestBody Feedback feedback,
+                                            @RequestHeader("Authorization") String authorizationHeader) {
+        feedbackService.updateFeedback(courseId, feedbackId, feedback, authorizationHeader);
+        return ResponseEntity.noContent().build();
+    }
 
     @DeleteMapping("/{feedbackId}")
     public ResponseEntity<?> deleteFeedback(@PathVariable Long courseId,
                                             @PathVariable Long feedbackId,
                                             @RequestHeader("Authorization") String authorizationHeader) {
-        feedbackService.deleteFeedbck(courseId, feedbackId);
+        feedbackService.deleteFeedback(courseId, feedbackId, authorizationHeader);
         return ResponseEntity.noContent().build();
     }
 }
