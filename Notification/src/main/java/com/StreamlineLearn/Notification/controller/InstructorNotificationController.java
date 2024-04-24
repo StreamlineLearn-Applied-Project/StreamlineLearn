@@ -1,9 +1,14 @@
 package com.StreamlineLearn.Notification.controller;
 
+import com.StreamlineLearn.Notification.model.Notification;
+import com.StreamlineLearn.Notification.service.NotificationService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/instructor/notifications")
+@RequestMapping("/home/instructor/notifications")
 public class InstructorNotificationController {
 
     private final NotificationService notificationService;
@@ -13,12 +18,8 @@ public class InstructorNotificationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Notification>> getInstructorNotifications(@AuthenticationPrincipal Jwt jwt) {
-        // Extract instructor id from JWT token
-        Long instructorId = Long.parseLong(jwt.getSubject());
-
-        // Retrieve notifications for the instructor
-        List<Notification> notifications = notificationService.getInstructorNotifications(instructorId);
+    public ResponseEntity<List<Notification>> getInstructorNotifications(@RequestHeader("Authorization") String authorizationHeader) {
+        List<Notification> notifications = notificationService.getInstructorNotifications(authorizationHeader);
 
         return ResponseEntity.ok(notifications);
     }

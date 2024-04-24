@@ -39,15 +39,7 @@ spring:
 
 
 
-# Management configurations
-management:
-  tracing:
-    sampling:
-      probability: 1.0
-
-# Logging configurations
-logging:
-  level:
-    root: info
-    org.springframework.cloud.gateway.route.RouteDefinitionLocator: INFO
-    org.springframework.cloud.gateway: TRACE
+course:
+  management:
+    service:
+      url: http://localhost:8282

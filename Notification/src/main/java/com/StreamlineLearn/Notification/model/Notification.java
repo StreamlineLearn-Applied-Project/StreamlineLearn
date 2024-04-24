@@ -21,8 +21,6 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private NotificationType type;
     private LocalDateTime timestamp;
-    @Enumerated(EnumType.STRING)
-    private NotificationStatus status;
 
     // Many-to-many relationship with Student
     @ManyToMany
@@ -72,14 +70,6 @@ public class Notification {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public NotificationStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(NotificationStatus status) {
-        this.status = status;
     }
 
     public Set<Student> getStudents() {

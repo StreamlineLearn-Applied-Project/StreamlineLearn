@@ -16,11 +16,6 @@ public class Student {
     private String userName;
     private String role;
 
-    // Many-to-many relationship with Course
-    @ManyToMany(mappedBy = "students")
-    @JsonIgnore // Ignore this field during serialization to break the infinite loop
-    private Set<Course> courses = new HashSet<>();
-
     // Many-to-many relationship with Notification
     @ManyToMany(mappedBy = "students")
     @JsonIgnore // Ignore this field during serialization to break the infinite loop
@@ -48,15 +43,6 @@ public class Student {
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-
-    public Set<Course> getCourses() {
-        return courses;
-    }
-
-    public void setCourses(Set<Course> courses) {
-        this.courses = courses;
     }
 
     public Set<Notification> getNotifications() {

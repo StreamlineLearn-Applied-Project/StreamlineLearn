@@ -16,10 +16,6 @@ public class Instructor {
     private String username;
     private String role;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "instructor", cascade = CascadeType.ALL)
-    private List<Course> courses = new ArrayList<>();
-
     // Many-to-many relationship with Notification
     @ManyToMany(mappedBy = "instructors")
     @JsonIgnore // Ignore this field during serialization to break the infinite loop
@@ -50,14 +46,6 @@ public class Instructor {
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-    public List<Course> getCourses() {
-        return courses;
-    }
-
-    public void setCourses(List<Course> courses) {
-        this.courses = courses;
     }
 
     public Set<Notification> getNotifications() {
