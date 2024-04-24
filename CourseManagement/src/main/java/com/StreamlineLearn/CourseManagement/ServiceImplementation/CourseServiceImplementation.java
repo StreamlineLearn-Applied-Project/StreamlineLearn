@@ -71,6 +71,13 @@ public class CourseServiceImplementation implements CourseService {
             return Optional.empty();
         }
 
+        // If token is null, return course details without authentication
+        if (token == null) {
+            return Optional.of(new CourseDTO(course.get().getCourseName(),
+                    course.get().getDescription(),
+                    course.get().getPrice()));
+        }
+
         String role = jwtService.extractRole(token.substring(TOKEN_PREFIX_LENGTH));
         Long roleId = jwtService.extractRoleId(token.substring(TOKEN_PREFIX_LENGTH));
 

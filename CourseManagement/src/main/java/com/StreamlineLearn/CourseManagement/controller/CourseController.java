@@ -38,7 +38,7 @@ public class CourseController {
 
     @GetMapping("/{courseId}")
     public ResponseEntity<CourseDTO> getCourseById(@PathVariable Long courseId,
-                                                   @RequestHeader("Authorization") String authorizationHeader){
+                                                   @RequestHeader(value = "Authorization", required = false) String authorizationHeader){
         Optional<CourseDTO> course = courseService.getCourseById(courseId, authorizationHeader);
 
         return course.map(value -> new ResponseEntity<>(value, HttpStatus.OK))

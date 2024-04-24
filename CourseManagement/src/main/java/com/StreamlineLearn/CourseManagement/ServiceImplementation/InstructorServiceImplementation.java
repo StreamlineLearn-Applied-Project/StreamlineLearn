@@ -23,6 +23,7 @@ public class InstructorServiceImplementation implements InstructorService {
                 .orElseThrow(() -> new EntityNotFoundException("Instructor not found with id: " + id));
     }
 
+    @Override
     public void saveInstructor(UserSharedDto userDtoEvent) {
         // Create a new instructor object
         Instructor instructor = new Instructor();
