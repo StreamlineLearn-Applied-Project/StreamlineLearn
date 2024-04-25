@@ -23,8 +23,9 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
+
           // landing page or home page
-          <Route path="/home" element={<HomePage/>} />
+          <Route path="/" element={<HomePage/>} />
 
           // sign in and sign up pages
           <Route path="/sign-up" element={<SignUp/>} />

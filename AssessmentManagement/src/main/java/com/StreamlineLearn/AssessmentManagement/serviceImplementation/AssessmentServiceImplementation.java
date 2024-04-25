@@ -9,6 +9,8 @@ import com.StreamlineLearn.AssessmentManagement.repository.CourseRepository;
 import com.StreamlineLearn.AssessmentManagement.service.AssessmentService;
 import com.StreamlineLearn.AssessmentManagement.service.CourseService;
 
+import com.StreamlineLearn.AssessmentManagement.service.KafkaProducerService;
+import com.StreamlineLearn.SharedModule.dto.CourseAssessmentDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,15 +24,19 @@ public class AssessmentServiceImplementation implements AssessmentService {
     private final CourseService courseService;
     private final AssessmentRepository assessmentRepository;
     private final CourseRepository courseRepository;
+    private final KafkaProducerService kafkaProducerService;
     private static final int TOKEN_PREFIX_LENGTH = 7;
     public AssessmentServiceImplementation(JwtService jwtService,
                                            CourseService courseService,
-                                           AssessmentRepository assessmentRepository, CourseRepository courseRepository) {
+                                           AssessmentRepository assessmentRepository,
+                                           CourseRepository courseRepository,
+                                           KafkaProducerService kafkaProducerService) {
 
         this.jwtService = jwtService;
         this.courseService = courseService;
         this.assessmentRepository = assessmentRepository;
         this.courseRepository = courseRepository;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     @Override
@@ -43,6 +49,11 @@ public class AssessmentServiceImplementation implements AssessmentService {
         if (course != null && course.getInstructor().getId().equals(instructorId)) {
             assessment.setCourse(course);
             assessmentRepository.save(assessment);
+
+            // Publish course assessment details
+            CourseAssessmentDto courseAssessmentDto = new CourseAssessmentDto(instructorId, courseId, assessment.getId());
+            kafkaProducerService.publishCourseAssessmentDetails(courseAssessmentDto);
+
         } else {
         // Handle the case where the course doesn't exist or the instructor doesn't own the course
         throw new RuntimeException("Instructor is not authorized to create Assessment for this course");
