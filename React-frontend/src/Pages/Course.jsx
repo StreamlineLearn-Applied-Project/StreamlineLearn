@@ -30,7 +30,7 @@ function CoursePage() {
           <CourseInfo heading={course.courseName} desc={course.description}/>
           
           <div>
-            <Link to={`/courses/${courseId}/announcements`}>
+            <Link to={`/courses/${courseId}/contents`}>
               <Button text={"Contents"} outlined={true} />
             </Link>
           </div>

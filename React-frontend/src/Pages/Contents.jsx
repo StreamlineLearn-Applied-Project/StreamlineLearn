@@ -9,7 +9,7 @@ function ContentsPage() {
 
     useEffect(() => {
         if (courseId) {
-            axios.get(`http://localhost:8686/courses/${courseId}/announcements`)
+            axios.get(`http://localhost:8686/courses/${courseId}/contents`)
               .then(response => {
                setAssessments(response.data);
               })

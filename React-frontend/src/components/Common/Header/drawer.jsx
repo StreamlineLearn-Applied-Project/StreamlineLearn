@@ -1,3 +1,4 @@
+// TemporaryDrawer.js
 import React, { useEffect, useState } from "react";
 import Drawer from "@mui/material/Drawer";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
@@ -11,6 +12,7 @@ export default function TemporaryDrawer() {
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark" ? true : false
   );
+  const userRole = localStorage.getItem('userRole'); // Get userRole from localStorage
 
   useEffect(() => {
     if (localStorage.getItem("theme") === "dark") {
@@ -39,6 +41,7 @@ export default function TemporaryDrawer() {
     localStorage.setItem("theme", "light");
     document.documentElement.setAttribute("data-theme", "light");
   };
+
   return (
     <div>
       <IconButton onClick={() => setOpen(true)}>
@@ -46,18 +49,42 @@ export default function TemporaryDrawer() {
       </IconButton>
       <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
         <div className="drawer-div">
-          <Link to="/courses">
-            <p className="link">courses</p>
-          </Link>
-          <Link to="/sign-in">
-            <p className="link">sign in</p>
-          </Link>
-          <Link to="/sign-up">
-            <p className="link">sign up</p>
-          </Link>
+          {userRole ? (
+            <>
+              <Link to="/home">
+                <p className="link">Home</p>
+              </Link>
+              {userRole === 'INSTRUCTOR' && (
+                <Link to="/instructor-courses">
+                  <p className="link">Teachings</p>
+                </Link>
+              )}
+              {userRole === 'STUDENT' && (
+                <Link to="/student-courses">
+                  <p className="link">Enrollments</p>
+                </Link>
+              )}
+              <Link to="/profile">
+                <p className="link">Profile</p>
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link to="/courses">
+                <p className="link">Courses</p>
+              </Link>
+              <Link to="/sign-in">
+                <p className="link">Sign In</p>
+              </Link>
+              <Link to="/sign-up">
+                <p className="link">Sign Up</p>
+              </Link>
+            </>
+          )}
           <Switch checked={darkMode} onClick={() => changeMode()} />
         </div>
       </Drawer>
     </div>
   );
 }
+

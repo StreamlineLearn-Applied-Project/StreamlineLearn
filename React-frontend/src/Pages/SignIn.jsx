@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './UserRegisterLoginForm.css';
 import Header from '../components/Common/Header';
 
 function SignIn() {
+
+    const navigate = useNavigate();
+
     // State for form inputs
     const [formData, setFormData] = useState({
         username: '',
@@ -37,6 +41,9 @@ function SignIn() {
             
             // Include the JWT token in the headers of all subsequent axios requests
             axios.defaults.headers.common['Authorization'] = 'Bearer ' + jwtToken;
+
+            // Redirect to home page after successful registration
+            navigate('/home');
 
         } catch (error) {
             alert('Error: Unable to log in');
