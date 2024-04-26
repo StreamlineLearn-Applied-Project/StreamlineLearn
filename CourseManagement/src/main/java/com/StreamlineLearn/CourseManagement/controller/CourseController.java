@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/courses")
@@ -34,6 +35,11 @@ public class CourseController {
     @GetMapping
     public ResponseEntity <List<Course>> getAllTheCourse(){
         return new ResponseEntity<>(courseService.getAllTheCourse(),HttpStatus.OK);
+    }
+
+    @GetMapping("/instructor-courses")
+    public ResponseEntity <Set<Course>> getAllInstructorCourse(@RequestHeader("Authorization") String authorizationHeader){
+        return new ResponseEntity<>(courseService.getAllInstructorCourse(authorizationHeader),HttpStatus.OK);
     }
 
     @GetMapping("/{courseId}")

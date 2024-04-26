@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class CourseServiceImplementation implements CourseService {
@@ -61,6 +62,20 @@ public class CourseServiceImplementation implements CourseService {
     @Override
     public List<Course> getAllTheCourse() {
         return courseRepository.findAll();
+    }
+
+    @Override
+    public Set<Course> getAllInstructorCourse(String authorizationHeader) {
+        Instructor instructor = instructorService.findInstructorById(jwtService.
+                extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH)));
+
+        if (instructor == null) {
+            throw new IllegalArgumentException("Instructor not found");
+        }
+
+        // Returning the courses associated with the instructor
+        return instructor.getCourses();
+
     }
 
     @Override
