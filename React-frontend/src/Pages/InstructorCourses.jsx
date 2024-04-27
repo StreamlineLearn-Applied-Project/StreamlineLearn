@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/Common/Header';
 import TabsComponent from '../components/Courses/Tabs'; 
+import Button from '../components/Common/Button';
 
-function InstructorCourses() {
+function InstructorCoursesPage() {
     const [courses, setCourses] = useState([]);
     const navigate = useNavigate();
 
@@ -31,13 +32,15 @@ function InstructorCourses() {
         <div>
             <Header/>
             <h1>Instructor Courses</h1>
-            <button onClick={handleCreateCourse}>Create New Course</button>
+            <Link to={`/create-course`}>
+                <Button text={"Create New Course"} outlined={true}/>
+            </Link>
             <TabsComponent courses={courses}/>
         </div>
     );
 }
 
-export default InstructorCourses;
+export default InstructorCoursesPage;
 
 
 

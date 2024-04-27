@@ -5,6 +5,7 @@ import { Link, useParams } from 'react-router-dom';
 import Header from '../components/Common/Header';
 import CourseInfo from '../components/Course/CourseInfo';
 import Button from '../components/Common/Button';
+import CourseLinks from '../components/Course/CourseLinks';
 
 function CoursePage() {
   const { courseId } = useParams();
@@ -28,49 +29,7 @@ function CoursePage() {
       {course ? (
         <div>
           <CourseInfo heading={course.courseName} desc={course.description}/>
-          
-          <div>
-            <Link to={`/courses/${courseId}/contents`}>
-              <Button text={"Contents"} outlined={true} />
-            </Link>
-          </div>
-
-          <div>
-            <Link to={`/courses/${courseId}/assessments`}>
-              <Button text={"Assessments"} outlined={true} />
-            </Link>
-          </div>
-
-          <div>
-            <Link to={`/courses/${courseId}/discussions`}>
-              <Button text={"Discussions"} outlined={true} />
-            </Link>
-          </div>
-
-          <div>
-            <Link to={`/courses/${courseId}/announcements`}>
-              <Button text={"Announcements"} outlined={true} />
-            </Link>
-          </div>
-
-          <div>
-            <Link to={`/courses/${courseId}/instructor`}>
-              <Button text={"Instructor"} outlined={true} />
-            </Link>
-          </div>
-
-          <div>
-            <Link to={`/courses/${courseId}/grades`}>
-              <Button text={"Grades"} outlined={true} />
-            </Link>
-          </div>
-
-          <div>
-            <Link to={`/courses/${courseId}/feedback`}>
-              <Button text={"Feedback"} outlined={true} />
-            </Link>
-          </div>
-
+          <CourseLinks courseId={courseId} /> 
         </div>
         
       ) : (

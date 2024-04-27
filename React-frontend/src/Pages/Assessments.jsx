@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Common/Header';
+import AssessmentList from '../components/Assessments/List';
 
 function AssessmentsPage() {
     const { courseId } = useParams();
@@ -9,7 +10,7 @@ function AssessmentsPage() {
 
     useEffect(() => {
       if (courseId) {
-        axios.get(`http://localhost:8484/courses/${courseId}/assessments`)
+        axios.get(`http://localhost:8686/courses/${courseId}/assessments`)
           .then(response => {
             setAssessments(response.data);
           })
@@ -22,18 +23,10 @@ function AssessmentsPage() {
     return (
       <div>
         <Header/>
-          <h1>
-              Assessments
-          </h1>
-        
-        {assessments.map((assessment) => (
-          <div key={assessment.id} className="assessment-box">
-            <h2>{assessment.title}</h2>
-            <p>Percentage: {assessment.percentage}%</p>
-          </div>
-        ))}
+        <h1>Assessments</h1>
+        <AssessmentList assessments={assessments} />
       </div>
     );
-  }
+}
 
 export default AssessmentsPage;

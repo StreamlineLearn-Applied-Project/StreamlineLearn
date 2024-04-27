@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Common/Header';
+import AnnouncementList from '../components/Announcements/List';
 
 function AnnouncementsPage() {
     const { courseId } = useParams();
@@ -21,12 +22,11 @@ function AnnouncementsPage() {
 
     return (
         <div>
-            <Header/>
-            <h1>
-               Announcements
-            </h1>
+          <Header/>
+          <h1>Announcements</h1>
+          <AnnouncementList announcements={announcements} />
         </div>
-    );
-}
+      );
+  }
 
 export default AnnouncementsPage;

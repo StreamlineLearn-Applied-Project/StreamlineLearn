@@ -41,7 +41,18 @@ function SignUp() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:8080/register', formData);
+            const response = await axios.post('http://localhost:8080/register', {
+                user: {
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    username: formData.username,
+                    password: formData.password,
+                    role: formData.role
+                },
+                [formData.role.toLowerCase()]: {
+                    ...formData.roleData
+                }
+            });
             alert(response.data);
             navigate('/sign-in');
         } catch (error) {

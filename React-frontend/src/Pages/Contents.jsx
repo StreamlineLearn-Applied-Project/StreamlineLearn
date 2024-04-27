@@ -5,7 +5,7 @@ import Header from '../components/Common/Header';
 
 function ContentsPage() {
     const { courseId } = useParams();
-    const [announcements, setContents] = useState([]);
+    const [Contents, setContents] = useState([]);
 
     useEffect(() => {
         if (courseId) {
