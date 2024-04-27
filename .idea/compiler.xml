@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="AnnouncementManagement" />
+        <module name="DiscussionService" />
+        <module name="AssessmentManagement" />
+        <module name="AssessmentSubmissionService" />
+        <module name="CourseEnrollManagement" />
+        <module name="Shared-Module" />
+        <module name="API-gateway" />
+        <module name="ContentManagement" />
+        <module name="CourseManagement" />
+        <module name="UserManagement" />
+        <module name="FeedbackManagment" />
+        <module name="Notification" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="API-gateway" options="-parameters" />
+      <module name="AnnouncementManagement" options="-parameters" />
+      <module name="AssessmentManagement" options="-parameters" />
+      <module name="AssessmentSubmissionService" options="-parameters" />
+      <module name="ContentManagement" options="-parameters" />
+      <module name="CourseEnrollManagement" options="-parameters" />
+      <module name="CourseManagement" options="-parameters" />
+      <module name="DiscussionService" options="-parameters" />
+      <module name="FeedbackManagment" options="-parameters" />
+      <module name="Notification" options="-parameters" />
+      <module name="Shared-Module" options="-parameters" />
+      <module name="UserManagement" options="-parameters" />
+    </option>
+  </component>
+</project>

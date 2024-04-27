@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/Shared-Module/pom.xml" />
+        <option value="$PROJECT_DIR$/AnnouncementManagement/pom.xml" />
+        <option value="$PROJECT_DIR$/DiscussionService/pom.xml" />
+        <option value="$PROJECT_DIR$/API-gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/AssessmentManagement/pom.xml" />
+        <option value="$PROJECT_DIR$/ContentManagement/pom.xml" />
+        <option value="$PROJECT_DIR$/CourseEnrollManagement/pom.xml" />
+        <option value="$PROJECT_DIR$/CourseManagement/pom.xml" />
+        <option value="$PROJECT_DIR$/FeedbackManagment/pom.xml" />
+        <option value="$PROJECT_DIR$/Notification/pom.xml" />
+        <option value="$PROJECT_DIR$/UserManagement/pom.xml" />
+        <option value="$PROJECT_DIR$/AssessmentSubmissionService/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="21" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+</project>
