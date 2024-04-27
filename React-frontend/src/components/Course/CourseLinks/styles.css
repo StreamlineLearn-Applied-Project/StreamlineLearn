@@ -1,0 +1,17 @@
+.links {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .link {
+    font-size: 0.8rem;
+    color: var(--grey);
+    font-weight: 600;
+  }
+  
+  .link:hover {
+    color: var(--white);
+    transform: all 0.3s;
+  }
