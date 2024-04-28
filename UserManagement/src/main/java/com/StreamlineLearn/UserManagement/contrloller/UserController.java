@@ -1,6 +1,7 @@
 package com.StreamlineLearn.UserManagement.contrloller;
 
-import com.StreamlineLearn.UserManagement.annotation.IsAdministrative;
+
+import com.StreamlineLearn.SharedModule.annotation.IsAdministrative;
 import com.StreamlineLearn.UserManagement.jwtUtil.JwtService;
 import com.StreamlineLearn.UserManagement.model.User;
 import com.StreamlineLearn.UserManagement.service.UserService;
