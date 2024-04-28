@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0e5d668e-ee2e-4fb2-ad3c-8eaf70643de4" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Shared-Module/src/main/java/com/StreamlineLearn/SharedModule/aspect/AuthorizationAspect.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AnnouncementManagement/src/main/java/com/StreamlineLearn/AnnouncementManagement/AnnouncementManagementApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/AnnouncementManagement/src/main/java/com/StreamlineLearn/AnnouncementManagement/AnnouncementManagementApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AnnouncementManagement/src/main/java/com/StreamlineLearn/AnnouncementManagement/controller/AnnouncementController.java" beforeDir="false" afterPath="$PROJECT_DIR$/AnnouncementManagement/src/main/java/com/StreamlineLearn/AnnouncementManagement/controller/AnnouncementController.java" afterDir="false" />
@@ -51,15 +52,15 @@
       <change beforePath="$PROJECT_DIR$/Shared-Module/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Shared-Module/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Shared-Module/src/main/java/com/StreamlineLearn/SharedModule/jwtUtil/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/Shared-Module/src/main/java/com/StreamlineLearn/SharedModule/jwtUtil/SharedJwtService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/UserManagementApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/UserManagementApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/annotation/IsAdministrative.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/annotation/IsAdministrative.java" beforeDir="false" afterPath="$PROJECT_DIR$/Shared-Module/src/main/java/com/StreamlineLearn/SharedModule/annotation/IsAdministrative.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/annotation/IsAuthorizedToDeleteAdministrative.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/annotation/IsAuthorizedToDeleteInstructor.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/annotation/IsAuthorizedToDeleteStudent.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/annotation/IsAuthorizedToUpdateAdministrative.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/annotation/IsAuthorizedToUpdateInstructor.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/annotation/IsAuthorizedToUpdateStudent.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/annotation/IsInstructor.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/annotation/IsStudent.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/annotation/IsInstructor.java" beforeDir="false" afterPath="$PROJECT_DIR$/Shared-Module/src/main/java/com/StreamlineLearn/SharedModule/annotation/IsInstructor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/annotation/IsStudent.java" beforeDir="false" afterPath="$PROJECT_DIR$/Shared-Module/src/main/java/com/StreamlineLearn/SharedModule/annotation/IsStudent.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/aspect/AuthorizationAspect.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/contrloller/AdministrativeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/contrloller/AdministrativeController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/contrloller/InstructorController.java" beforeDir="false" afterPath="$PROJECT_DIR$/UserManagement/src/main/java/com/StreamlineLearn/UserManagement/contrloller/InstructorController.java" afterDir="false" />
