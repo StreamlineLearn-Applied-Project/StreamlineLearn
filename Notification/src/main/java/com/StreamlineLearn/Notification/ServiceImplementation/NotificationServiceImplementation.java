@@ -2,7 +2,6 @@ package com.StreamlineLearn.Notification.ServiceImplementation;
 
 import com.StreamlineLearn.Notification.dto.CourseDTO;
 import com.StreamlineLearn.Notification.enums.NotificationType;
-import com.StreamlineLearn.Notification.jwtUtil.JwtService;
 import com.StreamlineLearn.Notification.model.Instructor;
 import com.StreamlineLearn.Notification.model.Notification;
 import com.StreamlineLearn.Notification.model.Student;
@@ -12,7 +11,7 @@ import com.StreamlineLearn.Notification.service.NotificationService;
 import com.StreamlineLearn.Notification.service.StudentService;
 import com.StreamlineLearn.SharedModule.dto.CourseSharedDto;
 import com.StreamlineLearn.SharedModule.dto.EnrolledStudentDto;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +28,7 @@ public class NotificationServiceImplementation implements NotificationService {
     private final NotificationRepository notificationRepository;
     private final InstructorService instructorService;
     private final StudentService studentService;
-    private final JwtService jwtService;
+    private final SharedJwtService jwtService;
     private final RestTemplate restTemplate;
 
     private static final int TOKEN_PREFIX_LENGTH = 7;
@@ -39,7 +38,7 @@ public class NotificationServiceImplementation implements NotificationService {
 
     public NotificationServiceImplementation(NotificationRepository notificationRepository,
                                              InstructorService instructorService,
-                                             StudentService studentService, JwtService jwtService,
+                                             StudentService studentService, SharedJwtService jwtService,
                                              RestTemplate restTemplate) {
         this.notificationRepository = notificationRepository;
         this.instructorService = instructorService;

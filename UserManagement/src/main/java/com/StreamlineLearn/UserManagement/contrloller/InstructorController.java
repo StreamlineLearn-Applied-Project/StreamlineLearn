@@ -1,7 +1,7 @@
 package com.StreamlineLearn.UserManagement.contrloller;
 
-
-import com.StreamlineLearn.UserManagement.annotation.IsAdministrative;
+import com.StreamlineLearn.SharedModule.annotation.IsAdministrative;
+import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
 import com.StreamlineLearn.UserManagement.jwtUtil.JwtService;
 import com.StreamlineLearn.UserManagement.model.Instructor;
 import com.StreamlineLearn.UserManagement.service.InstructorService;
@@ -30,6 +30,7 @@ public class InstructorController {
 
 
     @GetMapping("/instructor-profile")
+    @IsInstructor
     public ResponseEntity<Instructor> getInstructorById(@RequestHeader("Authorization") String token){
         return new ResponseEntity<>(instructorService
                 .getInstructorById(jwtService
@@ -38,6 +39,7 @@ public class InstructorController {
     }
 
     @PutMapping("/instructor-profile/update")
+    @IsInstructor
     public ResponseEntity<String> updateInstructor(@RequestHeader("Authorization") String token,
                                                    @RequestBody Instructor updateInstructor ) {
 
@@ -52,6 +54,7 @@ public class InstructorController {
         return new ResponseEntity<>("instructor did not found", HttpStatus.NOT_FOUND);
     }
     @DeleteMapping("/instructor-profile/delete")
+    @IsInstructor
     public ResponseEntity<String> deleteInstructorById(@RequestHeader("Authorization") String token) {
 
         boolean instructorDeleted = instructorService.deleteInstructorById(jwtService

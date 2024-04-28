@@ -1,6 +1,5 @@
 package com.StreamlineLearn.DiscussionService.serviceImplementation;
 
-import com.StreamlineLearn.DiscussionService.jwtUtil.JwtService;
 import com.StreamlineLearn.DiscussionService.model.Course;
 import com.StreamlineLearn.DiscussionService.model.Discussion;
 import com.StreamlineLearn.DiscussionService.model.Instructor;
@@ -11,6 +10,7 @@ import com.StreamlineLearn.DiscussionService.service.DiscussionService;
 import com.StreamlineLearn.DiscussionService.service.InstructorService;
 import com.StreamlineLearn.DiscussionService.service.StudentService;
 
+import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
 import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -18,19 +18,19 @@ import java.util.List;
 
 @Service
 public class DiscussionServiceImplementation implements DiscussionService {
-    private final JwtService jwtService;
+    private final SharedJwtService sharedJwtService;
     private final CourseService courseService;
     private final DiscussionRepository discussionRepository;
     private final StudentService studentService;
     private final InstructorService instructorService;
     private static final int TOKEN_PREFIX_LENGTH = 7;
 
-    public DiscussionServiceImplementation(JwtService jwtService,
+    public DiscussionServiceImplementation(SharedJwtService sharedJwtService,
                                            CourseService courseService,
                                            DiscussionRepository discussionRepository,
                                            StudentService studentService,
                                            InstructorService instructorService) {
-        this.jwtService = jwtService;
+        this.sharedJwtService = sharedJwtService;
         this.courseService = courseService;
         this.discussionRepository = discussionRepository;
         this.studentService = studentService;
@@ -40,8 +40,8 @@ public class DiscussionServiceImplementation implements DiscussionService {
 
     @Override
     public void createDiscussion(Long courseId, Discussion discussion, String authorizationHeader) {
-        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long studentId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long studentId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         Student student = studentService.findStudentByStudentId(studentId);
         Course course = courseService.getCourseByCourseId(courseId);
@@ -58,8 +58,8 @@ public class DiscussionServiceImplementation implements DiscussionService {
 
     @Override
     public List<Discussion> getAllDiscussions(Long courseId, String authorizationHeader) {
-        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         // Check if the user is a student enrolled in the course or an instructor of the course
         if (("STUDENT".equals(role) && courseService.isStudentEnrolled(roleId, courseId)) ||
@@ -72,8 +72,8 @@ public class DiscussionServiceImplementation implements DiscussionService {
 
     @Override
     public Discussion addThread(Long courseId, Long discussionId, String thread, String authorizationHeader) {
-        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         // Check if the user is a student enrolled in the course or an instructor of the course
         if (("STUDENT".equals(role) && courseService.isStudentEnrolled(roleId, courseId)) ||
@@ -107,7 +107,7 @@ public class DiscussionServiceImplementation implements DiscussionService {
 
     @Override
     public Boolean updateDiscussion(Long courseId, Long discussionId, Discussion discussion, String authorizationHeader) {
-        Long studentId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long studentId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         // Check if the user is a student
         Student student = studentService.findStudentByStudentId(studentId);
@@ -133,7 +133,7 @@ public class DiscussionServiceImplementation implements DiscussionService {
 
     @Override
     public Boolean deleteDiscussion(Long courseId, Long discussionId, String authorizationHeader) {
-        Long instructorId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long instructorId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
         Course course = courseService.getCourseByCourseId(courseId);
 
         // Check if the course exists and if the logged-in instructor owns the course

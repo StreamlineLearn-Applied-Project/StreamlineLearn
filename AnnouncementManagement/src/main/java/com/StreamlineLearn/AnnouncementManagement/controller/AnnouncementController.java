@@ -3,6 +3,7 @@ package com.StreamlineLearn.AnnouncementManagement.controller;
 import com.StreamlineLearn.AnnouncementManagement.dto.AnnouncementDto;
 import com.StreamlineLearn.AnnouncementManagement.model.Announcement;
 import com.StreamlineLearn.AnnouncementManagement.service.AnnouncementService;
+import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ public class AnnouncementController {
     }
 
     @PostMapping
+    @IsInstructor
     public ResponseEntity<String> createAnnouncement(@PathVariable Long courseId,
                                                      @RequestBody Announcement announcement,
                                                      @RequestHeader("Authorization") String authorizationHeader){
@@ -49,6 +51,7 @@ public class AnnouncementController {
     }
 
     @PutMapping("/{announcementId}")
+    @IsInstructor
     public ResponseEntity<String> updateAnnouncementById(@PathVariable Long courseId,
                                                          @PathVariable Long announcementId,
                                                          @RequestBody Announcement announcement,
@@ -62,6 +65,7 @@ public class AnnouncementController {
     }
 
     @DeleteMapping("/{announcementId}")
+    @IsInstructor
     public ResponseEntity<String> deleteAnnouncementById(@PathVariable Long courseId,
                                                          @PathVariable Long announcementId,
                                                          @RequestHeader("Authorization") String authorizationHeader){

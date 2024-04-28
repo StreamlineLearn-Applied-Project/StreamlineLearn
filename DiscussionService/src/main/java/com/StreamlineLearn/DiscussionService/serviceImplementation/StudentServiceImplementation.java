@@ -1,6 +1,6 @@
 package com.StreamlineLearn.DiscussionService.serviceImplementation;
 
-import com.StreamlineLearn.DiscussionService.jwtUtil.JwtService;
+
 import com.StreamlineLearn.DiscussionService.model.Course;
 import com.StreamlineLearn.DiscussionService.model.Student;
 import com.StreamlineLearn.DiscussionService.repository.CourseRepository;

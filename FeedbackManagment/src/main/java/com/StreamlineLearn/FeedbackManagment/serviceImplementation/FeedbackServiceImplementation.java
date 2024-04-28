@@ -1,15 +1,13 @@
 package com.StreamlineLearn.FeedbackManagment.serviceImplementation;
 
-import com.StreamlineLearn.FeedbackManagment.jwtUtil.JwtService;
 import com.StreamlineLearn.FeedbackManagment.model.Course;
 import com.StreamlineLearn.FeedbackManagment.model.Feedback;
 import com.StreamlineLearn.FeedbackManagment.model.Student;
-import com.StreamlineLearn.FeedbackManagment.repository.CourseRepository;
 import com.StreamlineLearn.FeedbackManagment.repository.FeedbackRepository;
-import com.StreamlineLearn.FeedbackManagment.repository.StudentRepository;
 import com.StreamlineLearn.FeedbackManagment.service.CourseService;
 import com.StreamlineLearn.FeedbackManagment.service.FeedbackService;
 import com.StreamlineLearn.FeedbackManagment.service.StudentService;
+import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
 import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -19,25 +17,25 @@ import java.util.List;
 public class FeedbackServiceImplementation implements FeedbackService {
 
     private final CourseService courseService;
-    private final JwtService jwtService;
+    private final SharedJwtService sharedJwtService;
     private final StudentService studentService;
     private final FeedbackRepository feedbackRepository;
     private static final int TOKEN_PREFIX_LENGTH = 7;
 
     public FeedbackServiceImplementation(CourseService courseService,
-                                         JwtService jwtService,
+                                         SharedJwtService sharedJwtService,
                                          StudentService studentService,
                                          FeedbackRepository feedbackRepository) {
         this.courseService = courseService;
-        this.jwtService = jwtService;
+        this.sharedJwtService = sharedJwtService;
         this.studentService = studentService;
         this.feedbackRepository = feedbackRepository;
     }
 
     @Override
     public void createFeedback(Long courseId, Feedback feedback, String authorizationHeader) {
-        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long studentId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long studentId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         Student student = studentService.findStudentByStudentId(studentId);
         Course course = courseService.getCourseByCourseId(courseId);
@@ -61,7 +59,7 @@ public class FeedbackServiceImplementation implements FeedbackService {
 
     @Override
     public boolean updateFeedback(Long courseId, Long feedbackId, Feedback updatedFeedback, String authorizationHeader) {
-        Long studentId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long studentId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
         Student student = studentService.findStudentByStudentId(studentId);
         if (student != null) {
             Feedback existingFeedback = feedbackRepository.findById(feedbackId)
@@ -86,7 +84,7 @@ public class FeedbackServiceImplementation implements FeedbackService {
 
     @Override
     public void deleteFeedback(Long courseId, Long feedbackId, String authorizationHeader) {
-        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         Feedback feedback = feedbackRepository.findById(feedbackId)
                 .orElseThrow(() -> new ResourceNotFoundException("Feedback not found"));

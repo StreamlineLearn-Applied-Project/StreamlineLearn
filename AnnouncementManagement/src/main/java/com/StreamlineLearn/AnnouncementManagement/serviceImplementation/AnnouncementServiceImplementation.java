@@ -1,13 +1,14 @@
 package com.StreamlineLearn.AnnouncementManagement.serviceImplementation;
 
 import com.StreamlineLearn.AnnouncementManagement.dto.AnnouncementDto;
-import com.StreamlineLearn.AnnouncementManagement.jwtUtil.JwtService;
+
 import com.StreamlineLearn.AnnouncementManagement.model.Announcement;
 import com.StreamlineLearn.AnnouncementManagement.model.Course;
 import com.StreamlineLearn.AnnouncementManagement.repository.AnnouncementRepository;
 import com.StreamlineLearn.AnnouncementManagement.repository.CourseRepository;
 import com.StreamlineLearn.AnnouncementManagement.service.AnnouncementService;
 import com.StreamlineLearn.AnnouncementManagement.service.CourseService;
+import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,17 +18,17 @@ import java.util.Set;
 
 @Service
 public class AnnouncementServiceImplementation implements AnnouncementService {
-    private final JwtService jwtService;
+    private final SharedJwtService sharedJwtService;
     private final CourseService courseService;
     private final AnnouncementRepository announcementRepository;
     private final CourseRepository courseRepository;
     private static final int TOKEN_PREFIX_LENGTH = 7;
 
-    public AnnouncementServiceImplementation(JwtService jwtService,
+    public AnnouncementServiceImplementation(SharedJwtService sharedJwtService,
                                              CourseService courseService,
                                              AnnouncementRepository announcementRepository, CourseRepository courseRepository) {
 
-        this.jwtService = jwtService;
+        this.sharedJwtService = sharedJwtService;
         this.courseService = courseService;
         this.announcementRepository = announcementRepository;
         this.courseRepository = courseRepository;
@@ -37,7 +38,7 @@ public class AnnouncementServiceImplementation implements AnnouncementService {
     public void createAnnouncement(Long courseId, Announcement announcement, String authorizationHeader) {
 
         Course course = courseService.getCourseByCourseId(courseId);
-        Long instructorId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long instructorId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         // Check if the course exists and if the logged-in instructor owns the course
         if (course != null && course.getInstructor().getId().equals(instructorId)) {
@@ -60,8 +61,8 @@ public class AnnouncementServiceImplementation implements AnnouncementService {
 
     @Override
     public Optional<AnnouncementDto> getAnnouncementById(Long courseId, Long announcementId, String authorizationHeader) {
-        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
         if (optionalCourse.isPresent()) {
@@ -111,8 +112,8 @@ public class AnnouncementServiceImplementation implements AnnouncementService {
 
     @Override
     public boolean updateAnnouncementById(Long courseId, Long announcementId, Announcement announcement, String authorizationHeader) {
-        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
         if (optionalCourse.isPresent()) {
@@ -146,8 +147,8 @@ public class AnnouncementServiceImplementation implements AnnouncementService {
 
     @Override
     public boolean deleteAnnouncementById(Long courseId, Long announcementId, String authorizationHeader) {
-        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
         if (optionalCourse.isPresent()) {

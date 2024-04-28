@@ -1,15 +1,13 @@
 package com.StreamlineLearn.ContentManagement.serviceImplementation;
 
 import com.StreamlineLearn.ContentManagement.dto.ContentDto;
-import com.StreamlineLearn.ContentManagement.jwtUtil.JwtService;
 import com.StreamlineLearn.ContentManagement.model.Content;
 import com.StreamlineLearn.ContentManagement.model.Course;
-import com.StreamlineLearn.ContentManagement.model.Instructor;
 import com.StreamlineLearn.ContentManagement.repository.ContentRepository;
 import com.StreamlineLearn.ContentManagement.repository.CourseRepository;
 import com.StreamlineLearn.ContentManagement.service.ContentService;
 import com.StreamlineLearn.ContentManagement.service.CourseService;
-import com.StreamlineLearn.ContentManagement.service.InstructorService;
+import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,18 +17,18 @@ import java.util.Set;
 
 @Service
 public class ContentServiceImplementation implements ContentService {
-    private final JwtService jwtService;
+    private final SharedJwtService sharedJwtService;
     private final CourseService courseService;
     private final ContentRepository contentRepository;
     private final CourseRepository courseRepository;
     private static final int TOKEN_PREFIX_LENGTH = 7;
 
-    public ContentServiceImplementation(JwtService jwtService,
+    public ContentServiceImplementation(SharedJwtService sharedJwtService,
                                         CourseService courseService,
                                         ContentRepository contentRepository,
                                         CourseRepository courseRepository) {
 
-        this.jwtService = jwtService;
+        this.sharedJwtService = sharedJwtService;
         this.courseService = courseService;
         this.contentRepository = contentRepository;
         this.courseRepository = courseRepository;
@@ -40,7 +38,7 @@ public class ContentServiceImplementation implements ContentService {
     public void createContent(Long courseId, Content content, String authorizationHeader) {
 
         Course course = courseService.getCourseByCourseId(courseId);
-        Long instructorId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long instructorId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         // Check if the course exists and if the logged-in instructor owns the course
         if (course != null && course.getInstructor().getId().equals(instructorId)) {
@@ -60,8 +58,8 @@ public class ContentServiceImplementation implements ContentService {
 
     @Override
     public Optional<ContentDto> getContentById(Long courseId, Long contentId, String authorizationHeader) {
-        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
         if (optionalCourse.isPresent()) {
@@ -112,8 +110,8 @@ public class ContentServiceImplementation implements ContentService {
 
     @Override
     public boolean updateContentById(Long courseId, Long contentId, Content content, String authorizationHeader) {
-        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
         if (optionalCourse.isPresent()) {
@@ -147,8 +145,8 @@ public class ContentServiceImplementation implements ContentService {
 
     @Override
     public boolean deleteContentById(Long courseId, Long contentId, String authorizationHeader) {
-        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
         if (optionalCourse.isPresent()) {

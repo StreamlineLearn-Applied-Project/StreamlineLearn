@@ -4,6 +4,7 @@ package com.StreamlineLearn.CourseManagement.controller;
 import com.StreamlineLearn.CourseManagement.dto.CourseDTO;
 import com.StreamlineLearn.CourseManagement.model.Course;
 import com.StreamlineLearn.CourseManagement.service.CourseService;
+import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,7 @@ public class CourseController {
     }
 
     @PostMapping("/create-course")
+    @IsInstructor
     public ResponseEntity<String> createCourse(@RequestBody Course course,
                                                @RequestHeader("Authorization") String authorizationHeader){
 
@@ -38,6 +40,7 @@ public class CourseController {
     }
 
     @GetMapping("/instructor-courses")
+    @IsInstructor
     public ResponseEntity <Set<Course>> getAllInstructorCourse(@RequestHeader("Authorization") String authorizationHeader){
         return new ResponseEntity<>(courseService.getAllInstructorCourse(authorizationHeader),HttpStatus.OK);
     }
@@ -52,6 +55,7 @@ public class CourseController {
     }
 
     @PutMapping("/{courseId}")
+    @IsInstructor
     public ResponseEntity<String> updateCourseById(@PathVariable Long courseId,
                                                    @RequestBody Course course,
                                                    @RequestHeader("Authorization") String authorizationHeader){
@@ -64,6 +68,7 @@ public class CourseController {
     }
 
     @DeleteMapping("/{courseId}")
+    @IsInstructor
     public ResponseEntity<String> deleteCourseById(@PathVariable Long courseId,
                                                    @RequestHeader("Authorization") String authorizationHeader){
         boolean courseDeleted = courseService.deleteCourseById(courseId, authorizationHeader);

@@ -1,7 +1,6 @@
 package com.StreamlineLearn.AssessmentManagement.serviceImplementation;
 
 import com.StreamlineLearn.AssessmentManagement.dto.AssessmentDto;
-import com.StreamlineLearn.AssessmentManagement.jwtUtil.JwtService;
 import com.StreamlineLearn.AssessmentManagement.model.Assessment;
 import com.StreamlineLearn.AssessmentManagement.model.Course;
 import com.StreamlineLearn.AssessmentManagement.repository.AssessmentRepository;
@@ -11,6 +10,7 @@ import com.StreamlineLearn.AssessmentManagement.service.CourseService;
 
 import com.StreamlineLearn.AssessmentManagement.service.KafkaProducerService;
 import com.StreamlineLearn.SharedModule.dto.CourseAssessmentDto;
+import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,19 +20,19 @@ import java.util.Set;
 
 @Service
 public class AssessmentServiceImplementation implements AssessmentService {
-    private final JwtService jwtService;
+    private final SharedJwtService sharedJwtService;
     private final CourseService courseService;
     private final AssessmentRepository assessmentRepository;
     private final CourseRepository courseRepository;
     private final KafkaProducerService kafkaProducerService;
     private static final int TOKEN_PREFIX_LENGTH = 7;
-    public AssessmentServiceImplementation(JwtService jwtService,
+    public AssessmentServiceImplementation(SharedJwtService sharedJwtService,
                                            CourseService courseService,
                                            AssessmentRepository assessmentRepository,
                                            CourseRepository courseRepository,
                                            KafkaProducerService kafkaProducerService) {
 
-        this.jwtService = jwtService;
+        this.sharedJwtService = sharedJwtService;
         this.courseService = courseService;
         this.assessmentRepository = assessmentRepository;
         this.courseRepository = courseRepository;
@@ -43,7 +43,7 @@ public class AssessmentServiceImplementation implements AssessmentService {
     public void createAssessment(Long courseId, Assessment assessment, String authorizationHeader) {
 
         Course course = courseService.getCourseByCourseId(courseId);
-        Long instructorId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long instructorId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         // Check if the course exists and if the logged-in instructor owns the course
         if (course != null && course.getInstructor().getId().equals(instructorId)) {
@@ -69,8 +69,8 @@ public class AssessmentServiceImplementation implements AssessmentService {
 
     @Override
     public Optional<AssessmentDto> getAssessmentById(Long courseId, Long assessmentId, String authorizationHeader) {
-        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
         if (optionalCourse.isPresent()) {
@@ -122,8 +122,8 @@ public class AssessmentServiceImplementation implements AssessmentService {
 
     @Override
     public boolean updateAssessmentById(Long courseId, Long assessmentId, Assessment assessment, String authorizationHeader) {
-        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
         if (optionalCourse.isPresent()) {
@@ -157,8 +157,8 @@ public class AssessmentServiceImplementation implements AssessmentService {
 
     @Override
     public boolean deleteAssessmentById(Long courseId, Long assessmentId, String authorizationHeader) {
-        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
         if (optionalCourse.isPresent()) {

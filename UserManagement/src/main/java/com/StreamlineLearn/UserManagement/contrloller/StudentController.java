@@ -1,6 +1,7 @@
 package com.StreamlineLearn.UserManagement.contrloller;
 
-import com.StreamlineLearn.UserManagement.annotation.IsAdministrative;
+import com.StreamlineLearn.SharedModule.annotation.IsAdministrative;
+import com.StreamlineLearn.SharedModule.annotation.IsStudent;
 import com.StreamlineLearn.UserManagement.jwtUtil.JwtService;
 import com.StreamlineLearn.UserManagement.model.Student;
 import com.StreamlineLearn.UserManagement.service.StudentService;
@@ -30,6 +31,7 @@ public class StudentController {
     }
 
     @GetMapping("/student-profile")
+    @IsStudent
     public ResponseEntity<Student> getStudentById(@RequestHeader("Authorization") String token){
         return new ResponseEntity<>(studentService
                 .getStudentById(jwtService
@@ -38,6 +40,7 @@ public class StudentController {
     }
 
     @PutMapping("/student-profile/update")
+    @IsStudent
     public ResponseEntity<String> updateStudent(@RequestHeader("Authorization") String token,
                                                 @RequestBody Student updateStudent ) {
         boolean studentUpdated = studentService.updateStudent(jwtService
@@ -51,6 +54,7 @@ public class StudentController {
     }
 
     @DeleteMapping("/student-profile/delete")
+    @IsStudent
     public ResponseEntity<String> deleteStudentById(@RequestHeader("Authorization") String token) {
         boolean studentDeleted = studentService.deleteStudentById(jwtService
                 .extractRoleId(token.substring(7)));

@@ -3,6 +3,7 @@ package com.StreamlineLearn.AssessmentManagement.controller;
 import com.StreamlineLearn.AssessmentManagement.dto.AssessmentDto;
 import com.StreamlineLearn.AssessmentManagement.model.Assessment;
 import com.StreamlineLearn.AssessmentManagement.service.AssessmentService;
+import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ public class AssessmentController {
     }
 
     @PostMapping
+    @IsInstructor
     public ResponseEntity<String> createAssessment(@PathVariable Long courseId,
                                                    @RequestBody Assessment assessment,
                                                    @RequestHeader("Authorization") String authorizationHeader){
@@ -52,6 +54,7 @@ public class AssessmentController {
     }
 
     @PutMapping("/{assessmentId}")
+    @IsInstructor
     public ResponseEntity<String> updateAssessmentById(@PathVariable Long courseId,
                                                        @PathVariable Long assessmentId,
                                                        @RequestBody Assessment assessment,
@@ -65,6 +68,7 @@ public class AssessmentController {
     }
 
     @DeleteMapping("/{assessmentId}")
+    @IsInstructor
     public ResponseEntity<String> deleteAssessmentById(@PathVariable Long courseId,
                                                        @PathVariable Long assessmentId,
                                                        @RequestHeader("Authorization") String authorizationHeader){

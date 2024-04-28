@@ -3,6 +3,7 @@ package com.StreamlineLearn.ContentManagement.controller;
 import com.StreamlineLearn.ContentManagement.dto.ContentDto;
 import com.StreamlineLearn.ContentManagement.model.Content;
 import com.StreamlineLearn.ContentManagement.service.ContentService;
+import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ public class ContentController {
     }
 
     @PostMapping
+    @IsInstructor
     public ResponseEntity<String> createContent(@PathVariable Long courseId,
                                                 @RequestBody Content content,
                                                 @RequestHeader("Authorization") String authorizationHeader){
@@ -51,6 +53,7 @@ public class ContentController {
     }
 
     @PutMapping("/{contentId}")
+    @IsInstructor
     public ResponseEntity<String> updateContentById(@PathVariable Long courseId, @PathVariable Long contentId, @RequestBody Content content,
                                                     @RequestHeader("Authorization") String authorizationHeader){
         boolean contentUpdated = contentService.updateContentById(courseId ,contentId, content, authorizationHeader);
@@ -62,6 +65,7 @@ public class ContentController {
     }
 
     @DeleteMapping("/{contentId}")
+    @IsInstructor
     public ResponseEntity<String> deleteContentById(@PathVariable Long courseId, @PathVariable Long contentId, @RequestHeader("Authorization") String authorizationHeader){
         boolean contentDeleted = contentService.deleteContentById(courseId , contentId, authorizationHeader);
         if(contentDeleted){

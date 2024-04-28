@@ -1,6 +1,6 @@
 package com.StreamlineLearn.AssessmentSubmissionService.serviceImplementation;
 
-import com.StreamlineLearn.AssessmentSubmissionService.jwtUtil.JwtService;
+
 import com.StreamlineLearn.AssessmentSubmissionService.model.Assessment;
 import com.StreamlineLearn.AssessmentSubmissionService.model.Student;
 import com.StreamlineLearn.AssessmentSubmissionService.model.Submission;
@@ -9,6 +9,7 @@ import com.StreamlineLearn.AssessmentSubmissionService.service.AssessmentService
 import com.StreamlineLearn.AssessmentSubmissionService.service.CourseService;
 import com.StreamlineLearn.AssessmentSubmissionService.service.StudentService;
 import com.StreamlineLearn.AssessmentSubmissionService.service.SubmissionService;
+import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
 import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -16,18 +17,18 @@ import java.util.List;
 
 @Service
 public class SubmissionServiceImplementation implements SubmissionService {
-    private final JwtService jwtService;
+    private final SharedJwtService jwtService;
     private final CourseService courseService;
     private final StudentService studentService;
     private final AssessmentService assessmentService;
     private final SubmissionRepository submissionRepository;
     private static final int TOKEN_PREFIX_LENGTH = 7;
 
-    public SubmissionServiceImplementation(JwtService jwtService,
-                                           CourseService courseService,
-                                           StudentService studentService,
-                                           AssessmentService assessmentService,
-                                           SubmissionRepository submissionRepository) {
+    public SubmissionServiceImplementation(SharedJwtService jwtService,
+                                            CourseService courseService,
+                                            StudentService studentService,
+                                            AssessmentService assessmentService,
+                                            SubmissionRepository submissionRepository) {
         this.jwtService = jwtService;
         this.courseService = courseService;
         this.studentService = studentService;

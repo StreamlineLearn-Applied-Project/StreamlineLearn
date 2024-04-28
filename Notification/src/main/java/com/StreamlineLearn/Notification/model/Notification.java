@@ -12,7 +12,6 @@ import java.util.Set;
 
 
 @Entity
-@Table(name = "notifications")
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

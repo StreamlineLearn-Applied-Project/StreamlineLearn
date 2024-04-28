@@ -1,8 +1,6 @@
 package com.StreamlineLearn.UserManagement.serviceImplementation;
 
 import com.StreamlineLearn.UserManagement.model.Administrative;
-import com.StreamlineLearn.UserManagement.model.Student;
-import com.StreamlineLearn.UserManagement.model.User;
 import com.StreamlineLearn.UserManagement.repository.AdministrativeRepository;
 import com.StreamlineLearn.UserManagement.repository.UserRepository;
 import com.StreamlineLearn.UserManagement.service.AdministrativeService;

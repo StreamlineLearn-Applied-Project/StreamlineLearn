@@ -1,14 +1,10 @@
 package com.StreamlineLearn.UserManagement.serviceImplementation;
 
-import com.StreamlineLearn.UserManagement.model.Student;
 import com.StreamlineLearn.UserManagement.model.User;
-import com.StreamlineLearn.UserManagement.repository.StudentRepository;
 import com.StreamlineLearn.UserManagement.repository.UserRepository;
 import com.StreamlineLearn.UserManagement.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

@@ -2,6 +2,7 @@ package com.StreamlineLearn.DiscussionService.controller;
 
 import com.StreamlineLearn.DiscussionService.model.Discussion;
 import com.StreamlineLearn.DiscussionService.service.DiscussionService;
+import com.StreamlineLearn.SharedModule.annotation.IsStudent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ public class DiscussionController {
     }
 
     @PostMapping
+    @IsStudent
     public ResponseEntity<String> createDiscussion(@PathVariable Long courseId,
                                                    @RequestBody Discussion discussion,
                                                    @RequestHeader("Authorization") String authorizationHeader){
@@ -48,6 +50,7 @@ public class DiscussionController {
 
     // Update an existing discussion in a specific course
     @PutMapping("/{discussionId}")
+    @IsStudent
     public ResponseEntity<Boolean> updateDiscussion(@PathVariable Long courseId,
                                                        @PathVariable Long discussionId,
                                                        @RequestBody Discussion discussion,
@@ -58,6 +61,7 @@ public class DiscussionController {
 
     // Delete a discussion from a specific course
     @DeleteMapping("/{discussionId}")
+    @IsStudent
     public ResponseEntity<?> deleteDiscussion(@PathVariable Long courseId,
                                               @PathVariable Long discussionId,
                                               @RequestHeader("Authorization") String authorizationHeader) {

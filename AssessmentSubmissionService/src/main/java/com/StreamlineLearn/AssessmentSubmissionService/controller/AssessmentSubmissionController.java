@@ -2,6 +2,8 @@ package com.StreamlineLearn.AssessmentSubmissionService.controller;
 
 import com.StreamlineLearn.AssessmentSubmissionService.model.Submission;
 import com.StreamlineLearn.AssessmentSubmissionService.service.SubmissionService;
+import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
+import com.StreamlineLearn.SharedModule.annotation.IsStudent;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +19,7 @@ public class AssessmentSubmissionController {
     }
 
     @PostMapping
+    @IsStudent
     public ResponseEntity<String> submitAssessment(@PathVariable("courseId") Long courseId,
                                                    @PathVariable("assessmentId") Long assessmentId,
                                                    @RequestBody Submission submission,
@@ -28,6 +31,7 @@ public class AssessmentSubmissionController {
     }
 
     @GetMapping
+    @IsInstructor
     public ResponseEntity<List<Submission>> getAllSubmissionsForInstructor(
             @PathVariable Long courseId,
             @PathVariable Long assessmentId,
@@ -46,6 +50,7 @@ public class AssessmentSubmissionController {
     }
 
     @PutMapping("/{submissionId}")
+    @IsStudent
     public ResponseEntity<Void> updateSubmission(@PathVariable Long courseId,
                                                  @PathVariable Long assessmentId,
                                                  @PathVariable Long submissionId,
@@ -57,6 +62,7 @@ public class AssessmentSubmissionController {
     }
 
     @DeleteMapping("/{submissionId}")
+    @IsStudent
     public ResponseEntity<Void> deleteSubmission(@PathVariable Long courseId,
                                                  @PathVariable Long assessmentId,
                                                  @PathVariable Long submissionId,

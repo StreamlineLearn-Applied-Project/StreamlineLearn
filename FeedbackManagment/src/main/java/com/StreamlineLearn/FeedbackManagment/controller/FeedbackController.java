@@ -2,6 +2,7 @@ package com.StreamlineLearn.FeedbackManagment.controller;
 
 import com.StreamlineLearn.FeedbackManagment.model.Feedback;
 import com.StreamlineLearn.FeedbackManagment.service.FeedbackService;
+import com.StreamlineLearn.SharedModule.annotation.IsStudent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ public class FeedbackController {
     }
 
     @PostMapping
+    @IsStudent
     public ResponseEntity<String> createFeedback(@PathVariable Long courseId,
                                                  @RequestBody Feedback feedback,
                                                  @RequestHeader("Authorization") String authorizationHeader){
@@ -35,6 +37,7 @@ public class FeedbackController {
     }
 
     @PutMapping("/{feedbackId}")
+    @IsStudent
     public ResponseEntity<?> updateFeedback(@PathVariable Long courseId,
                                             @PathVariable Long feedbackId,
                                             @RequestBody Feedback feedback,
@@ -44,6 +47,7 @@ public class FeedbackController {
     }
 
     @DeleteMapping("/{feedbackId}")
+    @IsStudent
     public ResponseEntity<?> deleteFeedback(@PathVariable Long courseId,
                                             @PathVariable Long feedbackId,
                                             @RequestHeader("Authorization") String authorizationHeader) {

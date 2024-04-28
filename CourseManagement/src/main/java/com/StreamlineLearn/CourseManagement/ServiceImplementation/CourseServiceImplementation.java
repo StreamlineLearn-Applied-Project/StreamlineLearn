@@ -1,7 +1,6 @@
 package com.StreamlineLearn.CourseManagement.ServiceImplementation;
 
 import com.StreamlineLearn.CourseManagement.dto.CourseDTO;
-import com.StreamlineLearn.CourseManagement.jwtUtil.JwtService;
 import com.StreamlineLearn.CourseManagement.model.Course;
 import com.StreamlineLearn.CourseManagement.model.Instructor;
 import com.StreamlineLearn.CourseManagement.repository.CourseRepository;
@@ -9,6 +8,7 @@ import com.StreamlineLearn.CourseManagement.service.CourseService;
 import com.StreamlineLearn.CourseManagement.service.InstructorService;
 import com.StreamlineLearn.CourseManagement.service.KafkaProducerService;
 import com.StreamlineLearn.SharedModule.dto.CourseSharedDto;
+import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,19 +21,19 @@ import java.util.Set;
 public class CourseServiceImplementation implements CourseService {
     private final CourseRepository courseRepository;
     private final InstructorService instructorService;
-    private final JwtService jwtService;
+    private final SharedJwtService sharedJwtService;
     private final KafkaProducerService kafkaProducerService;
     private static final int TOKEN_PREFIX_LENGTH = 7;
 
 
     public CourseServiceImplementation(CourseRepository courseRepository,
                                        InstructorService instructorService,
-                                       JwtService jwtService,
+                                       SharedJwtService sharedJwtService,
                                        KafkaProducerService kafkaProducerService) {
 
         this.courseRepository = courseRepository;
         this.instructorService = instructorService;
-        this.jwtService = jwtService;
+        this.sharedJwtService = sharedJwtService;
 
         this.kafkaProducerService = kafkaProducerService;
     }
@@ -41,7 +41,7 @@ public class CourseServiceImplementation implements CourseService {
     @Override
     public void createCourse(Course course, String token) {
 
-        Instructor instructor = instructorService.findInstructorById(jwtService.extractRoleId(token.substring(TOKEN_PREFIX_LENGTH)));
+        Instructor instructor = instructorService.findInstructorById(sharedJwtService.extractRoleId(token.substring(TOKEN_PREFIX_LENGTH)));
 
         if(instructor == null) {
             throw new IllegalArgumentException("Instructor not found");
@@ -66,7 +66,7 @@ public class CourseServiceImplementation implements CourseService {
 
     @Override
     public Set<Course> getAllInstructorCourse(String authorizationHeader) {
-        Instructor instructor = instructorService.findInstructorById(jwtService.
+        Instructor instructor = instructorService.findInstructorById(sharedJwtService.
                 extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH)));
 
         if (instructor == null) {
@@ -93,8 +93,8 @@ public class CourseServiceImplementation implements CourseService {
                     course.get().getPrice()));
         }
 
-        String role = jwtService.extractRole(token.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = jwtService.extractRoleId(token.substring(TOKEN_PREFIX_LENGTH));
+        String role = sharedJwtService.extractRole(token.substring(TOKEN_PREFIX_LENGTH));
+        Long roleId = sharedJwtService.extractRoleId(token.substring(TOKEN_PREFIX_LENGTH));
 
         if ("INSTRUCTOR".equals(role) && Objects.equals(course.get().getInstructor().getId(), roleId)) {
             return Optional.of(new CourseDTO(course.get().getCourseName(),
@@ -127,7 +127,7 @@ public class CourseServiceImplementation implements CourseService {
     public boolean updateCourseById(Long id,Course course, String token) {
         Optional<Course> courseOptional = courseRepository.findById(id);
 
-        Long instructorId = jwtService.extractRoleId(token.substring(TOKEN_PREFIX_LENGTH));
+        Long instructorId = sharedJwtService.extractRoleId(token.substring(TOKEN_PREFIX_LENGTH));
 
         if(courseOptional.isPresent()){
             if (Objects.equals(courseOptional.get().getInstructor().getId(), instructorId)){
@@ -147,7 +147,7 @@ public class CourseServiceImplementation implements CourseService {
     @Override
     public boolean deleteCourseById(Long id, String token) {
         Optional<Course> courseOptional = courseRepository.findById(id);
-        Long instructorId = jwtService.extractRoleId(token.substring(TOKEN_PREFIX_LENGTH));
+        Long instructorId = sharedJwtService.extractRoleId(token.substring(TOKEN_PREFIX_LENGTH));
 
         if(courseOptional.isPresent()){
             if (Objects.equals(courseOptional.get().getInstructor().getId(), instructorId)) {

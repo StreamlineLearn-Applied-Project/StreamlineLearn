@@ -1,11 +1,9 @@
 package com.StreamlineLearn.UserManagement.contrloller;
 
-import com.StreamlineLearn.UserManagement.annotation.IsAdministrative;
+import com.StreamlineLearn.SharedModule.annotation.IsAdministrative;
 import com.StreamlineLearn.UserManagement.jwtUtil.JwtService;
 import com.StreamlineLearn.UserManagement.model.Administrative;
-import com.StreamlineLearn.UserManagement.model.Instructor;
 import com.StreamlineLearn.UserManagement.service.AdministrativeService;
-import com.StreamlineLearn.UserManagement.service.InstructorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +37,7 @@ public class AdministrativeController {
     }
 
     @GetMapping("/administrative-profile")
+    @IsAdministrative
     public ResponseEntity<Administrative> getAdministrativeById(@RequestHeader("Authorization") String token){
         return new ResponseEntity<>(administrativeService
                 .getAdministrativeById(jwtService
@@ -47,6 +46,7 @@ public class AdministrativeController {
     }
 
     @PutMapping("/administrative-profile/update")
+    @IsAdministrative
     public ResponseEntity<String> updateAdministrative(@RequestHeader("Authorization") String token,
                                                        @RequestBody Administrative updateAdministrative ) {
         boolean administrativeUpdated = administrativeService.updateAdministrative(jwtService
@@ -60,6 +60,7 @@ public class AdministrativeController {
         return new ResponseEntity<>("Administrative did not found", HttpStatus.NOT_FOUND);
     }
     @DeleteMapping("/administrative-profile/delete")
+    @IsAdministrative
     public ResponseEntity<String> deleteAdministrativeById(@RequestHeader("Authorization") String token) {
         boolean administrativeDeleted = administrativeService.deleteAdministrativeById(jwtService
                 .extractRoleId(token.substring(7)));

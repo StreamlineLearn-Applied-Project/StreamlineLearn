@@ -2,6 +2,7 @@ package com.StreamlineLearn.Notification.controller;
 
 import com.StreamlineLearn.Notification.model.Notification;
 import com.StreamlineLearn.Notification.service.NotificationService;
+import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,7 @@ public class InstructorNotificationController {
     }
 
     @GetMapping
+    @IsInstructor
     public ResponseEntity<List<Notification>> getInstructorNotifications(@RequestHeader("Authorization") String authorizationHeader) {
         List<Notification> notifications = notificationService.getInstructorNotifications(authorizationHeader);
 

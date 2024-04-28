@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "instructors")
 public class Instructor {
     @Id
     private Long id;

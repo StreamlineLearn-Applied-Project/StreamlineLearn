@@ -1,4 +1,4 @@
-package com.StreamlineLearn.Notification.jwtUtil;
+package com.StreamlineLearn.SharedModule.jwtUtil;
 
 
 
@@ -13,12 +13,16 @@ import java.util.Date;
 import java.util.function.Function;
 
 @Service
-public class JwtService {
+public class SharedJwtService {
 
     private final String SECRET_KEY = "79e64193dac772a042fa99dc984a58dc17d15ebdc0352d8160fba52458b3b2d7";
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public Long extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("userId", Long.class));
     }
 
     public String extractRole(String token) {
@@ -55,5 +59,13 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64URL.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
+    public boolean isValidRole(String token, String requiredRole) {
+        String tokenRole = extractRole(token);
+        // Compare the extracted role with the required role
+        return tokenRole != null && tokenRole.equals(requiredRole);
+    }
+
+
 
 }
