@@ -20,7 +20,6 @@ public class StudentNotificationController {
     public StudentNotificationController(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
-
     @GetMapping
     @IsStudent
     public ResponseEntity<List<Notification>> getStudentNotifications(@RequestHeader("Authorization") String authorizationHeader) {

@@ -264,7 +264,7 @@ function SignUp() {
                 <div className="login-link">
                     <p>
                         Already have an account?{' '}
-                        <a href="/signin">
+                        <a href="/sign-in">
                             Log in here
                         </a>
                         .
