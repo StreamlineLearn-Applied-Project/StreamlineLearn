@@ -13,9 +13,9 @@ import java.util.Set;
 public interface AnnouncementService {
     Announcement createAnnouncement(Long courseId, Announcement announcement, String authorizationHeader);
 
-    Set<Announcement> getAnnouncementsByCourseId(Long id);
+    Set<Announcement> getAnnouncementsByCourseId(Long courseId,String authorizationHeader);
 
-    Optional<AnnouncementDto> getAnnouncementById(Long courseId, Long announcementId, String authorizationHeader);
+    Optional<Announcement> getAnnouncementById(Long courseId, Long announcementId, String authorizationHeader);
 
     boolean updateAnnouncementById(Long courseId, Long announcementId,Announcement announcement,String authorizationHeader);
 

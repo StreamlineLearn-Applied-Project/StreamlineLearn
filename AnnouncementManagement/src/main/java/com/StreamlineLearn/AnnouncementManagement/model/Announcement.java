@@ -15,6 +15,16 @@ public class Announcement {
     @JoinColumn(name = "course_id")
     private Course course;
 
+    public Announcement() {
+    }
+
+    public Announcement(Long id, String announcementTile, String announcement, Course course) {
+        this.id = id;
+        this.announcementTile = announcementTile;
+        this.announcement = announcement;
+        this.course = course;
+    }
+
     public Long getId() {
         return id;
     }

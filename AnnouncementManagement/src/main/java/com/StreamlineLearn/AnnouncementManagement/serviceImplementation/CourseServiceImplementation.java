@@ -31,7 +31,7 @@ public class CourseServiceImplementation implements CourseService {
         // Retrieve instructor by instructorId from the instructor service
         Instructor instructor = instructorService.findInstructorById(courseDtoEvent.getInstructorId());
 
-        //  If instructor exists, associate it with the course and save
+        //  If an instructor exists, associate it with the course and save
         if (instructor != null) {
             // Create a new course object
             Course course = new Course();
@@ -43,10 +43,22 @@ public class CourseServiceImplementation implements CourseService {
 
             courseRepository.save(course);
         } else {
-            // Handle case where instructor with provided ID does not exist
+            // Handle a case where instructor with provided ID does not exist
             // You can throw an exception, log an error, or handle it as appropriate
             throw new IllegalArgumentException("Instructor with ID " +
                     courseDtoEvent.getInstructorId() + " not found.");
         }
+    }
+
+    @Override
+    public void saveCourse(Course course) {
+        courseRepository.save(course);
+    }
+
+    @Override
+    public boolean isInstructorOfCourse(Long instructorId, Long courseId) {
+        Course course = courseRepository.findById(courseId).orElseThrow(null);
+        // Check if the instructor ID matches the ID of the instructor who owns the course
+        return course.getInstructor().getId().equals(instructorId);
     }
 }
