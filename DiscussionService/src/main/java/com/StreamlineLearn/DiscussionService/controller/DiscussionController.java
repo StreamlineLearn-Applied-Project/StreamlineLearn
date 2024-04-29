@@ -3,6 +3,8 @@ package com.StreamlineLearn.DiscussionService.controller;
 import com.StreamlineLearn.DiscussionService.model.Discussion;
 import com.StreamlineLearn.DiscussionService.service.DiscussionService;
 import com.StreamlineLearn.SharedModule.annotation.IsStudent;
+import com.StreamlineLearn.SharedModule.annotation.IsStudentOrInstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,21 +14,24 @@ import java.util.List;
 @RestController
 @RequestMapping("/courses/{courseId}/discussions")
 public class DiscussionController {
+    // This declares a dependency on a DiscussionService.
     private final DiscussionService discussionService;
 
+    // This is a constructor-based dependency injection of the DiscussionService.
     public DiscussionController(DiscussionService discussionService) {
         this.discussionService = discussionService;
     }
 
-    @PostMapping
-    @IsStudent
-    public ResponseEntity<String> createDiscussion(@PathVariable Long courseId,
-                                                   @RequestBody Discussion discussion,
+    @PostMapping //HTTP POST requests onto the createCourse method.
+    @IsStudentOrInstructor// This is a custom annotation, presumably checking if the authenticated user is an instructor.
+    public ResponseEntity<Discussion> createDiscussion(@PathVariable Long courseId,
+                                                   @Valid @RequestBody Discussion discussion,
                                                    @RequestHeader("Authorization") String authorizationHeader){
 
-        discussionService.createDiscussion(courseId, discussion, authorizationHeader );
+        // calls the createCourse method in the CourseService with the provided Course and authorization header.
+        Discussion createdDiscussion = discussionService.createDiscussion(courseId, discussion, authorizationHeader );
 
-        return new ResponseEntity<>("Discussion added to the course",HttpStatus.CREATED);
+        return new ResponseEntity<>(createdDiscussion,HttpStatus.CREATED);
     }
 
     // Add a thread to an existing discussion

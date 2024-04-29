@@ -22,6 +22,12 @@ public class Enrollment {
     public Enrollment() {
     }
 
+    public Enrollment(Student student, Course course, boolean paid) {
+        this.student = student;
+        this.course = course;
+        this.paid = paid;
+    }
+
     public Long getId() {
         return id;
     }

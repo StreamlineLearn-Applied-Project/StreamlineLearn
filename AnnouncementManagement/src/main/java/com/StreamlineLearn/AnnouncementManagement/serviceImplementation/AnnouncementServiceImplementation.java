@@ -2,6 +2,7 @@ package com.StreamlineLearn.AnnouncementManagement.serviceImplementation;
 
 import com.StreamlineLearn.AnnouncementManagement.dto.AnnouncementDto;
 
+import com.StreamlineLearn.AnnouncementManagement.exception.AnnouncementCreationException;
 import com.StreamlineLearn.AnnouncementManagement.model.Announcement;
 import com.StreamlineLearn.AnnouncementManagement.model.Course;
 import com.StreamlineLearn.AnnouncementManagement.repository.AnnouncementRepository;
@@ -9,6 +10,8 @@ import com.StreamlineLearn.AnnouncementManagement.repository.CourseRepository;
 import com.StreamlineLearn.AnnouncementManagement.service.AnnouncementService;
 import com.StreamlineLearn.AnnouncementManagement.service.CourseService;
 import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,6 +26,7 @@ public class AnnouncementServiceImplementation implements AnnouncementService {
     private final AnnouncementRepository announcementRepository;
     private final CourseRepository courseRepository;
     private static final int TOKEN_PREFIX_LENGTH = 7;
+    private static final Logger logger = LoggerFactory.getLogger(AnnouncementServiceImplementation.class);
 
     public AnnouncementServiceImplementation(SharedJwtService sharedJwtService,
                                              CourseService courseService,
@@ -35,21 +39,29 @@ public class AnnouncementServiceImplementation implements AnnouncementService {
     }
 
     @Override
-    public void createAnnouncement(Long courseId, Announcement announcement, String authorizationHeader) {
+    public Announcement createAnnouncement(Long courseId, Announcement announcement, String authorizationHeader) {
+        try {
+            Course course = courseService.getCourseByCourseId(courseId);
+            Long instructorId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
-        Course course = courseService.getCourseByCourseId(courseId);
-        Long instructorId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+            // Check if the course exists and if the logged-in instructor owns the course
+            if (course != null && course.getInstructor().getId().equals(instructorId)) {
 
-        // Check if the course exists and if the logged-in instructor owns the course
-        if (course != null && course.getInstructor().getId().equals(instructorId)) {
+                announcement.setCourse(course);
+                announcementRepository.save(announcement);
 
-            announcement.setCourse(course);
-            announcementRepository.save(announcement);
-        } else {
-            // Handle the case where the course doesn't exist or the instructor doesn't own the course
-            throw new RuntimeException("Instructor is not authorized to create Announcement for this course");
+                return announcement;
+            } else {
+                // Handle the case where the course doesn't exist or the instructor doesn't own the course
+                throw new RuntimeException("Instructor is not authorized to create Announcement for this course");
+            }
+
+        } catch (RuntimeException ex) {
+            // Log the error and throw a custom exception to announcement creation fails
+            logger.error("An error occurred while creating announcement", ex);
+            // Rethrow the exception or throw a custom exception
+            throw new AnnouncementCreationException("Failed to create announcement: " + ex.getMessage());
         }
-
 
     }
 

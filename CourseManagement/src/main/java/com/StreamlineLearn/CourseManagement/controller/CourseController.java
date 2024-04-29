@@ -5,6 +5,7 @@ import com.StreamlineLearn.CourseManagement.dto.CourseDTO;
 import com.StreamlineLearn.CourseManagement.model.Course;
 import com.StreamlineLearn.CourseManagement.service.CourseService;
 import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,21 +18,26 @@ import java.util.Set;
 @RequestMapping("/courses")
 @CrossOrigin(origins = "*")
 public class CourseController {
+    // This declares a dependency on a CourseService.
     private final CourseService courseService;
 
-
+    // This is a constructor-based dependency injection of the CourseService.
     public CourseController(CourseService courseService) {
         this.courseService = courseService;
 
     }
 
-    @PostMapping("/create-course")
-    @IsInstructor
-    public ResponseEntity<String> createCourse(@RequestBody Course course,
+    @PostMapping("/create-course") //HTTP POST requests onto the createCourse method.
+    @IsInstructor // This is a custom annotation, presumably checking if the authenticated user is an instructor.
+    public ResponseEntity<Course> createCourse(@Valid @RequestBody Course course,
                                                @RequestHeader("Authorization") String authorizationHeader){
 
-        courseService.createCourse(course, authorizationHeader );
-        return new ResponseEntity<>("added the Course Successfully", HttpStatus.CREATED);
+        // calls the createCourse method in the CourseService with the provided Course and authorization header.
+        Course createdCourse = courseService.createCourse(course, authorizationHeader );
+
+        // This returns a ResponseEntity with the created Course and an HTTP status code
+        // indicating that the course was successfully created.
+        return new ResponseEntity<>(createdCourse, HttpStatus.CREATED);
     }
 
     @GetMapping

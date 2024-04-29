@@ -1,6 +1,7 @@
 package com.StreamlineLearn.AssessmentSubmissionService.serviceImplementation;
 
 
+import com.StreamlineLearn.AssessmentSubmissionService.exception.AssessmentSubmissionException;
 import com.StreamlineLearn.AssessmentSubmissionService.model.Assessment;
 import com.StreamlineLearn.AssessmentSubmissionService.model.Student;
 import com.StreamlineLearn.AssessmentSubmissionService.model.Submission;
@@ -11,6 +12,8 @@ import com.StreamlineLearn.AssessmentSubmissionService.service.StudentService;
 import com.StreamlineLearn.AssessmentSubmissionService.service.SubmissionService;
 import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
 import org.apache.kafka.common.errors.ResourceNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,11 +26,10 @@ public class SubmissionServiceImplementation implements SubmissionService {
     private final AssessmentService assessmentService;
     private final SubmissionRepository submissionRepository;
     private static final int TOKEN_PREFIX_LENGTH = 7;
+    private static final Logger logger = LoggerFactory.getLogger(SubmissionServiceImplementation.class);
 
-    public SubmissionServiceImplementation(SharedJwtService jwtService,
-                                            CourseService courseService,
-                                            StudentService studentService,
-                                            AssessmentService assessmentService,
+    public SubmissionServiceImplementation(SharedJwtService jwtService, CourseService courseService,
+                                            StudentService studentService,AssessmentService assessmentService,
                                             SubmissionRepository submissionRepository) {
         this.jwtService = jwtService;
         this.courseService = courseService;
@@ -36,31 +38,42 @@ public class SubmissionServiceImplementation implements SubmissionService {
         this.submissionRepository = submissionRepository;
     }
 
+
     @Override
-    public void submitAssessment(Long courseId,
-                                 Long assessmentId,
-                                 Submission submission,
-                                 String authorizationHeader) {
+    public String submitAssessment(Long courseId, Long assessmentId,
+                                 Submission submission, String authorizationHeader) {
 
-        // Extract student ID from JWT token
-        Long studentId = jwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Student student = studentService.findStudentByStudentId(studentId);
-        String role = jwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        // Check if the student is enrolled in the course
-        if ("STUDENT".equals(role) && courseService.isStudentEnrolled(studentId, courseId)) {
-            // Get the assessment by ID
-            Assessment assessment = assessmentService.findAssessmentById(assessmentId);
+        try {
+            // Extract student ID from JWT token
+            Student student = studentService.findStudentByStudentId(jwtService
+                    .extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH)));
 
-            // Set the student and assessment for the submission
-            submission.setStudent(student); // Assuming Student constructor takes ID
-            submission.setAssessment(assessment);
+            String role = jwtService.extractRole(authorizationHeader
+                    .substring(TOKEN_PREFIX_LENGTH));
 
-            // Save the submission
-            submissionRepository.save(submission);
-        } else {
-            throw new RuntimeException("Student is not enrolled in the course");
+            // Check if the student is enrolled in the course
+            if ("STUDENT".equals(role) && courseService.isStudentEnrolled(student.getId(), courseId)) {
+                // Get the assessment by ID
+                Assessment assessment = assessmentService.findAssessmentById(assessmentId);
+
+                // Set the student and assessment for the submission
+                submission.setStudent(student); // Assuming Student constructor takes ID
+                submission.setAssessment(assessment);
+
+                // Save the submission
+                submissionRepository.save(submission);
+
+                return "Submitted Assessment successfully!";
+            } else {
+                throw new RuntimeException("Student is not enrolled in the course");
+            }
+
+        } catch (Exception ex){
+            // Log the error and throw a custom exception of course creation fails
+            logger.error("An error occurred while submitting the  Assessment", ex);
+            // Rethrow the exception or throw a custom exception
+            throw new AssessmentSubmissionException("Failed to submit the  Assessment: " + ex.getMessage());
         }
-
     }
 
     @Override

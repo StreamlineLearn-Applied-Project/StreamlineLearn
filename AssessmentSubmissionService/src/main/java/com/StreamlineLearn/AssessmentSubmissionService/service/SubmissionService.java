@@ -5,7 +5,7 @@ import com.StreamlineLearn.AssessmentSubmissionService.model.Submission;
 import java.util.List;
 
 public interface SubmissionService {
-    void submitAssessment(Long courseId, Long assessmentId, Submission submission, String authorizationHeader);
+    String submitAssessment(Long courseId, Long assessmentId, Submission submission, String authorizationHeader);
 
     List<Submission> getAllSubmissions(Long courseId, Long assessmentId, String authorizationHeader);
 

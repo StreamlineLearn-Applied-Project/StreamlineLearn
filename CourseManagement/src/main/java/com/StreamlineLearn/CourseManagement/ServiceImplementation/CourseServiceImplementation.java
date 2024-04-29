@@ -1,6 +1,7 @@
 package com.StreamlineLearn.CourseManagement.ServiceImplementation;
 
 import com.StreamlineLearn.CourseManagement.dto.CourseDTO;
+import com.StreamlineLearn.CourseManagement.exception.CourseCreationException;
 import com.StreamlineLearn.CourseManagement.model.Course;
 import com.StreamlineLearn.CourseManagement.model.Instructor;
 import com.StreamlineLearn.CourseManagement.repository.CourseRepository;
@@ -11,6 +12,8 @@ import com.StreamlineLearn.SharedModule.dto.CourseSharedDto;
 import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Objects;
@@ -24,6 +27,7 @@ public class CourseServiceImplementation implements CourseService {
     private final SharedJwtService sharedJwtService;
     private final KafkaProducerService kafkaProducerService;
     private static final int TOKEN_PREFIX_LENGTH = 7;
+    private static final Logger logger = LoggerFactory.getLogger(CourseServiceImplementation.class);
 
 
     public CourseServiceImplementation(CourseRepository courseRepository,
@@ -39,24 +43,38 @@ public class CourseServiceImplementation implements CourseService {
     }
 
     @Override
-    public void createCourse(Course course, String token) {
+    public Course createCourse(Course course, String token) {
+        try {
+            // Extract the instructor's ID from the JWT token and find the instructor
+            Instructor instructor = instructorService.findInstructorById(sharedJwtService
+                .extractRoleId(token.substring(TOKEN_PREFIX_LENGTH)));
 
-        Instructor instructor = instructorService.findInstructorById(sharedJwtService.extractRoleId(token.substring(TOKEN_PREFIX_LENGTH)));
+            // If no instructor is found, throw an exception
+            if (instructor == null) {
+                throw new IllegalArgumentException("Instructor not found");
+            }
 
-        if(instructor == null) {
-            throw new IllegalArgumentException("Instructor not found");
+            // Set the instructor of the course and save the course to the repository
+            course.setInstructor(instructor);
+            courseRepository.save(course);
+
+            // Prepare a DTO to share course details via Kafka
+            CourseSharedDto courseSharedDto = new CourseSharedDto();
+            courseSharedDto.setId(course.getId());
+            courseSharedDto.setCourseName(course.getCourseName());
+            courseSharedDto.setInstructorId(course.getInstructor().getId());
+
+            // Publish the course details to Kafka
+            kafkaProducerService.publishCourseDetails(courseSharedDto);
+
+            // Return the saved course object
+            return course;
+        }catch (Exception ex){
+            // Log the error and throw a custom exception of course creation fails
+            logger.error("An error occurred while creating Course", ex);
+            // Rethrow the exception or throw a custom exception
+            throw new CourseCreationException("Failed to create course: " + ex.getMessage());
         }
-
-        course.setInstructor(instructor);
-        courseRepository.save(course);
-
-        CourseSharedDto courseSharedDto = new CourseSharedDto();
-        courseSharedDto.setId(course.getId());
-        courseSharedDto.setCourseName(course.getCourseName());
-        courseSharedDto.setInstructorId(course.getInstructor().getId());
-
-        kafkaProducerService.publishCourseDetails(courseSharedDto);
-
     }
 
     @Override

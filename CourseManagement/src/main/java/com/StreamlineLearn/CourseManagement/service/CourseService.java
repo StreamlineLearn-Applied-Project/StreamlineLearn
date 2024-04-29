@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface CourseService {
-    void createCourse(Course course, String token);
+    Course createCourse(Course course, String token);
     List<Course> getAllTheCourse();
     Set<Course> getAllInstructorCourse(String authorizationHeader);
     Optional<CourseDTO> getCourseById(Long id, String token);

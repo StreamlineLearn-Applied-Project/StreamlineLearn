@@ -9,6 +9,13 @@ public class EnrolledStudentDto {
     public EnrolledStudentDto() {
     }
 
+    public EnrolledStudentDto(Long id, String userName, String role, Long courseId) {
+        this.id = id;
+        this.userName = userName;
+        this.role = role;
+        this.courseId = courseId;
+    }
+
     public Long getId() {
         return id;
     }

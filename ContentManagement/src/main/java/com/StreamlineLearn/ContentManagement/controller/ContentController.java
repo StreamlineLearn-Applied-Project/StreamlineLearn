@@ -4,6 +4,7 @@ import com.StreamlineLearn.ContentManagement.dto.ContentDto;
 import com.StreamlineLearn.ContentManagement.model.Content;
 import com.StreamlineLearn.ContentManagement.service.ContentService;
 import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,20 +16,26 @@ import java.util.Set;
 @RequestMapping("/courses/{courseId}/contents")
 @CrossOrigin(origins = "*")
 public class ContentController {
+    // This declares a dependency on a ContentService.
     private final ContentService contentService;
 
+    // This is a constructor-based dependency injection of the ContentService.
     public ContentController(ContentService contentService) {
         this.contentService = contentService;
     }
 
-    @PostMapping
-    @IsInstructor
-    public ResponseEntity<String> createContent(@PathVariable Long courseId,
-                                                @RequestBody Content content,
+    @PostMapping //HTTP POST requests onto the createContent method.
+    @IsInstructor // This is a custom annotation, presumably checking if the authenticated user is an instructor.
+    public ResponseEntity<Content> createContent(@PathVariable Long courseId,
+                                                @Valid @RequestBody Content content,
                                                 @RequestHeader("Authorization") String authorizationHeader){
 
-        contentService.createContent(courseId, content, authorizationHeader );
-        return new ResponseEntity<>("Content Added successfully.", HttpStatus.CREATED);
+        // calls the createContent method in the contentService.
+        Content createdContent = contentService.createContent(courseId, content, authorizationHeader );
+
+        // This returns a ResponseEntity with the created Content and an HTTP status code
+        // indicating that the Content was successfully created.
+        return new ResponseEntity<>(createdContent, HttpStatus.CREATED);
     }
 
     @GetMapping

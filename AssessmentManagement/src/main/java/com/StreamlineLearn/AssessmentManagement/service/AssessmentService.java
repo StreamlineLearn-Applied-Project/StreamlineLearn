@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface AssessmentService {
-    void createAssessment(Long courseId, Assessment assessment, String authorizationHeader);
+    Assessment createAssessment(Long courseId, Assessment assessment, String authorizationHeader);
 
     Set<Assessment> getAssessmentsByCourseId(Long courseId);
 
