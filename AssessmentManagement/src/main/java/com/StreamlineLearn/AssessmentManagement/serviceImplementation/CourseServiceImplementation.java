@@ -49,5 +49,17 @@ public class CourseServiceImplementation implements CourseService {
                     courseDtoEvent.getInstructorId() + " not found.");
         }
     }
+
+    @Override
+    public boolean isInstructorOfCourse(Long instructorId, Long courseId) {
+        Course course = courseRepository.findById(courseId).orElseThrow(null);
+        // Check if the instructor ID matches the ID of the instructor who owns the course
+        return course.getInstructor().getId().equals(instructorId);
+    }
+
+    @Override
+    public void saveCourse(Course course) {
+        courseRepository.save(course);
+    }
 }
 

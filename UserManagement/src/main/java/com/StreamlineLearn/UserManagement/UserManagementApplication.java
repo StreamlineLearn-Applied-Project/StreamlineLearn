@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 
 @SpringBootApplication
-@ComponentScan({"com.StreamlineLearn.UserManagement", "com.StreamlineLearn"})
+@ComponentScan({"com.StreamlineLearn.UserManagement"})
 public class UserManagementApplication {
 
 	public static void main(String[] args) {

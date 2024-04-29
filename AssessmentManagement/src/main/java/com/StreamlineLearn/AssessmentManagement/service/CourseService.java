@@ -8,4 +8,7 @@ import com.StreamlineLearn.SharedModule.dto.UserSharedDto;
 public interface CourseService {
     Course getCourseByCourseId(Long id);
     public void saveCourse(CourseSharedDto courseDtoEvent);
+    boolean isInstructorOfCourse(Long instructorId, Long courseId);
+
+    public void saveCourse(Course course);
 }

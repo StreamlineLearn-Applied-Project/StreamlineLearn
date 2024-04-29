@@ -9,9 +9,9 @@ import java.util.Set;
 public interface AssessmentService {
     Assessment createAssessment(Long courseId, Assessment assessment, String authorizationHeader);
 
-    Set<Assessment> getAssessmentsByCourseId(Long courseId);
+    Set<Assessment> getAssessmentsByCourseId(Long courseId,String authorizationHeader);
 
-    Optional<AssessmentDto> getAssessmentById(Long courseId, Long assessmentId, String authorizationHeader);
+    Optional<Assessment> getAssessmentById(Long courseId, Long assessmentId, String authorizationHeader);
 
     boolean updateAssessmentById(Long courseId, Long assessmentId,Assessment assessment, String authorizationHeader);
 
