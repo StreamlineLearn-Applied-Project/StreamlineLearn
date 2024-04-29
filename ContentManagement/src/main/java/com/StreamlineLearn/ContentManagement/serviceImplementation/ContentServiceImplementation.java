@@ -1,6 +1,7 @@
 package com.StreamlineLearn.ContentManagement.serviceImplementation;
 
 import com.StreamlineLearn.ContentManagement.dto.ContentDto;
+import com.StreamlineLearn.ContentManagement.exception.ContentCreationException;
 import com.StreamlineLearn.ContentManagement.model.Content;
 import com.StreamlineLearn.ContentManagement.model.Course;
 import com.StreamlineLearn.ContentManagement.repository.ContentRepository;
@@ -8,6 +9,8 @@ import com.StreamlineLearn.ContentManagement.repository.CourseRepository;
 import com.StreamlineLearn.ContentManagement.service.ContentService;
 import com.StreamlineLearn.ContentManagement.service.CourseService;
 import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,6 +25,7 @@ public class ContentServiceImplementation implements ContentService {
     private final ContentRepository contentRepository;
     private final CourseRepository courseRepository;
     private static final int TOKEN_PREFIX_LENGTH = 7;
+    private static final Logger logger = LoggerFactory.getLogger(ContentServiceImplementation.class);
 
     public ContentServiceImplementation(SharedJwtService sharedJwtService,
                                         CourseService courseService,
@@ -35,18 +39,32 @@ public class ContentServiceImplementation implements ContentService {
     }
 
     @Override
-    public void createContent(Long courseId, Content content, String authorizationHeader) {
+    public Content createContent(Long courseId, Content content, String authorizationHeader) {
 
-        Course course = courseService.getCourseByCourseId(courseId);
-        Long instructorId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        try {
+            // Retrieve the course by its ID
+            Course course = courseService.getCourseByCourseId(courseId);
 
-        // Check if the course exists and if the logged-in instructor owns the course
-        if (course != null && course.getInstructor().getId().equals(instructorId)) {
-            content.setCourse(course);
-            contentRepository.save(content);
-        } else {
-            // Handle the case where the course doesn't exist or the instructor doesn't own the course
-            throw new RuntimeException("Instructor is not authorized to create content for this course");
+            // Extract the instructor's ID from the JWT token
+            Long instructorId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+
+            // Check if the course exists and if the logged-in instructor owns the course
+            if (course != null && course.getInstructor().getId().equals(instructorId)) {
+                // Set the course to the content and save it in the repository
+                content.setCourse(course);
+                contentRepository.save(content);
+
+                // Return the newly created content
+                return content;
+            } else {
+                // Handle the case where the course doesn't exist, or the instructor doesn't own the course
+                throw new RuntimeException("Instructor is not authorized to create content for this course");
+            }
+        } catch (Exception ex){
+            // Log the error and throw a custom exception of course creation fails
+            logger.error("An error occurred while creating Content", ex);
+            // Rethrow the exception or throw a custom exception
+            throw new ContentCreationException("Failed to create Content: " + ex.getMessage());
         }
     }
 

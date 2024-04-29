@@ -53,7 +53,8 @@ public class AuthorizationAspect {
     @Pointcut("@annotation(com.StreamlineLearn.SharedModule.annotation.IsStudent)")
     public void studentPointcut() {}
 
-
+    @Pointcut("@annotation(com.StreamlineLearn.SharedModule.annotation.IsStudentOrInstructor)")
+    public void studentOrInstructorPointcut() {}
 
     //    <--ADMINISTRATIVE-->
 
@@ -67,8 +68,6 @@ public class AuthorizationAspect {
         validateRole(token, "ADMINISTRATIVE");
     }
 
-
-
     //    <--Instructor-->
 
     @Before("instructorPointcut()")
@@ -80,7 +79,6 @@ public class AuthorizationAspect {
         String token = extractBearerToken(request);
         validateRole(token, "INSTRUCTOR");
     }
-
 
 //    <--Student-->
 
@@ -94,6 +92,18 @@ public class AuthorizationAspect {
         validateRole(token, "STUDENT");
     }
 
+    @Before("studentOrInstructorPointcut()")
+    public void checkStudentOrInstructorAuthorization(JoinPoint joinPoint) {
+        HttpServletRequest request = getCurrentRequest();
+        if (request == null) {
+            throw new AccessDeniedException("No request context available");
+        }
+        String token = extractBearerToken(request);
+        String role = sharedJwtService.extractRole(token);
 
+        if (!role.equals("STUDENT") && !role.equals("INSTRUCTOR")) {
+            throw new AccessDeniedException("Unauthorized access: User is neither a student nor an instructor");
+        }
+    }
 }
 

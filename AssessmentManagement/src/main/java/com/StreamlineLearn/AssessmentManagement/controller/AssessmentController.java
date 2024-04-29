@@ -4,6 +4,7 @@ import com.StreamlineLearn.AssessmentManagement.dto.AssessmentDto;
 import com.StreamlineLearn.AssessmentManagement.model.Assessment;
 import com.StreamlineLearn.AssessmentManagement.service.AssessmentService;
 import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,20 +17,26 @@ import java.util.Set;
 @RequestMapping("/courses/{courseId}/assessments")
 @CrossOrigin(origins = "*")
 public class AssessmentController {
+    // This declares a dependency on a AssessmentService.
     private final AssessmentService assessmentService;
 
+    // This is a constructor-based dependency injection of the AssessmentService.
     public AssessmentController(AssessmentService assessmentService) {
         this.assessmentService = assessmentService;
     }
 
-    @PostMapping
-    @IsInstructor
-    public ResponseEntity<String> createAssessment(@PathVariable Long courseId,
-                                                   @RequestBody Assessment assessment,
+    @PostMapping //HTTP POST requests onto the createAssessment method.
+    @IsInstructor // This is a custom annotation, presumably checking if the authenticated user is an instructor.
+    public ResponseEntity<Assessment> createAssessment(@PathVariable Long courseId,
+                                                   @Valid @RequestBody Assessment assessment,
                                                    @RequestHeader("Authorization") String authorizationHeader){
 
-        assessmentService.createAssessment(courseId, assessment, authorizationHeader );
-        return new ResponseEntity<>("Assessment Added successfully.", HttpStatus.CREATED);
+        // calls the createAssessment method in the AssessmentService with the provided Assessment and authorization header.
+        Assessment createdAssessment = assessmentService.createAssessment(courseId, assessment, authorizationHeader );
+
+        // This returns a ResponseEntity with the created Assessment and an HTTP status code
+        // indicating that the assessment was successfully created.
+        return new ResponseEntity<>(createdAssessment, HttpStatus.CREATED);
     }
 
     @GetMapping

@@ -1,6 +1,7 @@
 package com.StreamlineLearn.AssessmentManagement.serviceImplementation;
 
 import com.StreamlineLearn.AssessmentManagement.dto.AssessmentDto;
+import com.StreamlineLearn.AssessmentManagement.exception.AssessmentCreationException;
 import com.StreamlineLearn.AssessmentManagement.model.Assessment;
 import com.StreamlineLearn.AssessmentManagement.model.Course;
 import com.StreamlineLearn.AssessmentManagement.repository.AssessmentRepository;
@@ -11,6 +12,8 @@ import com.StreamlineLearn.AssessmentManagement.service.CourseService;
 import com.StreamlineLearn.AssessmentManagement.service.KafkaProducerService;
 import com.StreamlineLearn.SharedModule.dto.CourseAssessmentDto;
 import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -26,6 +29,7 @@ public class AssessmentServiceImplementation implements AssessmentService {
     private final CourseRepository courseRepository;
     private final KafkaProducerService kafkaProducerService;
     private static final int TOKEN_PREFIX_LENGTH = 7;
+    private static final Logger logger = LoggerFactory.getLogger(AssessmentServiceImplementation.class);
     public AssessmentServiceImplementation(SharedJwtService sharedJwtService,
                                            CourseService courseService,
                                            AssessmentRepository assessmentRepository,
@@ -40,25 +44,34 @@ public class AssessmentServiceImplementation implements AssessmentService {
     }
 
     @Override
-    public void createAssessment(Long courseId, Assessment assessment, String authorizationHeader) {
+    public Assessment createAssessment(Long courseId, Assessment assessment, String authorizationHeader) {
 
-        Course course = courseService.getCourseByCourseId(courseId);
-        Long instructorId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        try {
+                Course course = courseService.getCourseByCourseId(courseId);
+                Long instructorId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
-        // Check if the course exists and if the logged-in instructor owns the course
-        if (course != null && course.getInstructor().getId().equals(instructorId)) {
-            assessment.setCourse(course);
-            assessmentRepository.save(assessment);
+                // Check if the course exists and if the logged-in instructor owns the course
+                if (course != null && course.getInstructor().getId().equals(instructorId)) {
+                    assessment.setCourse(course);
+                    assessmentRepository.save(assessment);
 
-            // Publish course assessment details
-            CourseAssessmentDto courseAssessmentDto = new CourseAssessmentDto(instructorId, courseId, assessment.getId());
-            kafkaProducerService.publishCourseAssessmentDetails(courseAssessmentDto);
+                    // Publish course assessment details
+                    CourseAssessmentDto courseAssessmentDto = new CourseAssessmentDto(instructorId, courseId, assessment.getId());
+                    kafkaProducerService.publishCourseAssessmentDetails(courseAssessmentDto);
 
-        } else {
-        // Handle the case where the course doesn't exist or the instructor doesn't own the course
-        throw new RuntimeException("Instructor is not authorized to create Assessment for this course");
+                    return assessment;
+
+                }else {
+                    // Handle the case where the course doesn't exist, or the instructor doesn't own the course
+                    throw new RuntimeException("Instructor is not authorized to create Assessment for this course");
+                }
+
+        } catch (Exception ex) {
+            // Log the error and throw a custom exception to Assessment creation fails
+            logger.error("An error occurred while creating Assessment", ex);
+            // Rethrow the exception or throw a custom exception
+            throw new AssessmentCreationException("Failed to create Assessment: " + ex.getMessage());
         }
-
     }
 
     @Override
@@ -90,7 +103,7 @@ public class AssessmentServiceImplementation implements AssessmentService {
                 }
             }
 
-            // Check if the role is student
+            // Check if the role is a student
             if ("STUDENT".equals(role)) {
                 RestTemplate restTemplate = new RestTemplate();
                 String enrolmentApiUrl = "http://localhost:9090/courses/" + courseId + "/enrollments/check/" + roleId;

@@ -1,5 +1,6 @@
 package com.StreamlineLearn.DiscussionService.serviceImplementation;
 
+import com.StreamlineLearn.DiscussionService.exception.DiscussionCreationException;
 import com.StreamlineLearn.DiscussionService.model.Course;
 import com.StreamlineLearn.DiscussionService.model.Discussion;
 import com.StreamlineLearn.DiscussionService.model.Instructor;
@@ -12,6 +13,8 @@ import com.StreamlineLearn.DiscussionService.service.StudentService;
 
 import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
 import org.apache.kafka.common.errors.ResourceNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +27,7 @@ public class DiscussionServiceImplementation implements DiscussionService {
     private final StudentService studentService;
     private final InstructorService instructorService;
     private static final int TOKEN_PREFIX_LENGTH = 7;
+    private static final Logger logger = LoggerFactory.getLogger(DiscussionServiceImplementation.class);
 
     public DiscussionServiceImplementation(SharedJwtService sharedJwtService,
                                            CourseService courseService,
@@ -39,22 +43,34 @@ public class DiscussionServiceImplementation implements DiscussionService {
     }
 
     @Override
-    public void createDiscussion(Long courseId, Discussion discussion, String authorizationHeader) {
-        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long studentId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+    public Discussion createDiscussion(Long courseId, Discussion discussion, String authorizationHeader) {
+        try {
+            // Extract role and ID from the authorization header
+            String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+            Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
 
-        Student student = studentService.findStudentByStudentId(studentId);
-        Course course = courseService.getCourseByCourseId(courseId);
+            // Retrieve the course by its ID
+            Course course = courseService.getCourseByCourseId(courseId);
 
-        // Check if the user is a student who enrolled in the course
-        if ("STUDENT".equals(role) && courseService.isStudentEnrolled(studentId, courseId)) {
-            discussion.setCourse(course);
-            discussion.setStudent(student);
-            discussionRepository.save(discussion);
-        }else {
-            throw new RuntimeException("Only instructors of the course can create discussions");
+            // Check if the user is a student enrolled in the course or an instructor of the course
+            if (("STUDENT".equals(role) && courseService.isStudentEnrolled(roleId, courseId)) ||
+                    ("INSTRUCTOR".equals(role) && courseService.isInstructorOfCourse(roleId, courseId))) {
+                // Set the course to the discussion and save it
+                discussion.setCourse(course);
+                discussionRepository.save(discussion);
+
+                return discussion;
+            } else {
+                // Handle the case where the user does not have permission to create a discussion
+                throw new RuntimeException("User does not have permission to create a discussion for this course");
+            }
+        } catch (Exception ex) {
+            // Log the error and throw a custom exception if discussion creation fails
+            logger.error("Error creating discussion", ex);
+            throw new DiscussionCreationException("Unable to create discussion: " + ex.getMessage());
         }
     }
+
 
     @Override
     public List<Discussion> getAllDiscussions(Long courseId, String authorizationHeader) {

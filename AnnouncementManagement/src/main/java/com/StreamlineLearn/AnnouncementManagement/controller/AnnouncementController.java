@@ -4,6 +4,7 @@ import com.StreamlineLearn.AnnouncementManagement.dto.AnnouncementDto;
 import com.StreamlineLearn.AnnouncementManagement.model.Announcement;
 import com.StreamlineLearn.AnnouncementManagement.service.AnnouncementService;
 import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,20 +16,26 @@ import java.util.Set;
 @RequestMapping("/courses/{courseId}/announcements")
 @CrossOrigin(origins = "*")
 public class AnnouncementController {
+    // This declares a dependency on a AnnouncementService.
     private final AnnouncementService announcementService;
 
+    // This is a constructor-based dependency injection of the AnnouncementService.
     public AnnouncementController(AnnouncementService announcementService) {
         this.announcementService = announcementService;
     }
 
-    @PostMapping
-    @IsInstructor
-    public ResponseEntity<String> createAnnouncement(@PathVariable Long courseId,
-                                                     @RequestBody Announcement announcement,
+    @PostMapping //HTTP POST requests onto the createCourse method.
+    @IsInstructor // This is a custom annotation, presumably checking if the authenticated user is an instructor.
+    public ResponseEntity<Announcement> createAnnouncement(@PathVariable Long courseId,
+                                                     @Valid @RequestBody Announcement announcement,
                                                      @RequestHeader("Authorization") String authorizationHeader){
 
-        announcementService.createAnnouncement(courseId, announcement, authorizationHeader );
-        return new ResponseEntity<>("Announcement Added successfully.", HttpStatus.CREATED);
+        // calls the createAnnouncement method in the AnnouncementService with the provided Announcement and authorization header.
+        Announcement createdAnnouncement = announcementService.createAnnouncement(courseId, announcement, authorizationHeader );
+
+        // This returns a ResponseEntity with the created Announcement and an HTTP status code
+        // indicating that the Announcement was successfully created.
+        return new ResponseEntity<>(createdAnnouncement, HttpStatus.CREATED);
     }
 
     @GetMapping

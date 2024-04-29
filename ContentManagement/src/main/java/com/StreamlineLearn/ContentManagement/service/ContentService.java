@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface ContentService {
-    void createContent(Long courseId, Content content, String authorizationHeader);
+    Content createContent(Long courseId, Content content, String authorizationHeader);
 
     Set<Content> getContentsByCourseId(Long id);
 

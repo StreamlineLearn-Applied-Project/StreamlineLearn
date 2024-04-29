@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface AnnouncementService {
-    void createAnnouncement(Long courseId, Announcement announcement, String authorizationHeader);
+    Announcement createAnnouncement(Long courseId, Announcement announcement, String authorizationHeader);
 
     Set<Announcement> getAnnouncementsByCourseId(Long id);
 

@@ -1,6 +1,7 @@
 package com.StreamlineLearn.CourseEnrollManagement.serviceImplementation;
 
 
+import com.StreamlineLearn.CourseEnrollManagement.exception.EnrollmentException;
 import com.StreamlineLearn.CourseEnrollManagement.model.Course;
 import com.StreamlineLearn.CourseEnrollManagement.model.Enrollment;
 import com.StreamlineLearn.CourseEnrollManagement.model.Student;
@@ -10,6 +11,8 @@ import com.StreamlineLearn.CourseEnrollManagement.service.EnrollmentService;
 import com.StreamlineLearn.CourseEnrollManagement.service.KafkaProducerService;
 import com.StreamlineLearn.CourseEnrollManagement.service.StudentService;
 import com.StreamlineLearn.SharedModule.dto.EnrolledStudentDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,6 +23,7 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
     private final CourseService courseService;
     private final EnrollmentRepository enrollmentRepository;
     private final KafkaProducerService kafkaProducerService;
+    private static final Logger logger = LoggerFactory.getLogger(EnrollmentServiceImplementation.class);
 
     public EnrollmentServiceImplementation(StudentService studentService,
                                            CourseService courseService,
@@ -33,24 +37,31 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
 
     @Override
     public Boolean enrollStudent(String token, Long courseId) {
-        Student student = studentService.saveOrGetStudent(token);
-        Course course = courseService.getCourseByCourseId(courseId);
+        try {
+            // Attempt to enroll the student and handle any potential errors
+            Student student = studentService.saveOrGetStudent(token);
+            Course course = courseService.getCourseByCourseId(courseId);
 
-        Enrollment enrollment = new Enrollment();
-        enrollment.setStudent(student);
-        enrollment.setCourse(course);
-        enrollment.setPaid(true);
+            // Check if the course is valid
+            if (course == null) {
+                throw new IllegalArgumentException("Course not found");
+            }
 
-        EnrolledStudentDto enrolledStudentDto = new EnrolledStudentDto();
-        enrolledStudentDto.setId(enrollment.getStudent().getId());
-        enrolledStudentDto.setUserName(enrollment.getStudent().getUsername());
-        enrolledStudentDto.setRole(enrollment.getStudent().getRole());
-        enrolledStudentDto.setCourseId(enrollment.getCourse().getId());
+            // Create and save the enrollment
+            Enrollment enrollment = new Enrollment(student, course, true);
+            enrollmentRepository.save(enrollment);
 
-        kafkaProducerService.publishEnrollStudentDetails(enrolledStudentDto);
+            // Publish the enrollment details
+            kafkaProducerService.publishEnrollStudentDetails(new EnrolledStudentDto(
+                    student.getId(), student.getUsername(), student.getRole(), course.getId()));
 
-        // save the enrollment
-        return enrollmentRepository.save(enrollment).isPaid();
+            // Return the payment status
+            return enrollment.isPaid();
+        } catch (Exception ex) {
+            // Log and rethrow the exception with a custom message
+            logger.error("An error occurred while enrolling the student", ex);
+            throw new EnrollmentException("Failed to enroll student: " + ex.getMessage());
+        }
     }
 
     public Boolean isStudentPaid(Long studentId, Long courseId) {
