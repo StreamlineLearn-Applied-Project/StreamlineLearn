@@ -12,4 +12,8 @@ public class UserSharedDto {
     private String userName;
     private String role;
 
+    public UserSharedDto(Long id, String role) {
+        this.id = id;
+        this.role = role;
+    }
 }
