@@ -24,3 +24,7 @@
   .search-input:focus {
     outline: none;
   }
+
+  input::placeholder{
+    color: var(--white);
+  }

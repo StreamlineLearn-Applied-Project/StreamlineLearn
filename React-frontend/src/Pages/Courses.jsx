@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Header from '../components/Common/Header';
+import Footer from '../components/Common/Footer';
 import TabsComponent from '../components/Courses/Tabs'; 
 import Search from '../components/Courses/Search';
 
@@ -33,6 +34,7 @@ function CoursesPage() {
       <Header/>
       <Search search={search} onSearchChange={onSearchChange}/>
       <TabsComponent courses={filteredCourses}/>
+      <Footer />
     </div>
   )
 }
