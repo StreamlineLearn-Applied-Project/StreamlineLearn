@@ -1,10 +1,7 @@
 package com.StreamlineLearn.DiscussionService.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +16,11 @@ public class Instructor {
     @JsonIgnore
     @OneToMany(mappedBy = "instructor", cascade = CascadeType.ALL)
     private List<Course> courses = new ArrayList<>();
+
+    // Many-to-many relationship with Discussion
+    @ManyToMany(mappedBy = "instructors")
+    @JsonIgnore // Ignore this field during serialization to break the infinite loop
+    private List<Discussion> discussions;
 
     public Instructor() {
     }
@@ -55,5 +57,12 @@ public class Instructor {
         this.courses = courses;
     }
 
+    public List<Discussion> getDiscussions() {
+        return discussions;
+    }
+
+    public void setDiscussions(List<Discussion> discussions) {
+        this.discussions = discussions;
+    }
 }
 

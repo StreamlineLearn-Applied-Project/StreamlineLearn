@@ -36,6 +36,7 @@ public class DiscussionController {
 
     // Add a thread to an existing discussion
     @PostMapping("/{discussionId}/threads")
+    @IsStudentOrInstructor// This is a custom annotation, presumably checking if the authenticated user is an instructor.
     public ResponseEntity<Discussion> addThread(@PathVariable Long courseId,
                                                 @PathVariable Long discussionId,
                                                 @RequestBody String thread,
@@ -45,9 +46,12 @@ public class DiscussionController {
     }
 
     // Get all discussions for a specific course
-    @GetMapping
+    @GetMapping //HTTP GET requests onto the getDiscussionByCourseId method.
+    @IsStudentOrInstructor
     public ResponseEntity<List<Discussion>> getAllDiscussions(@PathVariable Long courseId,
                                                               @RequestHeader("Authorization") String authorizationHeader) {
+
+        // Call the service method to get all the Discussions of a course.
         List<Discussion> discussions = discussionService.getAllDiscussions(courseId,authorizationHeader);
         return ResponseEntity.ok().body(discussions);
     }
@@ -55,22 +59,32 @@ public class DiscussionController {
 
     // Update an existing discussion in a specific course
     @PutMapping("/{discussionId}")
-    @IsStudent
-    public ResponseEntity<Boolean> updateDiscussion(@PathVariable Long courseId,
+    @IsStudentOrInstructor// This is a custom annotation, presumably checking if the authenticated user is an instructor.
+    public ResponseEntity<?> updateDiscussion(@PathVariable Long courseId,
                                                        @PathVariable Long discussionId,
-                                                       @RequestBody Discussion discussion,
+                                                       @Valid @RequestBody Discussion discussion,
                                                        @RequestHeader("Authorization") String authorizationHeader) {
+
+        // Call the service method to update the Discussion
         Boolean updatedDiscussion = discussionService.updateDiscussion(courseId, discussionId, discussion, authorizationHeader);
-        return ResponseEntity.ok().body(updatedDiscussion);
+
+        // If the Discussion was updated successfully, return a success message; otherwise, return 404
+        return updatedDiscussion ? ResponseEntity.ok("Discussion updated Successfully") :
+                ResponseEntity.notFound().build();
     }
 
     // Delete a discussion from a specific course
     @DeleteMapping("/{discussionId}")
-    @IsStudent
+    @IsStudentOrInstructor// This is a custom annotation, presumably checking if the authenticated user is an instructor.
     public ResponseEntity<?> deleteDiscussion(@PathVariable Long courseId,
                                               @PathVariable Long discussionId,
                                               @RequestHeader("Authorization") String authorizationHeader) {
+
+        // Call the service method to Delete the Discussion
         Boolean isDeleted = discussionService.deleteDiscussion(courseId, discussionId, authorizationHeader);
-        return ResponseEntity.noContent().build();
+
+        // If the Discussion was deleted successfully, return a success message; otherwise, return 404
+        return isDeleted ? ResponseEntity.ok("Discussion updated Successfully") :
+                ResponseEntity.notFound().build();
     }
 }
