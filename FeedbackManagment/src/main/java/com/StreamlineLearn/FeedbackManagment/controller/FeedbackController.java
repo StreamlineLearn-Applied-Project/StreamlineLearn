@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/courses/{courseId}/feedback")
@@ -33,28 +34,40 @@ public class FeedbackController {
         return new ResponseEntity<>(createdFeedback, HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public ResponseEntity<List<Feedback>> getAllFeedbacks(@PathVariable Long courseId) {
-        List<Feedback> feedbacks = feedbackService.getAllFeedbacks(courseId);
+    // Endpoint to get all Feedbacks for a course
+    @GetMapping //HTTP GET requests onto the getFeedbackByCourseId method.
+    public ResponseEntity<Optional<List<Feedback>>> getAllFeedbacks(@PathVariable Long courseId) {
+
+        Optional<List<Feedback>> feedbacks = feedbackService.getAllFeedbacks(courseId);
         return ResponseEntity.ok().body(feedbacks);
     }
 
+    // Endpoint to update a Feedback by ID
     @PutMapping("/{feedbackId}")
     @IsStudent
-    public ResponseEntity<?> updateFeedback(@PathVariable Long courseId,
-                                            @PathVariable Long feedbackId,
-                                            @RequestBody Feedback feedback,
+    public ResponseEntity<?> updateFeedback(@PathVariable Long courseId, @PathVariable Long feedbackId,
+                                            @Valid @RequestBody Feedback feedback,
                                             @RequestHeader("Authorization") String authorizationHeader) {
-        feedbackService.updateFeedback(courseId, feedbackId, feedback, authorizationHeader);
-        return ResponseEntity.noContent().build();
+
+        // Call the service method to update the Feedback
+        boolean feedbackUpdated = feedbackService
+                .updateFeedback(courseId, feedbackId, feedback, authorizationHeader);
+
+        // If the Feedback was updated successfully, return a success message; otherwise, return 404
+        return feedbackUpdated ? ResponseEntity.ok("Feedback updated Successfully") :
+                ResponseEntity.notFound().build();
     }
 
+    // Endpoint to delete an Feedback by ID
     @DeleteMapping("/{feedbackId}")
     @IsStudent
     public ResponseEntity<?> deleteFeedback(@PathVariable Long courseId,
                                             @PathVariable Long feedbackId,
                                             @RequestHeader("Authorization") String authorizationHeader) {
-        feedbackService.deleteFeedback(courseId, feedbackId, authorizationHeader);
-        return ResponseEntity.noContent().build();
+
+        boolean feedbackDeleted = feedbackService.deleteFeedback(courseId, feedbackId, authorizationHeader);
+        // If the Feedback was deleted successfully, return a success message; otherwise, return 404
+        return feedbackDeleted ? ResponseEntity.ok("Feedback deleted Successfully") :
+                ResponseEntity.notFound().build();
     }
 }
