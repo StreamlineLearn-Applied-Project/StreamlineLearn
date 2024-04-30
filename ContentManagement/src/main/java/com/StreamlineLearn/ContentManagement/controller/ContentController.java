@@ -4,6 +4,7 @@ import com.StreamlineLearn.ContentManagement.dto.ContentDto;
 import com.StreamlineLearn.ContentManagement.model.Content;
 import com.StreamlineLearn.ContentManagement.service.ContentService;
 import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
+import com.StreamlineLearn.SharedModule.annotation.IsStudentOrInstructor;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,48 +39,58 @@ public class ContentController {
         return new ResponseEntity<>(createdContent, HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public ResponseEntity<Set<Content>> getContentsByCourseId(@PathVariable Long courseId){
-        Set<Content> contents = contentService.getContentsByCourseId(courseId);
-        if(contents != null && !contents.isEmpty()){
-            return new ResponseEntity<>(contents, HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    // Endpoint to get all contents for a course
+    @GetMapping //HTTP GET requests onto the getContentByCourseId method.
+    @IsStudentOrInstructor// This is a custom annotation, presumably checking if the authenticated user is an instructor or student.
+    public ResponseEntity<Set<Content>> getContentsByCourseId(@PathVariable Long courseId,
+                                                              @RequestHeader("Authorization") String authorizationHeader){
+
+        Set<Content> contents = contentService.getContentsByCourseId(courseId,authorizationHeader);
+        return new ResponseEntity<>(contents, HttpStatus.OK);
     }
 
+    // Endpoint to get a specific content by ID
     @GetMapping("/{contentId}")
-    public ResponseEntity<ContentDto> getContentById(@PathVariable Long courseId,
+    @IsStudentOrInstructor // This is a custom annotation, presumably checking if the authenticated user is an instructor or student.
+    public ResponseEntity<Content> getContentById(@PathVariable Long courseId,
                                                   @PathVariable Long contentId,
                                                   @RequestHeader("Authorization") String authorizationHeader){
 
-        Optional<ContentDto> content = contentService.getContentById(courseId,contentId, authorizationHeader);
+        // Call the service method to get the content by ID
+        Optional<Content> content = contentService.getContentById(courseId,contentId, authorizationHeader);
 
+        // If the content is present, return it with HTTP status code OK; otherwise, return 404
         return content.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    // Endpoint to update a content by ID
     @PutMapping("/{contentId}")
-    @IsInstructor
-    public ResponseEntity<String> updateContentById(@PathVariable Long courseId, @PathVariable Long contentId, @RequestBody Content content,
+    @IsInstructor // Custom annotation to check if the user is an instructor
+    public ResponseEntity<String> updateContentById(@PathVariable Long courseId,
+                                                    @PathVariable Long contentId, @RequestBody Content content,
                                                     @RequestHeader("Authorization") String authorizationHeader){
-        boolean contentUpdated = contentService.updateContentById(courseId ,contentId, content, authorizationHeader);
-        if(contentUpdated){
-            return new ResponseEntity<>("Content updated Successfully", HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>("Content not found", HttpStatus.NOT_FOUND);
-        }
+
+        // Call the service method to update the content
+        boolean contentUpdated = contentService
+                .updateContentById(courseId ,contentId, content, authorizationHeader);
+        // If the content was updated successfully, return a success message; otherwise, return 404
+        return contentUpdated ? ResponseEntity.ok("content updated Successfully") :
+                ResponseEntity.notFound().build();
     }
 
+    // Endpoint to delete a content by ID
     @DeleteMapping("/{contentId}")
-    @IsInstructor
-    public ResponseEntity<String> deleteContentById(@PathVariable Long courseId, @PathVariable Long contentId, @RequestHeader("Authorization") String authorizationHeader){
+    @IsInstructor // Custom annotation to check if the user is an instructor
+    public ResponseEntity<String> deleteContentById(@PathVariable Long courseId,
+                                                    @PathVariable Long contentId,
+                                                    @RequestHeader("Authorization") String authorizationHeader){
+
+        // Call the service method to delete the content
         boolean contentDeleted = contentService.deleteContentById(courseId , contentId, authorizationHeader);
-        if(contentDeleted){
-            return new ResponseEntity<>("Content deleted Successfully", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Content not found", HttpStatus.NOT_FOUND);
-        }
+        // If the content was deleted successfully, return a success message; otherwise, return 404
+        return contentDeleted ? ResponseEntity.ok("Content deleted Successfully") :
+                ResponseEntity.notFound().build();
     }
 
 }

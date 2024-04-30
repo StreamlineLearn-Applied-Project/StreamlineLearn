@@ -1,14 +1,16 @@
 package com.StreamlineLearn.ContentManagement.serviceImplementation;
 
 import com.StreamlineLearn.ContentManagement.dto.ContentDto;
-import com.StreamlineLearn.ContentManagement.exception.ContentCreationException;
+import com.StreamlineLearn.ContentManagement.exception.ContentException;
 import com.StreamlineLearn.ContentManagement.model.Content;
 import com.StreamlineLearn.ContentManagement.model.Course;
 import com.StreamlineLearn.ContentManagement.repository.ContentRepository;
 import com.StreamlineLearn.ContentManagement.repository.CourseRepository;
 import com.StreamlineLearn.ContentManagement.service.ContentService;
 import com.StreamlineLearn.ContentManagement.service.CourseService;
-import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
+import com.StreamlineLearn.SharedModule.dto.UserSharedDto;
+import com.StreamlineLearn.SharedModule.service.EnrollmentService;
+import com.StreamlineLearn.SharedModule.service.JwtUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,36 +22,49 @@ import java.util.Set;
 
 @Service
 public class ContentServiceImplementation implements ContentService {
-    private final SharedJwtService sharedJwtService;
+    private final JwtUserService jwtUserService;
     private final CourseService courseService;
     private final ContentRepository contentRepository;
-    private final CourseRepository courseRepository;
-    private static final int TOKEN_PREFIX_LENGTH = 7;
+    private final EnrollmentService enrollmentService;
     private static final Logger logger = LoggerFactory.getLogger(ContentServiceImplementation.class);
 
-    public ContentServiceImplementation(SharedJwtService sharedJwtService,
+    // Constructor injection for dependencies
+    public ContentServiceImplementation(JwtUserService jwtUserService,
                                         CourseService courseService,
                                         ContentRepository contentRepository,
-                                        CourseRepository courseRepository) {
-
-        this.sharedJwtService = sharedJwtService;
+                                        EnrollmentService enrollmentService) {
+        this.jwtUserService = jwtUserService;
         this.courseService = courseService;
         this.contentRepository = contentRepository;
-        this.courseRepository = courseRepository;
+        this.enrollmentService = enrollmentService;
     }
 
+    // Method to check if a user is authorized as an instructor or student
+    private boolean isAuthorizedAsInstructorOrStudent(String role, Long roleId, Long courseId) {
+        if ("INSTRUCTOR".equals(role)) {
+            return courseService.isInstructorOfCourse(roleId, courseId);
+        } else if ("STUDENT".equals(role)) {
+            return enrollmentService.hasStudentPaidForCourse(roleId, courseId);
+        }
+        return false; // Any other role is not authorized
+    }
+
+    // Method to check if a user is authorized as an instructor
+    private boolean isAuthorizedAsInstructor(String role, Long instructorId, Long courseId) {
+        return "INSTRUCTOR".equals(role) && courseService.isInstructorOfCourse(instructorId, courseId);
+    }
+
+    // Method to create a content
     @Override
     public Content createContent(Long courseId, Content content, String authorizationHeader) {
-
         try {
             // Retrieve the course by its ID
             Course course = courseService.getCourseByCourseId(courseId);
 
-            // Extract the instructor's ID from the JWT token
-            Long instructorId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+            UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
 
             // Check if the course exists and if the logged-in instructor owns the course
-            if (course != null && course.getInstructor().getId().equals(instructorId)) {
+            if (course != null && course.getInstructor().getId().equals(userSharedDto.getId())) {
                 // Set the course to the content and save it in the repository
                 content.setCourse(course);
                 contentRepository.save(content);
@@ -64,138 +79,107 @@ public class ContentServiceImplementation implements ContentService {
             // Log the error and throw a custom exception of course creation fails
             logger.error("An error occurred while creating Content", ex);
             // Rethrow the exception or throw a custom exception
-            throw new ContentCreationException("Failed to create Content: " + ex.getMessage());
+            throw new ContentException("Failed to create Content: " + ex.getMessage());
         }
     }
 
+    // Method to get contents by course ID
     @Override
-    public Set<Content> getContentsByCourseId(Long id) {
-        Course course = courseRepository.findById(id).orElseThrow(null);
-        return course.getContents();
+    public Set<Content> getContentsByCourseId(Long courseId,String authorizationHeader) {
+        try{
+            UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
+            Course course = courseService.getCourseByCourseId(courseId);
+
+            return (course != null && isAuthorizedAsInstructorOrStudent(userSharedDto.getRole(),
+                    userSharedDto.getId(), courseId)) ?
+                    course.getContents() : null;
+
+        } catch (Exception ex) {
+            // Log any unexpected exceptions and throw a generic ContentException
+            logger.error("An unexpected error occurred while getting contents", ex);
+            throw new ContentException("Failed to get contents: " + ex.getMessage(), ex);
+        }
     }
 
+    // Method to get and contents by ID
     @Override
-    public Optional<ContentDto> getContentById(Long courseId, Long contentId, String authorizationHeader) {
-        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+    public Optional<Content> getContentById(Long courseId, Long contentId, String authorizationHeader) {
+        try {
+            UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
+            Course course = courseService.getCourseByCourseId(courseId);
 
-        Optional<Course> optionalCourse = courseRepository.findById(courseId);
-        if (optionalCourse.isPresent()) {
-            Course course = optionalCourse.get();
-
-            // Check if the owner of the course is the instructor
-            if ("INSTRUCTOR".equals(role) && Objects.equals(course.getInstructor().getId(), roleId)) {
-                Optional<Content> optionalContent = course.getContents()
-                        .stream()
+            if (course != null && isAuthorizedAsInstructorOrStudent(userSharedDto.getRole(),
+                    userSharedDto.getId(), courseId)) {
+                return course.getContents().stream()
                         .filter(content -> content.getId().equals(contentId))
+                        .map(content -> new Content(content.getId(),
+                                content.getTitle(),
+                                content.getImage(),
+                                content.getCourse()))
                         .findFirst();
-                if (optionalContent.isPresent()) {
-                    Content content = optionalContent.get();
-                    return Optional.of(new ContentDto(content.getTitle(), content.getImage()));
-                } else {
-                    return Optional.empty(); // Content not found
-                }
             }
-
-            // Check if the role is student
-            if ("STUDENT".equals(role)) {
-                RestTemplate restTemplate = new RestTemplate();
-                String enrolmentApiUrl = "http://localhost:9090/courses/" + courseId + "/enrollments/check/" + roleId;
-                String apiResponse = restTemplate.getForObject(enrolmentApiUrl, String.class);
-                System.out.println("API Response: " + apiResponse);
-
-                // Assuming the API response indicates whether the student has paid for the course
-                if ("PAID".equals(apiResponse)) {
-                    Optional<Content> optionalContent = course.getContents()
-                            .stream()
-                            .filter(content -> content.getId().equals(contentId))
-                            .findFirst();
-                    if (optionalContent.isPresent()) {
-                        Content content = optionalContent.get();
-                        return Optional.of(new ContentDto(content.getTitle(), content.getImage()));
-                    } else {
-                        return Optional.empty(); // Content not found
-                    }
-                } else {
-                    return Optional.empty(); // Student has not paid for the course
-                }
-            }
+            return Optional.empty();
+        } catch (Exception ex) {
+            // Log any unexpected exceptions and throw a generic ContentException
+            logger.error("An unexpected error occurred while getting content by ID", ex);
+            throw new ContentException("Failed to get content by ID: " + ex.getMessage(), ex);
         }
-
-        return Optional.empty(); // Course not found, or unauthorized access
     }
 
-
+    // Method to update a contents by ID
     @Override
     public boolean updateContentById(Long courseId, Long contentId, Content content, String authorizationHeader) {
-        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        try{
+            UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
+            Course course = courseService.getCourseByCourseId(courseId);
 
-        Optional<Course> optionalCourse = courseRepository.findById(courseId);
-        if (optionalCourse.isPresent()) {
-            Course course = optionalCourse.get();
-
-            // Check if the owner of the course is the instructor
-            if ("INSTRUCTOR".equals(role) && Objects.equals(course.getInstructor().getId(), roleId)) {
-                Optional<Content> optionalContent = course.getContents()
-                        .stream()
-                        .filter(c -> c.getId().equals(contentId))
+            if (course != null && isAuthorizedAsInstructor(userSharedDto.getRole(),
+                    userSharedDto.getId(), courseId)) {
+                Optional<Content> optionalContent = course.getContents().stream()
+                        .filter(a -> a.getId().equals(contentId))
                         .findFirst();
+
                 if (optionalContent.isPresent()) {
                     Content existingContent = optionalContent.get();
                     existingContent.setTitle(content.getTitle());
                     existingContent.setImage(content.getImage());
                     contentRepository.save(existingContent);
                     return true;
-                } else {
-                    // Content not found in the course
-                    return false;
                 }
-            } else {
-                // Instructor is not authorized to update content for this course
-                return false;
             }
-        } else {
-            // Course not found
             return false;
+        } catch (Exception ex) {
+            // Log any unexpected exceptions and throw a generic ContentException
+            logger.error("An unexpected error occurred while updating content by ID", ex);
+            throw new ContentException("Failed to update content by ID: " + ex.getMessage(), ex);
         }
     }
 
+    // Method to delete a contents by ID
     @Override
     public boolean deleteContentById(Long courseId, Long contentId, String authorizationHeader) {
-        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        try {
+            UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
+            Course course = courseService.getCourseByCourseId(courseId);
 
-        Optional<Course> optionalCourse = courseRepository.findById(courseId);
-        if (optionalCourse.isPresent()) {
-            Course course = optionalCourse.get();
-
-            // Check if the owner of the course is the instructor
-            if ("INSTRUCTOR".equals(role) && Objects.equals(course.getInstructor().getId(), roleId)) {
-                Optional<Content> optionalContent = course.getContents()
-                        .stream()
-                        .filter(c -> c.getId().equals(contentId))
+            if (course != null && isAuthorizedAsInstructor(userSharedDto.getRole(), userSharedDto.getId(), courseId)) {
+                Optional<Content> optionalContent = course.getContents().stream()
+                        .filter(a -> a.getId().equals(contentId))
                         .findFirst();
+
                 if (optionalContent.isPresent()) {
-                    // Remove the announcement from the course's list of announcements
                     Content contentToRemove = optionalContent.get();
                     course.getContents().remove(contentToRemove);
-
-                    courseRepository.save(course); // Save the course to update the changes
-
+                    courseService.saveCourse(course);
                     contentRepository.deleteById(contentId);
                     return true;
-                } else {
-                    // Content not found in the course
-                    return false;
                 }
-            } else {
-                // Instructor is not authorized to delete content for this course
-                return false;
             }
-        } else {
-            // Course not found
             return false;
+        } catch (Exception ex) {
+            // Log any unexpected exceptions and throw a generic ContentException
+            logger.error("An unexpected error occurred while deleting content by ID", ex);
+            throw new ContentException("Failed to delete content by ID: " + ex.getMessage(), ex);
         }
     }
 

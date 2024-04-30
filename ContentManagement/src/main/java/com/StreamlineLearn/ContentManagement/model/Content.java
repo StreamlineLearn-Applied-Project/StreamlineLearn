@@ -15,6 +15,15 @@ public class Content {
     @JoinColumn(name = "course_id")
     private Course course;
 
+    public Content() {
+    }
+
+    public Content(Long id, String title, String image, Course course) {
+        this.id = id;
+        this.title = title;
+        this.image = image;
+        this.course = course;
+    }
 
     public Long getId() {
         return id;
