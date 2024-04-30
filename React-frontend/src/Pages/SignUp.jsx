@@ -151,6 +151,7 @@ function SignUp() {
                                         required
                                         value={formData.education}
                                         onChange={handleInputChange}
+                                        className="transparent-dropdown"
                                     >
                                         <option value="" disabled defaultValue>
                                             Select Education
@@ -170,6 +171,7 @@ function SignUp() {
                                         required
                                         value={formData.field}
                                         onChange={handleInputChange}
+                                        className="transparent-dropdown"
                                     >
                                         <option value="" disabled defaultValue>
                                             Select Field
@@ -194,6 +196,7 @@ function SignUp() {
                                         required
                                         value={formData.department}
                                         onChange={handleInputChange}
+                                        className="transparent-dropdown"
                                     >
                                         <option value="" disabled defaultValue>
                                             Select Department
@@ -213,6 +216,7 @@ function SignUp() {
                                         required
                                         value={formData.expertise}
                                         onChange={handleInputChange}
+                                        className="transparent-dropdown"
                                     >
                                         <option value="" disabled defaultValue>
                                             Select Expertise
@@ -236,6 +240,7 @@ function SignUp() {
                                     required
                                     value={formData.position}
                                     onChange={handleInputChange}
+                                    className="transparent-dropdown"
                                 >
                                     <option value="" disabled defaultValue>
                                         Select Position
