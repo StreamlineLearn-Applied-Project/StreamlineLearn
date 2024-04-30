@@ -4,7 +4,6 @@
 .idea
 
 #dependencies
-React/node_modules
 React-frontend/node_modules
 
 
