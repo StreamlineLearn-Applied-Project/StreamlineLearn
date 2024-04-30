@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './UserRegisterLoginForm.css';
 import Header from '../components/Common/Header';
+import Footer from '../components/Common/Footer';
 import LoginForm from '../components/UserRegisterLoginForm/LoginForm';
 
 function SignIn() {
@@ -53,6 +54,7 @@ function SignIn() {
         <div>
             <Header />
             <LoginForm formProps={formProps} />
+            <Footer />
         </div>
     );
 }
