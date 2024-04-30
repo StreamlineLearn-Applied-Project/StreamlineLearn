@@ -1,5 +1,8 @@
 .footer{
+    margin-top: 0.5%;
+    margin-left: 1%;
+    font-size: small;
     width: 100%;
     color: #000;
-    background-color: lightblue;
+    background-color: rgba(173, 216, 230, 0); /* Use RGBA color for transparency */
 }

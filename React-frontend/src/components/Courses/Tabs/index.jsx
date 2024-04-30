@@ -26,9 +26,15 @@ palette: {
     
 
   const style = {
-    color: "var(--white)",
+    color: {
+      light: "var(--black)", 
+      dark: "var(--green)"   
+  },
     "& .Mui-selected": {
-      color: "var(--blue) !important",
+      color: {
+        light: "var(--black)", 
+        dark: "var(--green)"  
+      },
     },
     fontFamily: "Inter,sans-serif",
     fontWeight: 600,
@@ -38,10 +44,12 @@ palette: {
   return (
     <ThemeProvider theme={Theme}>
       <TabContext value={value}>
+        <div className='tab-container'>
           <TabList onChange={handleChange} variant='fullWidth'>
-            <Tab label="Grid " value="grid" sx={style} />
-            <Tab label="List" value="list" sx={style} />
-          </TabList>
+              <Tab label="Grid " value="grid" sx={style}  style={{outline: "none", textDecoration: "none", MuiSelected: {color: "var(--red)"}}}/>
+              <Tab label="List" value="list" sx={style}  style={{outline: "none", textDecoration: "none"}}/>
+            </TabList>
+        </div>
         <TabPanel value="grid">
           <div className='grid-flex'>
             {courses.map((course, i) => {
