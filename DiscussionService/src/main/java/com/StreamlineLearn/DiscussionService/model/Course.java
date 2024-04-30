@@ -1,5 +1,6 @@
 package com.StreamlineLearn.DiscussionService.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -14,6 +15,7 @@ public class Course {
 
     // One-to-many relationship with Discussion
     @OneToMany(mappedBy = "course")
+    @JsonIgnore
     private List<Discussion> discussions;
 
     // Many-to-many relationship with Student

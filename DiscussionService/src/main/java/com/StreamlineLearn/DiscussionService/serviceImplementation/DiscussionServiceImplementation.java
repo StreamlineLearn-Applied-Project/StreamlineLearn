@@ -1,6 +1,6 @@
 package com.StreamlineLearn.DiscussionService.serviceImplementation;
 
-import com.StreamlineLearn.DiscussionService.exception.DiscussionCreationException;
+import com.StreamlineLearn.DiscussionService.exception.DiscussionException;
 import com.StreamlineLearn.DiscussionService.model.Course;
 import com.StreamlineLearn.DiscussionService.model.Discussion;
 import com.StreamlineLearn.DiscussionService.model.Instructor;
@@ -11,30 +11,29 @@ import com.StreamlineLearn.DiscussionService.service.DiscussionService;
 import com.StreamlineLearn.DiscussionService.service.InstructorService;
 import com.StreamlineLearn.DiscussionService.service.StudentService;
 
-import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
+import com.StreamlineLearn.SharedModule.dto.UserSharedDto;
+import com.StreamlineLearn.SharedModule.service.JwtUserService;
+import com.StreamlineLearn.SharedModule.sharedException.UnauthorizedException;
 import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
 public class DiscussionServiceImplementation implements DiscussionService {
-    private final SharedJwtService sharedJwtService;
     private final CourseService courseService;
     private final DiscussionRepository discussionRepository;
     private final StudentService studentService;
     private final InstructorService instructorService;
-    private static final int TOKEN_PREFIX_LENGTH = 7;
+    private final JwtUserService jwtUserService;
     private static final Logger logger = LoggerFactory.getLogger(DiscussionServiceImplementation.class);
 
-    public DiscussionServiceImplementation(SharedJwtService sharedJwtService,
-                                           CourseService courseService,
+    public DiscussionServiceImplementation(CourseService courseService,
                                            DiscussionRepository discussionRepository,
                                            StudentService studentService,
-                                           InstructorService instructorService) {
-        this.sharedJwtService = sharedJwtService;
+                                           InstructorService instructorService, JwtUserService jwtUserService) {
+        this.jwtUserService = jwtUserService;
         this.courseService = courseService;
         this.discussionRepository = discussionRepository;
         this.studentService = studentService;
@@ -46,17 +45,27 @@ public class DiscussionServiceImplementation implements DiscussionService {
     public Discussion createDiscussion(Long courseId, Discussion discussion, String authorizationHeader) {
         try {
             // Extract role and ID from the authorization header
-            String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-            Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+            UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
 
             // Retrieve the course by its ID
             Course course = courseService.getCourseByCourseId(courseId);
 
             // Check if the user is a student enrolled in the course or an instructor of the course
-            if (("STUDENT".equals(role) && courseService.isStudentEnrolled(roleId, courseId)) ||
-                    ("INSTRUCTOR".equals(role) && courseService.isInstructorOfCourse(roleId, courseId))) {
-                // Set the course to the discussion and save it
+            if (("STUDENT".equals(userSharedDto.getRole()) && courseService.isStudentEnrolled(userSharedDto.getId(), courseId)) ||
+                    ("INSTRUCTOR".equals(userSharedDto.getRole()) && courseService.isInstructorOfCourse(userSharedDto.getId(), courseId))) {
+                // Set the course to the discussion
                 discussion.setCourse(course);
+
+                // Set the creator (student or instructor) based on the user's role
+                if ("STUDENT".equals(userSharedDto.getRole())) {
+                    Student student = studentService.findStudentByStudentId(userSharedDto.getId());
+                    discussion.setStudent(student);
+                } else {
+                    Instructor instructor = instructorService.findInstructorById(userSharedDto.getId());
+                    discussion.setInstructor(instructor);
+                }
+
+                // Save the discussion
                 discussionRepository.save(discussion);
 
                 return discussion;
@@ -67,100 +76,141 @@ public class DiscussionServiceImplementation implements DiscussionService {
         } catch (Exception ex) {
             // Log the error and throw a custom exception if discussion creation fails
             logger.error("Error creating discussion", ex);
-            throw new DiscussionCreationException("Unable to create discussion: " + ex.getMessage());
+            throw new DiscussionException("Unable to create discussion: " + ex.getMessage());
         }
     }
 
-
     @Override
     public List<Discussion> getAllDiscussions(Long courseId, String authorizationHeader) {
-        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        try {// Extract role and ID from the authorization header
+            UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
 
-        // Check if the user is a student enrolled in the course or an instructor of the course
-        if (("STUDENT".equals(role) && courseService.isStudentEnrolled(roleId, courseId)) ||
-                ("INSTRUCTOR".equals(role) && courseService.isInstructorOfCourse(roleId, courseId))) {
-            return discussionRepository.findByCourseId(courseId);
-        } else {
-            throw new RuntimeException("Unauthorized access to discussions");
+            // Check if the user is a student enrolled in the course or an instructor of the course
+            if (("STUDENT".equals(userSharedDto.getRole()) && courseService.isStudentEnrolled(userSharedDto.getId(), courseId)) ||
+                    ("INSTRUCTOR".equals(userSharedDto.getRole()) && courseService.isInstructorOfCourse(userSharedDto.getId(), courseId))) {
+                return discussionRepository.findByCourseId(courseId);
+            } else {
+                throw new RuntimeException("Unauthorized access to discussions");
+            }
+        } catch (Exception ex) {
+            logger.error("Error getting discussions", ex);
+            throw new DiscussionException("Unable to get discussions: " + ex.getMessage());
         }
     }
 
     @Override
     public Discussion addThread(Long courseId, Long discussionId, String thread, String authorizationHeader) {
-        String role = sharedJwtService.extractRole(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        try {        // Extract role and ID from the authorization header
+            UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
 
-        // Check if the user is a student enrolled in the course or an instructor of the course
-        if (("STUDENT".equals(role) && courseService.isStudentEnrolled(roleId, courseId)) ||
-                ("INSTRUCTOR".equals(role) && courseService.isInstructorOfCourse(roleId, courseId))) {
-            Discussion discussion = discussionRepository.findById(discussionId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Discussion not found"));
+            // Check if the user is a student enrolled in the course or an instructor of the course
+            if (("STUDENT".equals(userSharedDto.getRole()) && courseService.isStudentEnrolled(userSharedDto.getId(), courseId)) ||
+                    ("INSTRUCTOR".equals(userSharedDto.getRole()) && courseService.isInstructorOfCourse(userSharedDto.getId(), courseId))) {
+                Discussion discussion = discussionRepository.findById(discussionId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Discussion not found"));
 
-            if ("STUDENT".equals(role)) {
-                Student student = studentService.findStudentByStudentId(roleId);
+                if ("STUDENT".equals(userSharedDto.getRole())) {
+                    Student student = studentService.findStudentByStudentId(userSharedDto.getId());
 
-                String threadWithUserInfo = String.format("%s - %s: %s", student.getRole(), student.getUsername(), thread);
-                discussion.getDiscussionThreads().add(threadWithUserInfo);
+                    String threadWithUserInfo = String.format("%s - %s: %s", student.getRole(), student.getUsername(), thread);
+                    discussion.getDiscussionThreads().add(threadWithUserInfo);
 
+                } else {
+                    Instructor instructor = instructorService.findInstructorById(userSharedDto.getId());
+
+                    String threadWithUserInfo = String.format("%s - %s: %s", instructor.getRole(), instructor.getUsername(), thread);
+                    discussion.getDiscussionThreads().add(threadWithUserInfo);
+
+                }
                 return discussionRepository.save(discussion);
+
             } else {
-                Instructor instructor = instructorService.findInstructorById(roleId);
-
-                String threadWithUserInfo = String.format("%s - %s: %s", instructor.getRole(), instructor.getUsername(), thread);
-                discussion.getDiscussionThreads().add(threadWithUserInfo);
-
-                return discussionRepository.save(discussion);
+                throw new RuntimeException("Unauthorized access to add thread");
             }
-
-        } else {
-            throw new RuntimeException("Unauthorized access to add thread");
+        }  catch (Exception ex) {
+            logger.error("Error updating discussion", ex);
+            throw new DiscussionException("Unable to update discussion: " + ex.getMessage());
         }
     }
 
-
-
-
     @Override
     public Boolean updateDiscussion(Long courseId, Long discussionId, Discussion discussion, String authorizationHeader) {
-        Long studentId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
+        try{  // Extract role and ID from the authorization header
+            UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
 
-        // Check if the user is a student
-        Student student = studentService.findStudentByStudentId(studentId);
-        if (student != null) {
+            // Retrieve the discussion by its ID
             Discussion existingDiscussion = discussionRepository.findById(discussionId)
                     .orElseThrow(() -> new ResourceNotFoundException("Discussion not found"));
 
-            // Ensure that the student attempting to update the discussion is the same as the one who created it
-            if (existingDiscussion.getStudents().contains(student)) {
+            // Check if the user is a student or an instructor
+            if (("STUDENT".equals(userSharedDto.getRole()) &&
+                    existingDiscussion.getStudents()
+                            .stream()
+                            .anyMatch(student -> student.getId()
+                                    .equals(userSharedDto.getId()))) ||
+                    ("INSTRUCTOR".equals(userSharedDto.getRole()) &&
+                            existingDiscussion.getCourse()
+                                    .getInstructor()
+                                    .getId()
+                                    .equals(userSharedDto.getId()))) {
                 // Update discussion
                 existingDiscussion.setDiscussion(discussion.getDiscussion());
                 discussionRepository.save(existingDiscussion);
                 return true;
-            } else {
-                throw new RuntimeException("Student is not enrolled in the course associated with this discussion");
             }
-        } else {
-            throw new RuntimeException("Only students are authorized to update discussions");
+        }catch (ResourceNotFoundException ex) {
+        logger.error("Discussion not found", ex);
+        throw new DiscussionException("Discussion not found");
+        } catch (UnauthorizedException ex) {
+        logger.error("Unauthorized access", ex);
+        throw new UnauthorizedException("User is not authorized to update this discussion");
+        } catch (Exception ex) {
+        logger.error("Error updating discussion", ex);
+        throw new DiscussionException("Unable to update discussion: " + ex.getMessage());
         }
+
+        return false;
     }
-
-
 
     @Override
     public Boolean deleteDiscussion(Long courseId, Long discussionId, String authorizationHeader) {
-        Long instructorId = sharedJwtService.extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH));
-        Course course = courseService.getCourseByCourseId(courseId);
+        try{// Extract role and ID from the authorization header
+            UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
 
-        // Check if the course exists and if the logged-in instructor owns the course
-        if (course != null && courseService.isInstructorOfCourse(instructorId, courseId)) {
-            discussionRepository.deleteById(discussionId);
-            return true;
-        } else {
-            throw new RuntimeException("Instructor is not authorized to delete this discussion");
+            // Retrieve the discussion by its ID
+            Discussion existingDiscussion = discussionRepository.findById(discussionId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Discussion not found"));
+
+            // Check if the user is a student or an instructor
+            if (("STUDENT".equals(userSharedDto.getRole()) &&
+                    existingDiscussion.getStudents().
+                            stream()
+                            .anyMatch(student -> student.getId()
+                                    .equals(userSharedDto.getId()))) ||
+                    ("INSTRUCTOR".equals(userSharedDto.getRole()) &&
+                            existingDiscussion.getCourse().
+                                    getInstructor()
+                                    .getId().equals(userSharedDto.getId()))) {
+                // Delete discussion
+                discussionRepository.deleteById(discussionId);
+                return true;
+            }
+        }catch (ResourceNotFoundException ex) {
+            logger.error("Discussion not found", ex);
+            throw new DiscussionException("Discussion not found");
+        } catch (UnauthorizedException ex) {
+            logger.error("Unauthorized access", ex);
+            throw new UnauthorizedException("User is not authorized to delete this discussion");
+        } catch (Exception ex) {
+            logger.error("Error deleting discussion", ex);
+            throw new DiscussionException("Unable to delete discussion: " + ex.getMessage());
         }
+        return false;
     }
+
 }
+
+
 
 
 

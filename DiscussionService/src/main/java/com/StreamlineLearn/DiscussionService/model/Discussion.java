@@ -21,7 +21,6 @@ public class Discussion {
     // Many-to-one relationship with Course
     @ManyToOne
     @JoinColumn(name = "course_id")
-    @JsonIgnore
     private Course course;
 
     // Many-to-many relationship with Student
@@ -31,7 +30,17 @@ public class Discussion {
             joinColumns = @JoinColumn(name = "discussion_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
+    @JsonIgnore // Ignore this field during serialization to break the infinite loop
     private Set<Student> students = new HashSet<>();
+
+    // Many-to-many relationship with Student
+    @ManyToMany
+    @JoinTable(
+            name = "discussion_instructor",
+            joinColumns = @JoinColumn(name = "discussion_id"),
+            inverseJoinColumns = @JoinColumn(name = "instructor_id")
+    )
+    private Set<Instructor> instructors = new HashSet<>();
 
     @ElementCollection
     private List<String> discussionThreads = new ArrayList<>();
@@ -80,9 +89,20 @@ public class Discussion {
         students.add(student);
     }
 
+    public Set<Instructor> getInstructors() {
+        return instructors;
+    }
+    public void setInstructors(Set<Instructor> instructors) {
+        this.instructors = instructors;
+    }
+    public void setInstructor(Instructor instructor) {
+        instructors.add(instructor);
+    }
+
     public List<String> getDiscussionThreads() {
         return discussionThreads;
     }
+
     public void setDiscussionThreads(List<String> discussionThreads) {
         this.discussionThreads = discussionThreads;
     }

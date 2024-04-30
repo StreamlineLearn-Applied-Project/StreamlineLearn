@@ -58,7 +58,7 @@ public class FeedbackController {
                 ResponseEntity.notFound().build();
     }
 
-    // Endpoint to delete an Feedback by ID
+    // Endpoint to delete a Feedback by ID
     @DeleteMapping("/{feedbackId}")
     @IsStudent
     public ResponseEntity<?> deleteFeedback(@PathVariable Long courseId,
