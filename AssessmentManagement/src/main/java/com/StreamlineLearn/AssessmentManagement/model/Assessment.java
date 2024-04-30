@@ -11,6 +11,17 @@ public class Assessment {
     private String title;
     private Integer percentage;
 
+
+    public Assessment() {
+    }
+
+    public Assessment(Long id, String title, Integer percentage, Course course) {
+        this.id = id;
+        this.title = title;
+        this.percentage = percentage;
+        this.course = course;
+    }
+
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;

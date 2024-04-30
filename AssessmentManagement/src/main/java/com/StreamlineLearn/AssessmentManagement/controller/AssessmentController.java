@@ -4,6 +4,7 @@ import com.StreamlineLearn.AssessmentManagement.dto.AssessmentDto;
 import com.StreamlineLearn.AssessmentManagement.model.Assessment;
 import com.StreamlineLearn.AssessmentManagement.service.AssessmentService;
 import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
+import com.StreamlineLearn.SharedModule.annotation.IsStudentOrInstructor;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ import java.util.Set;
 @RequestMapping("/courses/{courseId}/assessments")
 @CrossOrigin(origins = "*")
 public class AssessmentController {
-    // This declares a dependency on a AssessmentService.
+    // This declares a dependency on an AssessmentService.
     private final AssessmentService assessmentService;
 
     // This is a constructor-based dependency injection of the AssessmentService.
@@ -25,6 +26,7 @@ public class AssessmentController {
         this.assessmentService = assessmentService;
     }
 
+    // Endpoint to create a new assessment
     @PostMapping //HTTP POST requests onto the createAssessment method.
     @IsInstructor // This is a custom annotation, presumably checking if the authenticated user is an instructor.
     public ResponseEntity<Assessment> createAssessment(@PathVariable Long courseId,
@@ -39,52 +41,57 @@ public class AssessmentController {
         return new ResponseEntity<>(createdAssessment, HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public ResponseEntity<Set<Assessment>> getAssessmentsByCourseId(@PathVariable Long courseId){
-        Set<Assessment> assessments = assessmentService.getAssessmentsByCourseId(courseId);
-        if(assessments != null && !assessments.isEmpty()){
-            return new ResponseEntity<>(assessments, HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    // Endpoint to get all assessments for a course
+    @GetMapping //HTTP GET requests onto the getAssessmentsByCourseId method.
+    @IsStudentOrInstructor
+    public ResponseEntity<Set<Assessment>> getAssessmentsByCourseId(@PathVariable Long courseId,
+                                                                    @RequestHeader("Authorization") String authorizationHeader){
+        Set<Assessment> assessments = assessmentService.getAssessmentsByCourseId(courseId, authorizationHeader);
+        return new ResponseEntity<>(assessments, HttpStatus.OK);
     }
 
     @GetMapping("/{assessmentId}")
-    public ResponseEntity<AssessmentDto> getAssessmentById(@PathVariable Long courseId,
+    @IsStudentOrInstructor
+    public ResponseEntity<Assessment> getAssessmentById(@PathVariable Long courseId,
                                                         @PathVariable Long assessmentId,
                                                         @RequestHeader("Authorization") String authorizationHeader){
 
-        Optional<AssessmentDto> assessment = assessmentService.getAssessmentById(courseId, assessmentId, authorizationHeader);
+        // Call the service method to get the assessment by ID
+        Optional<Assessment> assessment = assessmentService.getAssessmentById(courseId, assessmentId, authorizationHeader);
 
+        // If the assessment is present, return it with HTTP status code OK; otherwise, return 404
         return assessment.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    // Endpoint to update an assessment by ID
     @PutMapping("/{assessmentId}")
-    @IsInstructor
+    @IsInstructor // Custom annotation to check if the user is an instructor
     public ResponseEntity<String> updateAssessmentById(@PathVariable Long courseId,
                                                        @PathVariable Long assessmentId,
-                                                       @RequestBody Assessment assessment,
+                                                       @Valid @RequestBody Assessment assessment,
                                                        @RequestHeader("Authorization") String authorizationHeader){
-        boolean assessmentUpdated = assessmentService.updateAssessmentById(courseId, assessmentId, assessment, authorizationHeader);
-        if(assessmentUpdated){
-            return new ResponseEntity<>("Assessment updated Successfully", HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>("Assessment not found", HttpStatus.NOT_FOUND);
-        }
+
+        // Call the service method to update the Assessment
+        boolean assessmentUpdated = assessmentService
+                .updateAssessmentById(courseId, assessmentId, assessment, authorizationHeader);
+
+        // If the Assessment was updated successfully, return a success message; otherwise, return 404
+        return assessmentUpdated ? ResponseEntity.ok("Assessment updated Successfully") :
+                ResponseEntity.notFound().build();
     }
 
+    // Endpoint to delete an Assessment by ID
     @DeleteMapping("/{assessmentId}")
     @IsInstructor
     public ResponseEntity<String> deleteAssessmentById(@PathVariable Long courseId,
                                                        @PathVariable Long assessmentId,
                                                        @RequestHeader("Authorization") String authorizationHeader){
+
         boolean assessmentDeleted = assessmentService.deleteAssessmentById(courseId, assessmentId, authorizationHeader);
-        if(assessmentDeleted){
-            return new ResponseEntity<>("Assessment deleted Successfully", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("CourseExternal not found", HttpStatus.NOT_FOUND);
-        }
+        // If the announcement was updated successfully, return a success message; otherwise, return 404
+        return assessmentDeleted ? ResponseEntity.ok("Assessment Deleted Successfully") :
+                ResponseEntity.notFound().build();
     }
 
 }

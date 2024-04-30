@@ -126,7 +126,6 @@ public class AnnouncementServiceImplementation implements AnnouncementService {
     // Method to update an announcement by ID
     @Override
     public boolean updateAnnouncementById(Long courseId, Long announcementId, Announcement announcement, String authorizationHeader) {
-
         try{
             UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
             Course course = courseService.getCourseByCourseId(courseId);
@@ -156,7 +155,6 @@ public class AnnouncementServiceImplementation implements AnnouncementService {
     // Method to delete an announcement by ID
     @Override
     public boolean deleteAnnouncementById(Long courseId, Long announcementId, String authorizationHeader) {
-
         try {
             UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
             Course course = courseService.getCourseByCourseId(courseId);

@@ -8,7 +8,6 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class EnrollmentService {
-
     private final RestTemplate restTemplate;
     private final String enrollmentApiUrl;
 
