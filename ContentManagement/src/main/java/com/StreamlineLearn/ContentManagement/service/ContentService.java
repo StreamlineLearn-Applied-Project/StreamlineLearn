@@ -10,9 +10,9 @@ import java.util.Set;
 public interface ContentService {
     Content createContent(Long courseId, Content content, String authorizationHeader);
 
-    Set<Content> getContentsByCourseId(Long id);
+    Set<Content> getContentsByCourseId(Long courseId,String authorizationHeader);
 
-    Optional<ContentDto> getContentById(Long courseId, Long contentId, String authorizationHeader);
+    Optional<Content> getContentById(Long courseId, Long contentId, String authorizationHeader);
 
     boolean updateContentById(Long courseId, Long contentId, Content content, String authorizationHeader);
 
