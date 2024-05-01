@@ -57,10 +57,6 @@ public class JwtService {
         return extractClaim(token, claims -> claims.get("userId", Long.class));
     }
 
-    public String extractRole(String token) {
-        return extractClaim(token, claims -> claims.get("role", String.class));
-    }
-
     public Long extractRoleId(String token) {
         return extractClaim(token, claims -> claims.get("roleId", Long.class));
     }
@@ -92,14 +88,8 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public boolean isValidRole(String token, String requiredRole) {
-        String tokenRole = extractRole(token);
 
-        // Compare the extracted role with the required role
-        return tokenRole != null && tokenRole.equals(requiredRole);
-    }
-
-    // need to move the code into separate service or file
+    // need to move the code into a separate service or file
     public Long getRoleId(User user) {
         Long userId = user.getId();
         // Check if the user is a student or an instructor

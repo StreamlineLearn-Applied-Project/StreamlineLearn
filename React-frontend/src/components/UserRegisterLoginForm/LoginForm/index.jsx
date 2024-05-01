@@ -5,7 +5,7 @@ function LoginForm({ formProps }) {
     const { formData, handleInputChange, handleSubmit } = formProps;
 
     return (
-        <div className="login-background">
+        <div>
             <div className="login-card">
                 <div className="card-content">
                     <h2>Login</h2>

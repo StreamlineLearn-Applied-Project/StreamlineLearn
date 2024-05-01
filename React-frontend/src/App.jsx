@@ -13,6 +13,7 @@ import ContentsPage from './Pages/Contents';
 import AssessmentsPage from './Pages/Assessments';
 import DiscussionsPage from './Pages/Discussions';
 import AnnouncementsPage from './Pages/Announcements';
+import AnnouncementPage from './Pages/Announcement';
 import InstructorInfoPage from './Pages/InstructorInfo';
 import GradesPage from './Pages/Grades';
 import FeedbackPage from './Pages/Feedback';
@@ -44,7 +45,9 @@ function App() {
           <Route path="/courses/:courseId/contents" element={<ContentsPage/>} />
           <Route path="/courses/:courseId/assessments" element={<AssessmentsPage/>} />
           <Route path="/courses/:courseId/discussions" element={<DiscussionsPage/>} /> 
-          <Route path="/courses/:courseId/announcements" element={<AnnouncementsPage/>} /> 
+
+          <Route path="/courses/:courseId/announcements" element={<AnnouncementsPage/>} />
+          <Route path="/courses/:courseId/announcements/:announcementId" element={<AnnouncementPage />} /> 
           <Route path="/courses/:courseId/instructor" element={<InstructorInfoPage/>} /> 
           <Route path="/courses/:courseId/grades" element={<GradesPage/>} /> 
           <Route path="/courses/:courseId/feedback" element={<FeedbackPage/>} /> 

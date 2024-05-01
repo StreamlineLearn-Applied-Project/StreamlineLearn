@@ -1,8 +1,28 @@
+// UserProfile.jsx
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import ProfileDetails from '../components/Profile';
+import Header from '../components/Common/Header';
+import Footer from '../components/Common/Footer';
 
 function UserProfile() {
+    // Mock user data
+    const mockUser = {
+        id: 1,
+        firstName: 'John',
+        lastName: 'Doe',
+        username: 'johndoe',
+        role: 'USER',
+        enabled: true,
+        authorities: [{ authority: 'ROLE_USER' }],
+        credentialsNonExpired: true,
+        accountNonExpired: true,
+        accountNonLocked: true
+    };
+    
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const token = localStorage.getItem('jwtToken');
@@ -13,33 +33,29 @@ function UserProfile() {
         })
         .then(response => {
             setUser(response.data);
+            setLoading(false);
         })
         .catch(error => {
             console.error("Error fetching user data", error);
+            setLoading(false);
         });
     }, []);
 
-    if (!user) {
+    if (loading) {
         return <div>Loading...</div>;
     }
 
     return (
         <div>
-            <h1>Profile Details</h1>
-            <p><strong>ID:</strong> {user.id}</p>
-            <p><strong>First Name:</strong> {user.firstName}</p>
-            <p><strong>Last Name:</strong> {user.lastName}</p>
-            <p><strong>Username:</strong> {user.username}</p>
-            <p><strong>Role:</strong> {user.role}</p>
-            <p><strong>Enabled:</strong> {user.enabled ? 'Yes' : 'No'}</p>
-            <p><strong>Authorities:</strong> {user.authorities.map(auth => auth.authority).join(', ')}</p>
-            <p><strong>Credentials Non-Expired:</strong> {user.credentialsNonExpired ? 'Yes' : 'No'}</p>
-            <p><strong>Account Non-Expired:</strong> {user.accountNonExpired ? 'Yes' : 'No'}</p>
-            <p><strong>Account Non-Locked:</strong> {user.accountNonLocked ? 'Yes' : 'No'}</p>
-        </div>
+            <Header />
+            {/* Once done with the mockUser replace it with "user"*/}
+            <ProfileDetails user={mockUser} /> 
+            <Footer />
+        </div> 
     );
 }
 
 export default UserProfile;
+
 
 

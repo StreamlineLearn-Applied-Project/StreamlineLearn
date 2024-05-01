@@ -17,6 +17,7 @@ public class SharedJwtService {
 
     private final String SECRET_KEY = "79e64193dac772a042fa99dc984a58dc17d15ebdc0352d8160fba52458b3b2d7";
 
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }

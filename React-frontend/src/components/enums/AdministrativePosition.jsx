@@ -1,3 +1,3 @@
 export const AdministrativePosition = {
-    ADMINISTRATOR: 'ADMINISTRATOR'
+    ADMINISTRATOR: 'Administrator'
 };
