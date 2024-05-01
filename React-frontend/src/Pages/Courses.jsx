@@ -7,6 +7,25 @@ import Search from '../components/Courses/Search';
 
 function CoursesPage() {
 
+// Mock course data
+const mockCourses = [
+  { 
+    id: 1, 
+    courseName: 'Course 1', 
+    description: 'Description 1', 
+    price: 100, 
+    instructor: { username: 'instructor1' } 
+  },
+  { 
+    id: 2, 
+    courseName: 'Course 2', 
+    description: 'Description 2', 
+    price: 200, 
+    instructor: { username: 'instructor2' } 
+  },
+  // Add more mock courses if needed
+];
+
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState([]);
 
@@ -29,11 +48,18 @@ function CoursesPage() {
       });
   }, []);
 
+
+
   return (
     <div>
       <Header/>
+
       <Search search={search} onSearchChange={onSearchChange}/>
-      <TabsComponent courses={filteredCourses}/>
+      
+      {/* Once done with the mockCourses replace it with "filteredCourses"*/}
+
+      <TabsComponent courses={mockCourses}/>
+      
       <Footer />
     </div>
   )

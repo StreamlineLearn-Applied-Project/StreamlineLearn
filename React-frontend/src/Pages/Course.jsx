@@ -8,6 +8,7 @@ import Button from '../components/Common/Button';
 import CourseLinks from '../components/Course/CourseLinks';
 
 function CoursePage() {
+  
   const { courseId } = useParams();
   const [course, setCourse] = useState(null);
 
@@ -23,13 +24,27 @@ function CoursePage() {
     }
   }, [courseId]);
 
+    // Mock course data
+    const mockCourse = {
+      courseId: 1,
+      courseName: 'Mock Course',
+      description: 'This is a mock course description.',
+      // Add more mock data if needed
+    };
+
   return (
     <div>
       <Header/>
-      {course ? (
+      {/* Once done with the mockCourse replace "true" with "course"*/}
+      {true ? (
         <div>
-          <CourseInfo heading={course.courseName} desc={course.description}/>
+
+          {/* Once done with the mockCourse replace it with "course"*/}
+
+          <CourseInfo heading={mockCourse.courseName} desc={mockCourse.description}/>
+
           <CourseLinks courseId={courseId} /> 
+          
         </div>
         
       ) : (

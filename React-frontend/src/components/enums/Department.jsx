@@ -1,13 +1,13 @@
 export const Department = {
-    COMPUTER_SCIENCE: 'COMPUTER_SCIENCE',
-    ENGINEERING: 'ENGINEERING',
-    MATHEMATICS: 'MATHEMATICS',
-    PHYSICS: 'PHYSICS',
-    BIOLOGY: 'BIOLOGY',
-    CHEMISTRY: 'CHEMISTRY',
-    BUSINESS: 'BUSINESS',
-    EDUCATION: 'EDUCATION',
-    SOCIAL_SCIENCES: 'SOCIAL_SCIENCES',
-    ARTS: 'ARTS',
-    OTHER: 'OTHER'
+    COMPUTER_SCIENCE: 'Computer Science',
+    ENGINEERING: 'Engineering',
+    MATHEMATICS: 'Mathematics',
+    PHYSICS: 'Physics',
+    BIOLOGY: 'Biology',
+    CHEMISTRY: 'Chemistry',
+    BUSINESS: 'Business',
+    EDUCATION: 'Education',
+    SOCIAL_SCIENCES: 'Social Sciences',
+    ARTS: 'Arts',
+    OTHER: 'Other'
 };

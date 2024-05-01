@@ -20,11 +20,20 @@ function AnnouncementsPage() {
         }
     }, [courseId]);
 
+    // Mock announcements data
+    const mockAnnouncements = [
+        { id: 1, title: 'Mock Announcement 1' },
+        { id: 2, title: 'Mock Announcement 2' },
+        // Add more mock announcements if needed
+    ];
+
     return (
         <div>
           <Header/>
           <h1>Announcements</h1>
-          <AnnouncementList announcements={announcements} />
+
+          {/* Once done with the mockAnnouncements replace it with "announcements"*/}
+          <AnnouncementList announcements={mockAnnouncements} />
         </div>
       );
   }
