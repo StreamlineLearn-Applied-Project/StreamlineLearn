@@ -1,52 +1,57 @@
 .btn {
-  background-color: #d8d8d8;
-  border-radius: 100px;
-  box-shadow: rgba(206, 206, 206, .2) 0 -25px 18px -14px inset,rgba(206, 206, 206, .15) 0 1px 2px,rgba(206, 206, 206, .15) 0 2px 4px,rgba(206, 206, 206, .15) 0 4px 8px,rgba(206, 206, 206, .15) 0 8px 16px,rgba(206, 206, 206, .15) 0 16px 32px;
-  color: rgb(206, 206, 206);
+  background-color: #fff;
+  border: 1px solid #d5d9d9;
+  border-radius: 8px;
+  box-shadow: rgba(213, 217, 217, .5) 0 2px 5px 0;
+  box-sizing: border-box;
+  color: #0f1111;
   cursor: pointer;
   display: inline-block;
-  font-family: CerebriSans-Regular,-apple-system,system-ui,Roboto,sans-serif;
-  padding: 7px 20px;
+  font-family: "Amazon Ember",sans-serif;
+  font-size: 13px;
+  line-height: 29px;
+  padding: 0 10px 0 11px;
+  position: relative;
   text-align: center;
   text-decoration: none;
-  transition: all 250ms;
-  border: 0;
-  font-size: 16px;
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
+  vertical-align: middle;
+  width: 100px;
 }
 
 .btn:hover {
-  box-shadow: rgba(206, 206, 206, .2) 0 -25px 18px -14px inset,rgba(206, 206, 206, .15) 0 1px 2px,rgba(206, 206, 206, .15) 0 2px 4px,rgba(206, 206, 206, .15) 0 4px 8px,rgba(206, 206, 206, .15) 0 8px 16px,rgba(206, 206, 206, .15) 0 16px 32px;
-  transform: scale(1.05) rotate(-1deg);
+  background-color: #f7fafa;
 }
 
 .btn-outlined {
-  background-color: #d8d8d8;
-  border-radius: 50px;
-  box-shadow: rgba(206, 206, 206, .2) 0 -25px 18px -14px inset,rgba(206, 206, 206, .15) 0 1px 2px,rgba(206, 206, 206, .15) 0 2px 4px,rgba(206, 206, 206, .15) 0 4px 8px,rgba(206, 206, 206, .15) 0 8px 16px,rgba(206, 206, 206, .15) 0 16px 32px;
-  color: rgb(0, 0, 0);
+  background-color: #fff;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.5) 0 2px 5px 0;
+  box-sizing: border-box;
+  color: #0f1111;
   cursor: pointer;
   display: inline-block;
-  font-family: CerebriSans-Regular,-apple-system,system-ui,Roboto,sans-serif;
-  padding: 7px 20px;
+  font-family: "Amazon Ember",sans-serif;
+  font-size: 13px;
+  line-height: 29px;
+  padding: 0 10px 0 11px;
+  position: relative;
   text-align: center;
   text-decoration: none;
-  transition: all 250ms;
-  border: 0;
-  font-size: 16px;
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
+  vertical-align: middle;
+  width: 125px;
 }
 
 .btn-outlined:hover {
-  background-color: #ffffff;
+  background-color: #000000;
   text-decoration: none;
-  color: #000;
-  box-shadow: rgba(206, 206, 206,.35) 0 -25px 18px -14px inset,rgba(206, 206, 206,.25) 0 1px 2px,rgba(206, 206, 206,.25) 0 2px 4px,rgba(206, 206, 206,.25) 0 4px 8px,rgba(206, 206, 206,.25) 0 8px 16px,rgba(206, 206, 206,.25) 0 16px 32px;
-  transform: scale(1.05) rotate(-0deg);
+  color: rgb(255, 255, 255);
 }
 
 @media only screen and (max-width: 800px) {

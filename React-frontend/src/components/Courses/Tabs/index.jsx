@@ -26,16 +26,6 @@ palette: {
     
 
   const style = {
-    color: {
-      light: "var(--black)", 
-      dark: "var(--green)"   
-  },
-    "& .Mui-selected": {
-      color: {
-        light: "var(--black)", 
-        dark: "var(--green)"  
-      },
-    },
     fontFamily: "Inter,sans-serif",
     fontWeight: 600,
     textTransform: "capitalize",
@@ -46,8 +36,8 @@ palette: {
       <TabContext value={value}>
         <div className='tab-container'>
           <TabList onChange={handleChange} variant='fullWidth'>
-              <Tab label="Grid " value="grid" sx={style}  style={{outline: "none", textDecoration: "none", MuiSelected: {color: "var(--red)"}}}/>
-              <Tab label="List" value="list" sx={style}  style={{outline: "none", textDecoration: "none"}}/>
+              <Tab label="Grid " value="grid" sx={style}  style={{outline: "none", textDecoration: "none", color: "var(--white)"}}/>
+              <Tab label="List" value="list" sx={style}  style={{outline: "none", textDecoration: "none", color: "var(--white)"}}/>
             </TabList>
         </div>
         <TabPanel value="grid">

@@ -23,6 +23,27 @@ const mockCourses = [
     price: 200, 
     instructor: { username: 'instructor2' } 
   },
+  { 
+    id: 3, 
+    courseName: 'Course 3', 
+    description: 'Description 3', 
+    price: 300, 
+    instructor: { username: 'instructor3' } 
+  },
+  { 
+    id: 4, 
+    courseName: 'Course 4', 
+    description: 'Description 4', 
+    price: 400, 
+    instructor: { username: 'instructor4' } 
+  },
+  { 
+    id: 5, 
+    courseName: 'Course 5', 
+    description: 'Description 5', 
+    price: 500, 
+    instructor: { username: 'instructor5' } 
+  },
   // Add more mock courses if needed
 ];
 

@@ -4,7 +4,7 @@ import "./styles.css";
 
 function List({ course }) {
   return (
-    <Link to={`/courses/${course.id}`}>
+    <Link to={`/courses/${course.id}`} style={{ textDecoration: 'none' }}>
       <td className='list-row'>
         <div className='td-info'>
           <p className='course_name'>

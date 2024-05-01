@@ -195,12 +195,14 @@ function SignUpForm({ formData, handleInputChange, handleRoleChange, handleSubmi
                         </div>
                     )}
 
-                    <button type="submit" className="btn btn-primary">
-                        Sign Up
-                    </button>
+                    <div style={{display: "flex", justifyContent: "center", paddingTop: "5%", paddingBottom: "10%"}}>
+                        <button type="submit" className="btn btn-primary">
+                            Sign Up
+                        </button>
+                    </div>
 
                     <div className="login-link">
-                        <p style={{marginTop: "10px"}}>
+                        <p style={{fontSize: "small"}}>
                             Already have an account?{' '}
                             <a href="/sign-in">
                                 Log in here

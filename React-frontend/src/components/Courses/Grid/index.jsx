@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 function Grid({ course }) {
     return (
-      <Link to={`/courses/${course.id}`}>
+      <Link to={`/courses/${course.id}`} style={{ textDecoration: 'none' }}>
         <div className='grid-container'>
           <div className='name-col'>
             <p className='course_name'>
