@@ -5,7 +5,7 @@ import Button from '../../Common/Button';
 
 function CourseLinks({ courseId }) {
   return (
-    <div className="links">
+    <div className="links" style={{marginTop: "20px"}}>
       <Link to={`/courses/${courseId}/contents`}>
         <Button text={"Contents"} outlined={true} />
       </Link>

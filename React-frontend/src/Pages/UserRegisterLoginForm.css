@@ -87,7 +87,7 @@ input:focus~label,input:not(:placeholder-shown)~label{
 }
 .recover a{
     text-decoration:none;
-    color:rgb(125,125,235);
+    color:rgb(0, 0, 0);
 }
 .recover a:hover{
     color:black;
@@ -100,13 +100,13 @@ input:focus~label,input:not(:placeholder-shown)~label{
     outline:none;
     border:none;
     width:100%;
-    background:rgb(125,125,235);
+    background:rgb(0, 0, 0);
     color:white;
     cursor:pointer;
     transition:0.9s;
 }
 .btn:hover{
-    background:#07001f;
+    background:#000000;
 }
 .or{
     font-size:1.1rem;
@@ -135,11 +135,10 @@ input:focus~label,input:not(:placeholder-shown)~label{
     display:flex;
     justify-content:space-around;
     padding:0 4rem;
-    margin-top:0.9rem;
     font-weight:bold;
 }
 button{
-    color:rgb(125,125,235);
+    color:rgb(0, 0, 0);
     border:none;
     background-color:transparent;
     font-size:1rem;
@@ -147,5 +146,5 @@ button{
 }
 button:hover{
     text-decoration:underline;
-    color:blue;
+    color:rgb(0, 0, 0);
 }

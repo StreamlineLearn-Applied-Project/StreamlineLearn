@@ -1,8 +1,10 @@
 .footer{
-    margin-top: 0.5%;
-    margin-left: 1%;
-    font-size: small;
+    position: fixed;
+    bottom: 0px;
     width: 100%;
+    font-size: small;
     color: #000;
-    background-color: rgba(173, 216, 230, 0); /* Use RGBA color for transparency */
+    padding: 0.5rem 3rem;
+    background-color: var(--darkgrey);
+    z-index: 1000;
 }

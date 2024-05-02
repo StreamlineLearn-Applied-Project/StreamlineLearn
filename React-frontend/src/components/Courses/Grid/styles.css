@@ -1,10 +1,10 @@
 .grid-container {
   width: 350px;
-  height: 500px;
+  height: 400px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  background-color: #f0f0f0; /* Light grey */
+  background-color: var(--black);
   border-radius: 0.8rem;
   border: 2px solid #ccc; /* Dark grey */
   cursor: pointer;
@@ -13,8 +13,8 @@
 }
 
 .grid-container:hover {
-  border: 2px solid #4CAF50; /* Green */
-  transition: all 0.3s;
+  border: 3px solid #696969;
+  transition: all 0.1s;
 }
 
 .name-col {
@@ -27,7 +27,7 @@
 .course_name {
   margin: 0;
   font-weight: bold; /* Make course name bold */
-  color: #333; /* Dark grey */
+  color: var(--white);
   font-size: 3rem; /* Increase font size */
 }
 

@@ -1,5 +1,6 @@
 .carousel-container { 
-    margin-top: 0px
+    margin-top: 0px;
+    height: 90vh;
 }
 
 .carousel-container .slide {

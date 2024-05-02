@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link, useParams } from 'react-router-dom';
 
 import Header from '../components/Common/Header';
+import Footer from '../components/Common/Footer';
 import CourseInfo from '../components/Course/CourseInfo';
 import Button from '../components/Common/Button';
 import CourseLinks from '../components/Course/CourseLinks';
@@ -50,6 +51,7 @@ function CoursePage() {
       ) : (
         <p>Loading course...</p>
       )}
+      <Footer/>
     </div>
   );
 }
