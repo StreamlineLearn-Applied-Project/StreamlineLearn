@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DiscussionServiceImplementation implements DiscussionService {
@@ -95,6 +96,30 @@ public class DiscussionServiceImplementation implements DiscussionService {
         } catch (Exception ex) {
             logger.error("Error getting discussions", ex);
             throw new DiscussionException("Unable to get discussions: " + ex.getMessage());
+        }
+    }
+
+    @Override
+    public Discussion getDiscussionById(Long courseId, Long discussionId, String authorizationHeader) {
+        try {
+            // Extract role and ID from the authorization header
+            UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
+
+            // Check if the user is authorized to access the discussion
+            Optional<Discussion> discussion = discussionRepository.findById(discussionId);
+            if (discussion.isPresent()) {
+                if (("STUDENT".equals(userSharedDto.getRole()) && courseService.isStudentEnrolled(userSharedDto.getId(), courseId)) ||
+                        ("INSTRUCTOR".equals(userSharedDto.getRole()) && courseService.isInstructorOfCourse(userSharedDto.getId(), courseId))) {
+                    return discussion.get();
+                } else {
+                    throw new RuntimeException("Unauthorized access to discussion");
+                }
+            } else {
+                throw new RuntimeException("Discussion not found");
+            }
+        } catch (Exception ex) {
+            logger.error("Error getting discussion", ex);
+            throw new DiscussionException("Unable to get discussion: " + ex.getMessage());
         }
     }
 

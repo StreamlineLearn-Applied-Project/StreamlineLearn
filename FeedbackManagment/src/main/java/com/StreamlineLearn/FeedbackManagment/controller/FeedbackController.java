@@ -13,6 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/courses/{courseId}/feedback")
+@CrossOrigin(origins = "*")
 public class FeedbackController {
     // This declares a dependency on a FeedbackService.
     private final FeedbackService feedbackService;

@@ -11,6 +11,8 @@ public interface DiscussionService {
 
     List<Discussion> getAllDiscussions(Long courseId, String authorizationHeader);
 
+    public Discussion getDiscussionById(Long courseId, Long discussionId, String authorizationHeader);
+
     Boolean updateDiscussion(Long courseId, Long discussionId, Discussion discussion, String authorizationHeader);
 
     Boolean deleteDiscussion(Long courseId, Long discussionId, String authorizationHeader);
