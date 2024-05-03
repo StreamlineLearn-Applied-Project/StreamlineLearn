@@ -13,7 +13,7 @@
     transition: all 0.1s;
   }
 
-  .announcement-title {
+  .content-title {
     margin: 0;
     font-weight: bold; /* Make course name bold */
     color: var(--gray);

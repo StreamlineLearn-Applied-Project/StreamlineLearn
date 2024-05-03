@@ -1,24 +1,71 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import Header from '../components/Common/Header';
+import Footer from '../components/Common/Footer';
+import { getAssessmentById } from '../Api/assessments';
+import AssessmentDetails from '../components/Assessment';
 
 function AssessmentPage() {
-  const { assessmentId } = useParams();
-  const [assessment, setAssessment] = useState(null);
 
-  useEffect(() => {
-    if(assessmentId){
-      axios.get(`http://localhost:8484/courses/${courseId}/announcements/${assessmentId}`)
-        .then(response => {
-          setCourse(response.data);
-        })
-        .catch(error => {
-          console.error('There was an error!', error);
-        });
+  // mockAssessment
+  const mockAssessment = {
+    id: 1,
+    title: "Machine Learning Algorithms Proficiency Test",
+    percentage: 20,
+    course: {
+        id: 1,
+        courseName: "Artificial Intelligence",
+        instructor: {
+            id: 1,
+            username: "abishekalwis",
+            role: "INSTRUCTOR"
+        }
     }
-  }, [assessmentId]);
+  };
 
-  return (
-    <div>AssessmentPage</div>
-  )
+    const { courseId, assessmentId } = useParams();
+    const [assessment, setAssessment] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem('jwtToken');
+        setIsLoading(true);
+        getAssessmentById(courseId, assessmentId, token)
+            .then(response => {
+                setAssessment(response.data);
+                setIsLoading(false);
+            })
+            .catch(error => {
+                console.error('There was an error!', error);
+                setError(error);
+                setIsLoading(false);
+                // Use mockAssessment if there's an error (e.g., backend is not running)
+                setAssessment(mockAssessment);
+            });
+    }, [courseId, assessmentId]);
+
+    // if (isLoading) {
+    //     return <div>Loading...</div>;
+    // }
+
+    // if (error) {
+    //     return <div>Error: {error.message}</div>;
+    // }
+
+    return (
+      <div>
+        <Header/>
+        {assessment && (
+          <div>
+            <h1>Assessment Details</h1>
+            <AssessmentDetails assessment={assessment} />
+          </div>
+        )}
+        <Footer/>
+      </div>
+    );
 }
 
-export default AssessmentPage
+export default AssessmentPage;
+

@@ -1,36 +1,67 @@
+// AnnouncementPage.jsx
+
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Common/Header';
 import AnnouncementDetails from '../components/Announcement';
+import { getAnnouncementById } from '../Api/announcements';
+
 
 function AnnouncementPage() {
+
+    // mockAnnouncement
+    const mockAnnouncement = {
+        id: 1,
+        announcementTitle: "Introduction to Neural Networks",
+        announcement: "Dear students, this week we'll dive into the fascinating world of Neural Networks. We'll explore their architecture, understand how they learn, and start implementing our first models. Make sure to review the materials on perceptrons and gradient descent before our next session. Happy learning!",
+        course: {
+            id: 1,
+            courseName: "Artificial Intelligence",
+            instructor: {
+                id: 1,
+                username: "abishekalwis",
+                role: "INSTRUCTOR"
+            }
+        }
+    };
+    
     const { courseId, announcementId } = useParams();
     const [announcement, setAnnouncement] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (courseId && announcementId) {
-            axios.get(`http://localhost:8484/courses/${courseId}/announcements/${announcementId}`)
-                .then(response => {
-                    setAnnouncement(response.data);
-                })
-                .catch(error => {
-                    console.error('There was an error!', error);
-                });
-        }
+        const token = localStorage.getItem('jwtToken');
+        setIsLoading(true);
+        getAnnouncementById(courseId, announcementId, token)
+        .then(response => {
+            setAnnouncement(response.data);
+            setIsLoading(false);
+        })
+        .catch(error => {
+            console.error('There was an error!', error);
+            setError(error);
+            setIsLoading(false);
+            setAnnouncement(mockAnnouncement);
+        });
     }, [courseId, announcementId]);
 
-    // Mock announcement data
-    const mockAnnouncement = { id: 1, title: 'Mock Announcement 1', content: 'This is a mock announcement content.' };
+    // if (isLoading) {
+    //     return <div>Loading...</div>;
+    // }
+
+    // if (error) {
+    //     return <div>Error: {error.message}</div>;
+    // }
 
     return (
         <div>
-          <Header/>
-          <h1>Announcement Details</h1>
-            {/* Once done with the mockAnnouncement replace it with "announcement"*/}
-            <AnnouncementDetails announcement={mockAnnouncement} /> 
+            <Header />
+            <h1>Announcement Details</h1>
+            <AnnouncementDetails announcement={announcement} />
         </div>
-      );
-  }
+    );
+}
 
 export default AnnouncementPage;
+
