@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/courses/{courseId}/discussions")
+@CrossOrigin(origins = "*")
 public class DiscussionController {
     // This declares a dependency on a DiscussionService.
     private final DiscussionService discussionService;
@@ -54,6 +55,18 @@ public class DiscussionController {
         // Call the service method to get all the Discussions of a course.
         List<Discussion> discussions = discussionService.getAllDiscussions(courseId,authorizationHeader);
         return ResponseEntity.ok().body(discussions);
+    }
+
+    // Get discussion by courseId and DiscussionId
+    @GetMapping("/{discussionId}") //HTTP GET requests onto the getDiscussionByCourseId method.
+    @IsStudentOrInstructor
+    public ResponseEntity<Discussion> getDiscussionByDiscussionId(@PathVariable Long courseId,
+                                                                  @PathVariable Long discussionId,
+                                                              @RequestHeader("Authorization") String authorizationHeader) {
+
+        // Call the service method to get all the Discussions of a course.
+        Discussion discussion = discussionService.getDiscussionById(courseId,discussionId,authorizationHeader);
+        return ResponseEntity.ok().body(discussion);
     }
 
 

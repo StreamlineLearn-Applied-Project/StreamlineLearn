@@ -1,0 +1,21 @@
+.list-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid #ccc;
+    margin-right: 10%;
+  }
+
+  .list-row:hover {
+    border-bottom: 2px solid var(--white);
+    transition: all 0.1s;
+  }
+
+  .assessment-title {
+    margin: 0;
+    font-weight: bold; /* Make course name bold */
+    color: var(--gray);
+    font-size: 3rem; /* Increase font size */
+  }

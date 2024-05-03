@@ -1,6 +1,7 @@
 package com.StreamlineLearn.DiscussionService.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class Discussion {
             joinColumns = @JoinColumn(name = "discussion_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
-    @JsonIgnore // Ignore this field during serialization to break the infinite loop
+    @JsonIgnore
     private Set<Student> students = new HashSet<>();
 
     // Many-to-many relationship with Student
@@ -40,6 +41,7 @@ public class Discussion {
             joinColumns = @JoinColumn(name = "discussion_id"),
             inverseJoinColumns = @JoinColumn(name = "instructor_id")
     )
+    @JsonIgnore
     private Set<Instructor> instructors = new HashSet<>();
 
     @ElementCollection

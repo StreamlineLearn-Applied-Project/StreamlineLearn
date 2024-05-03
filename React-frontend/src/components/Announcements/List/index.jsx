@@ -1,15 +1,19 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
+import "./styles.css";
 
-function AnnouncementList({ announcements }) {
+function AnnouncementList({ announcements, courseId }) {
     return (
         <div>
             {announcements.map((announcement) => (
-                // Once done replace the "1" with " ${course.id}"
-                <Link to={`/courses/1/announcements/${announcement.id}`} key={announcement.id}>
-                    <div>
-                        <h2>{announcement.title}</h2>
-                    </div>
+                <Link to={`/courses/${courseId}/announcements/${announcement.id}`} key={announcement.id}>
+                    <td className='list-row'>
+                        <div className='td-info'>
+                            <p className='announcement-title'>
+                                {announcement.announcementTitle} 
+                            </p>
+                        </div>
+                    </td>
                 </Link>
             ))}
         </div>
@@ -17,3 +21,4 @@ function AnnouncementList({ announcements }) {
 }
 
 export default AnnouncementList;
+

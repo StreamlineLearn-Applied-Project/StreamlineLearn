@@ -25,6 +25,7 @@ public class Course {
             joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
+    @JsonIgnore
     private Set<Student> students = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.EAGER)

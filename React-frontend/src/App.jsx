@@ -10,15 +10,18 @@ import CoursesPage from './Pages/Courses';
 import CoursePage from './Pages/Course';
 import CreateCoursePage from './Pages/CreateCourse';
 import ContentsPage from './Pages/Contents';
+import ContentPage from './Pages/Content';
 import AssessmentsPage from './Pages/Assessments';
 import DiscussionsPage from './Pages/Discussions';
+import DiscussionPage from './Pages/Discussion';
 import AnnouncementsPage from './Pages/Announcements';
 import AnnouncementPage from './Pages/Announcement';
 import InstructorInfoPage from './Pages/InstructorInfo';
 import GradesPage from './Pages/Grades';
-import FeedbackPage from './Pages/Feedback';
+import FeedbacksPage from './Pages/Feedbacks';
 
 import PrivateRoute from './components/private/PrivateRoute';
+import AssessmentPage from './Pages/Assessment';
 
 function App() {
   return (
@@ -39,18 +42,25 @@ function App() {
           <Route path="/instructor-courses" element={<InstructorCoursesPage/>} />
           <Route path="/create-course" element={<CreateCoursePage/>} />
 
-          // courses and course releted pages
+          // courses and course related pages
           <Route path="/courses" element={<CoursesPage/>} />
           <Route path="/courses/:courseId" element={<CoursePage/>} />
+
           <Route path="/courses/:courseId/contents" element={<ContentsPage/>} />
+          <Route path="/courses/:courseId/contents/:contentId" element={<ContentPage/>} />
+
           <Route path="/courses/:courseId/assessments" element={<AssessmentsPage/>} />
+          <Route path="/courses/:courseId/assessments/:assessmentId" element={<AssessmentPage/>} />
+
           <Route path="/courses/:courseId/discussions" element={<DiscussionsPage/>} /> 
+          <Route path="/courses/:courseId/discussions/:discussionId" element={<DiscussionPage/>} /> 
 
           <Route path="/courses/:courseId/announcements" element={<AnnouncementsPage/>} />
           <Route path="/courses/:courseId/announcements/:announcementId" element={<AnnouncementPage />} /> 
+
           <Route path="/courses/:courseId/instructor" element={<InstructorInfoPage/>} /> 
           <Route path="/courses/:courseId/grades" element={<GradesPage/>} /> 
-          <Route path="/courses/:courseId/feedback" element={<FeedbackPage/>} /> 
+          <Route path="/courses/:courseId/feedbacks" element={<FeedbacksPage/>} /> 
         </Routes>
       </BrowserRouter>
     </div>

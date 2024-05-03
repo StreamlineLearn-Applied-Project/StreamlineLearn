@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import Header from '../components/Common/Header';
 import Footer from '../components/Common/Footer';
 import TabsComponent from '../components/Courses/Tabs'; 
 import Search from '../components/Courses/Search';
+import { getAllCourses } from '../Api/courses';
 
 function CoursesPage() {
 
@@ -44,11 +44,20 @@ const mockCourses = [
     price: 500, 
     instructor: { username: 'instructor5' } 
   },
-  // Add more mock courses if needed
+  { 
+    id: 6, 
+    courseName: 'Course 6', 
+    description: 'Description 6', 
+    price: 600, 
+    instructor: { username: 'instructor5' } 
+  },
+  
 ];
 
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const onSearchChange = (e) => {
     setSearch(e.target.value);
@@ -56,31 +65,40 @@ const mockCourses = [
 
   var filteredCourses = courses.filter((item)=> 
   item.courseName.toLowerCase().includes(search)
-);
+  );
 
 
   useEffect(() => {
-    axios.get('http://localhost:8282/courses')
+    setIsLoading(true);
+    getAllCourses()
       .then(response => {
         setCourses(response.data);
+        setIsLoading(false);
       })
       .catch(error => {
         console.error('There was an error!', error);
+        setError(error);
+        setIsLoading(false);
+        setCourses(mockCourses); // Use mockCourses if there's an error (e.g., backend is not running)
       });
   }, []);
+
+
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
+
+  // if (error) {
+  //   return <div>Error: {error.message}</div>;
+  // }
 
 
 
   return (
     <div>
       <Header/>
-
       <Search search={search} onSearchChange={onSearchChange}/>
-      
-      {/* Once done with the mockCourses replace it with "filteredCourses"*/}
-
-      <TabsComponent courses={mockCourses}/>
-      
+      <TabsComponent courses={filteredCourses}/>
       <Footer />
     </div>
   )
