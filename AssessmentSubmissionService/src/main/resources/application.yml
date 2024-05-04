@@ -43,3 +43,7 @@ course:
   management:
     service:
       url: http://localhost:8282
+
+
+app:
+  folder-path: "C:\\Users\\Abish\\Desktop\\Image\\"

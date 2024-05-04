@@ -38,6 +38,8 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
 
 
+app:
+  folder-path: "C:\\Users\\Abish\\Desktop\\Image\\"
 
 
 
