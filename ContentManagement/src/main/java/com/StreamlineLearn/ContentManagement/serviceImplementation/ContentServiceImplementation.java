@@ -1,22 +1,27 @@
 package com.StreamlineLearn.ContentManagement.serviceImplementation;
 
-import com.StreamlineLearn.ContentManagement.dto.ContentDto;
 import com.StreamlineLearn.ContentManagement.exception.ContentException;
 import com.StreamlineLearn.ContentManagement.model.Content;
+import com.StreamlineLearn.ContentManagement.model.ContentMedia;
 import com.StreamlineLearn.ContentManagement.model.Course;
+import com.StreamlineLearn.ContentManagement.repository.ContentMediaRepository;
 import com.StreamlineLearn.ContentManagement.repository.ContentRepository;
-import com.StreamlineLearn.ContentManagement.repository.CourseRepository;
 import com.StreamlineLearn.ContentManagement.service.ContentService;
 import com.StreamlineLearn.ContentManagement.service.CourseService;
 import com.StreamlineLearn.SharedModule.dto.UserSharedDto;
 import com.StreamlineLearn.SharedModule.service.EnrollmentService;
 import com.StreamlineLearn.SharedModule.service.JwtUserService;
+import com.StreamlineLearn.SharedModule.sharedException.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Objects;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Optional;
 import java.util.Set;
 
@@ -25,17 +30,22 @@ public class ContentServiceImplementation implements ContentService {
     private final JwtUserService jwtUserService;
     private final CourseService courseService;
     private final ContentRepository contentRepository;
+    private final ContentMediaRepository contentMediaRepository;
     private final EnrollmentService enrollmentService;
     private static final Logger logger = LoggerFactory.getLogger(ContentServiceImplementation.class);
+    @Value("${app.folder-path}")
+    private String FOLDER_PATH;
 
     // Constructor injection for dependencies
     public ContentServiceImplementation(JwtUserService jwtUserService,
                                         CourseService courseService,
                                         ContentRepository contentRepository,
+                                        ContentMediaRepository contentMediaRepository,
                                         EnrollmentService enrollmentService) {
         this.jwtUserService = jwtUserService;
         this.courseService = courseService;
         this.contentRepository = contentRepository;
+        this.contentMediaRepository = contentMediaRepository;
         this.enrollmentService = enrollmentService;
     }
 
@@ -54,10 +64,23 @@ public class ContentServiceImplementation implements ContentService {
         return "INSTRUCTOR".equals(role) && courseService.isInstructorOfCourse(instructorId, courseId);
     }
 
+    private static ContentMedia getContentMedia(MultipartFile file, Content existingContent, String imageFilePath) {
+        ContentMedia contentMedia = existingContent.getContentMedia();
+        if (contentMedia == null) {
+            contentMedia = new ContentMedia();
+            contentMedia.setContent(existingContent);
+        }
+        contentMedia.setMediaName(file.getOriginalFilename());
+        contentMedia.setType(file.getContentType());
+        contentMedia.setMediaFilePath(imageFilePath);
+        return contentMedia;
+    }
+
     // Method to create a content
     @Override
-    public Content createContent(Long courseId, Content content, String authorizationHeader) {
+    public Content createContent(Long courseId, Content content, MultipartFile file, String authorizationHeader) {
         try {
+            String imageFilePath = FOLDER_PATH + file.getOriginalFilename();
             // Retrieve the course by its ID
             Course course = courseService.getCourseByCourseId(courseId);
 
@@ -67,7 +90,25 @@ public class ContentServiceImplementation implements ContentService {
             if (course != null && course.getInstructor().getId().equals(userSharedDto.getId())) {
                 // Set the course to the content and save it in the repository
                 content.setCourse(course);
-                contentRepository.save(content);
+                // Save the Content entity first
+                Content savedContent = contentRepository.save(content);
+
+                // Save the ContentMedia entity after the Content entity is saved
+                ContentMedia contentMedia = ContentMedia.builder()
+                        .mediaName(file.getOriginalFilename())
+                        .type(file.getContentType())
+                        .mediaFilePath(imageFilePath)
+                        .content(savedContent) // Set the saved Content entity
+                        .build();
+                contentMedia = contentMediaRepository.save(contentMedia);
+
+                // Set the ContentMedia entity in the Content entity
+                savedContent.setContentMedia(contentMedia);
+                // Update the Content entity to reflect the relationship
+                savedContent = contentRepository.save(savedContent);
+
+                // Transfer the file
+                file.transferTo(new File(imageFilePath));
 
                 // Return the newly created content
                 return content;
@@ -112,10 +153,15 @@ public class ContentServiceImplementation implements ContentService {
                     userSharedDto.getId(), courseId)) {
                 return course.getContents().stream()
                         .filter(content -> content.getId().equals(contentId))
-                        .map(content -> new Content(content.getId(),
-                                content.getTitle(),
-                                content.getImage(),
-                                content.getCourse()))
+                        .map(content -> new Content(
+                                content.getId(),
+                                content.getContentTitle(),
+                                content.getContentDescription(),
+                                content.getCreationDate(),
+                                content.getLastUpdated(),
+                                content.getCourse(),
+                                content.getContentMedia()
+                        ))
                         .findFirst();
             }
             return Optional.empty();
@@ -126,23 +172,85 @@ public class ContentServiceImplementation implements ContentService {
         }
     }
 
-    // Method to update a contents by ID
     @Override
-    public boolean updateContentById(Long courseId, Long contentId, Content content, String authorizationHeader) {
-        try{
+    public byte[] getContentMedia(Long courseId, String fileName, String authorizationHeader) throws IOException {
+        try {
             UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
             Course course = courseService.getCourseByCourseId(courseId);
 
-            if (course != null && isAuthorizedAsInstructor(userSharedDto.getRole(),
+            if (course != null && isAuthorizedAsInstructorOrStudent(userSharedDto.getRole(),
                     userSharedDto.getId(), courseId)) {
+                Optional<ContentMedia> contentMedia = contentMediaRepository.findByMediaName(fileName);
+                if (contentMedia.isPresent()) {
+                    String mediaFilePath = contentMedia.get().getMediaFilePath();
+                    return Files.readAllBytes(new File(mediaFilePath).toPath());
+                } else {
+                    throw new FileNotFoundException("Media file not found: " + fileName);
+                }
+            } else {
+                throw new UnauthorizedException("User is not authorized to access media for this course");
+            }
+        } catch (IOException ex) {
+            // Log IO exceptions
+            logger.error("Error occurred while reading media file", ex);
+            throw ex;
+        } catch (UnauthorizedException ex) {
+            // Log and rethrow UnauthorizedException
+            logger.error(ex.getMessage(), ex);
+            throw ex;
+        } catch (Exception ex) {
+            // Log any unexpected exceptions and throw a generic ContentException
+            logger.error("An unexpected error occurred while getting content media", ex);
+            throw new ContentException("Failed to get content media: " + ex.getMessage(), ex);
+        }
+    }
+
+
+    // Method to update a content by ID
+    @Override
+    public boolean updateContentById(Long courseId, Long contentId, Content content, MultipartFile file, String authorizationHeader) {
+        try {
+            UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
+            Course course = courseService.getCourseByCourseId(courseId);
+
+            if (course != null && isAuthorizedAsInstructor(userSharedDto.getRole(), userSharedDto.getId(), courseId)) {
                 Optional<Content> optionalContent = course.getContents().stream()
                         .filter(a -> a.getId().equals(contentId))
                         .findFirst();
 
                 if (optionalContent.isPresent()) {
                     Content existingContent = optionalContent.get();
-                    existingContent.setTitle(content.getTitle());
-                    existingContent.setImage(content.getImage());
+                    existingContent.setContentTitle(content.getContentTitle());
+                    existingContent.setContentDescription(content.getContentDescription());
+
+                    // Check if a new file is uploaded
+                    if (file != null && !file.isEmpty()) {
+                        // Delete the previous file
+                        if (existingContent.getContentMedia() != null) {
+                            String previousFilePath = existingContent.getContentMedia().getMediaFilePath();
+                            File previousFile = new File(previousFilePath);
+                            if (previousFile.exists()) {
+                                if (!previousFile.delete()) {
+                                    logger.warn("Failed to delete previous file: {}", previousFilePath);
+                                }
+                            }
+                        }
+
+                        // Save the new file
+                        String imageFilePath = FOLDER_PATH + file.getOriginalFilename();
+                        file.transferTo(new File(imageFilePath));
+
+                        // Update the ContentMedia entity
+                        ContentMedia contentMedia = getContentMedia(file, existingContent, imageFilePath);
+
+                        // Save the ContentMedia entity
+                        contentMediaRepository.save(contentMedia);
+
+                        // Set the ContentMedia entity in the Content entity
+                        existingContent.setContentMedia(contentMedia);
+                    }
+
+                    // Save the updated content
                     contentRepository.save(existingContent);
                     return true;
                 }
@@ -154,6 +262,7 @@ public class ContentServiceImplementation implements ContentService {
             throw new ContentException("Failed to update content by ID: " + ex.getMessage(), ex);
         }
     }
+
 
     // Method to delete a contents by ID
     @Override
@@ -182,7 +291,6 @@ public class ContentServiceImplementation implements ContentService {
             throw new ContentException("Failed to delete content by ID: " + ex.getMessage(), ex);
         }
     }
-
 
 }
 
