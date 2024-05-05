@@ -35,7 +35,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--black);
   overflow-x: hidden;
-  height: 200vh;
+  height: auto;
+  margin-bottom: 2%;
 }
 
 h1,
