@@ -102,7 +102,6 @@ function FeedbacksPage() {
     return (
       <div>
         <Header/>
-        <h1>Feedbacks</h1>
         <FeedbackList feedbacks={feedbacks} courseId={courseId} />
       </div>
     );

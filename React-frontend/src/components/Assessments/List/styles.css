@@ -10,7 +10,7 @@
     justify-content: space-between;
     padding: 1rem;
     border-bottom: 1px solid #ccc;
-    margin-right: 10%;
+    margin-right: 5%;
     grid-template-columns: 80% 1fr;
     gap: 8px;
   }
