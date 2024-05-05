@@ -1,21 +1,24 @@
-.list-row {
+.announcements {
+  position: relative;
+  width:50%;
+  padding:2.5rem;
+}
+
+.announcements-list-row {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    gap: 1rem;
-    padding: 1rem;
-    border-bottom: 1px solid #ccc;
-    margin-right: 10%;
+    padding-top: 1.5rem;
   }
 
-  .list-row:hover {
-    border-bottom: 2px solid var(--white);
+  .announcements-list-row:hover {
     transition: all 0.1s;
+    text-decoration: none;
   }
 
   .announcement-title {
     margin: 0;
-    font-weight: bold; /* Make course name bold */
+    font-weight: bold; 
     color: var(--gray);
-    font-size: 3rem; /* Increase font size */
+    font-size: 1.5rem; 
   }
