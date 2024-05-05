@@ -1,0 +1,12 @@
+.announcement {
+    position: relative;
+    width:100%;
+    padding:2.5rem;
+  }
+
+  .announcement-details {
+    margin-top: 2%;
+    position: relative;
+    width:90%;
+    padding-top:2.5rem;
+  }

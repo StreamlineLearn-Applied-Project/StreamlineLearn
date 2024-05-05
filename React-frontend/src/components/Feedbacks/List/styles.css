@@ -1,0 +1,28 @@
+.feedback {
+    position: relative;
+    width:100%;
+    padding:2.5rem;
+  }
+  
+    .feedback-list-row {
+      display: grid;
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem;
+      border-bottom: 1px solid #ccc;
+      margin-right: 5%;
+      text-decoration: none;
+    }
+  
+    .feedback-list-row:hover {
+      border-bottom: 2px solid var(--white);
+      transition: all 0.1s;
+    }
+  
+    .feedback-title {
+      margin: 0;
+      font-weight: bold; /* Make course name bold */
+      color: var(--gray);
+      font-size: 3rem; /* Increase font size */
+    }

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Common/Header';
+import Footer from '../components/Common/Footer';
 import AnnouncementDetails from '../components/Announcement';
 import { getAnnouncementById } from '../Api/announcements';
 
@@ -57,8 +58,8 @@ function AnnouncementPage() {
     return (
         <div>
             <Header />
-            <h1>Announcement Details</h1>
             <AnnouncementDetails announcement={announcement} />
+            <Footer />  
         </div>
     );
 }

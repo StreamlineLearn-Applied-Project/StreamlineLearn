@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Common/Header';
+import Footer from '../components/Common/Footer';
 import { getAllFeedbacks } from '../Api/feedbacks';
 import FeedbackList from '../components/Feedbacks/List';
 
@@ -102,8 +103,8 @@ function FeedbacksPage() {
     return (
       <div>
         <Header/>
-        <h1>Feedbacks</h1>
         <FeedbackList feedbacks={feedbacks} courseId={courseId} />
+        <Footer/>
       </div>
     );
 }

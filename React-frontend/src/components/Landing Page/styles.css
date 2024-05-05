@@ -7,3 +7,25 @@
     max-height: 85vh;
     min-height: 45vh;
 }
+
+.landing-page-card {
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.2);
+    width:100%;
+    padding:1.5rem;
+    backdrop-filter: blur(10px);
+    background-image: url('CI4.jpg');
+    background-size: cover;
+    background-position: bottom;
+    height: 60vH;
+}
+
+.page-card {
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.2);
+    width:100%;
+    padding:1.5rem;
+    box-shadow:0 0px 5px rgba(0,0,1,0.9);
+    backdrop-filter: blur(10px);
+    height: 27vH;
+}

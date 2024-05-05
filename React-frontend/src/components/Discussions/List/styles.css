@@ -1,0 +1,27 @@
+.discussions {
+    position: relative;
+    width:100%;
+    padding:2.5rem;
+  }
+  
+  .discussions-list-row {
+      display: grid;
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 1rem;
+      border-bottom: 1px solid #ccc;
+      margin-right: 5%;
+      gap: 8px;
+    }
+  
+    .discussions-list-row:hover {
+      border-bottom: 2px solid var(--white);
+      transition: all 0.1s;
+    }
+  
+    .discussions-title {
+      margin: 0;
+      font-weight: bold; /* Make course name bold */
+      color: var(--gray);
+      font-size: 3rem; /* Increase font size */
+    }

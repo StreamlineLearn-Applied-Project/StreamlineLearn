@@ -4,17 +4,20 @@ import "./styles.css";
 
 function AssessmentList({ assessments, courseId }) {
     return (
-        <div>
-            {assessments.map((assessment) => (
-                <Link to={`/courses/${courseId}/assessments/${assessment.id}`} key={assessment.id}>
-                    <td className='list-row'>
-                        <h2>{assessment.title}</h2>
-                        <p>Percentage: {assessment.percentage}%</p>
-                        <p>Course: {assessment.course.courseName}</p>
-                        <p>Instructor: {assessment.course.instructor.username}</p>
-                    </td>
-                </Link>
-            ))}
+        <div className='assesments'>
+            <h1 style={{ textAlign: 'left', fontWeight: 'bold', position: 'absolute'}}>Assessments</h1>
+            <div style={{marginTop: '4%'}}>
+                {assessments.map((assessment) => (
+                    <Link to={`/courses/${courseId}/assessments/${assessment.id}`} key={assessment.id} style={{ textDecoration: 'none' }}>
+                        <div className='assesments-list-row'>
+                            <h2>{assessment.title}</h2>
+                            <p>Percentage: {assessment.percentage}%</p>
+                            <p>Course: {assessment.course.courseName}</p>
+                            <p>Instructor: {assessment.course.instructor.username}</p>
+                        </div>
+                    </Link>
+                ))}
+            </div>
         </div>
     );
 }

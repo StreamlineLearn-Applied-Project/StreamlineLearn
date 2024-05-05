@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Common/Header';
+import Footer from '../components/Common/Footer';
 import AssessmentList from '../components/Assessments/List';
 import { getCourseAssessments } from '../Api/assessments';
 
@@ -93,8 +94,8 @@ function AssessmentsPage() {
     return (
       <div>
         <Header/>
-        <h1>Assessments</h1>
         <AssessmentList assessments={assessments} courseId={courseId} />
+        <Footer/>
       </div>
     );
 }

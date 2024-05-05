@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Common/Header';
+import Footer from '../components/Common/Footer';
 import AnnouncementList from '../components/Announcements/List';
 import { getCourseAnnouncements } from '../Api/announcements';
 
@@ -92,8 +93,8 @@ function AnnouncementsPage() {
     return (
         <div>
           <Header/>
-          <h1>Announcements</h1>
           <AnnouncementList announcements={announcements} courseId={courseId} />
+          <Footer/>
         </div>
       );
 }

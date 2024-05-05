@@ -9,6 +9,14 @@ function LandingPage() {
   return (
     <div>
         <Header/>
+        <div className="landing-page-card">
+            <h1 style={{textAlign: 'left', fontWeight: 'bold', position: 'absolute', paddingTop: '5%', paddingRight: '1%', marginLeft: '42%'}}> Streamlinelearn</h1>
+            <h1 style={{textAlign: 'left', position: 'absolute', paddingTop: '12%', paddingRight: '1%', marginLeft: '42%'}}> Unlimited access to 7,000+ world-class courses, hands-on projects, and job-ready certificate programs</h1>
+        </div>
+        <div className="page-card">
+            <h3 style={{textAlign: 'center', paddingBottom: '2rem'}}>Learn from 275+ leading universities and companies</h3>
+            <p style={{backgroundImage: 'url("ecu.jpg")', backgroundSize: 'contain', backgroundPosition: 'center', backgroundSize: 'cover', height: '80px', width: '110px', marginLeft: '50%'}}></p>
+        </div>
         <div>
             <Carousel showArrows={true} infiniteLoop={true} autoPlay={true} interval={5000} showThumbs={false} className="carousel-container">
                 <div>

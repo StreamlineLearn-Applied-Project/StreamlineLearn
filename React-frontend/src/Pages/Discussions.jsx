@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Common/Header';
+import Footer from '../components/Common/Footer';
 import { getAllDiscussions } from '../Api/discussions';
 import DiscussionList from '../components/Discussions/List';
 
@@ -87,8 +88,8 @@ function DiscussionsPage() {
     return (
       <div>
         <Header/>
-        <h1>Discussions</h1>
         <DiscussionList discussions={discussions} courseId={courseId} />
+        <Footer/>
       </div>
     );
 }

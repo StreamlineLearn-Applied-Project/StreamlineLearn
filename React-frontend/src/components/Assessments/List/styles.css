@@ -1,14 +1,21 @@
-.list-row {
-    display: flex;
+.assesments {
+  position: relative;
+  width:50%;
+  padding:2.5rem;
+}
+
+.assesments-list-row {
+    display: grid;
     flex-direction: row;
     justify-content: space-between;
-    gap: 1rem;
     padding: 1rem;
     border-bottom: 1px solid #ccc;
-    margin-right: 10%;
+    margin-right: 5%;
+    grid-template-columns: 80% 1fr;
+    gap: 8px;
   }
 
-  .list-row:hover {
+  .assesments-list-row:hover {
     border-bottom: 2px solid var(--white);
     transition: all 0.1s;
   }
