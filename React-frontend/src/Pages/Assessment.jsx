@@ -58,7 +58,6 @@ function AssessmentPage() {
         <Header/>
         {assessment && (
           <div>
-            <h1>Assessment Details</h1>
             <AssessmentDetails assessment={assessment} />
           </div>
         )}
