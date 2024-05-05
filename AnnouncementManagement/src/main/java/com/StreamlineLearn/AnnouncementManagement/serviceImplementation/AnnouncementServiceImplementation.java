@@ -112,6 +112,8 @@ public class AnnouncementServiceImplementation implements AnnouncementService {
                         .map(announcement -> new Announcement(announcement.getId(),
                                 announcement.getAnnouncementTile(),
                                 announcement.getAnnouncement(),
+                                announcement.getCreationDate(),
+                                announcement.getLastUpdated(),
                                 announcement.getCourse()))
                         .findFirst();
             }

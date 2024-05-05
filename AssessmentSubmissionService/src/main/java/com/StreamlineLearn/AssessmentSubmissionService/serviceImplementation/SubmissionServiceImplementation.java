@@ -38,8 +38,6 @@ public class SubmissionServiceImplementation implements SubmissionService {
     private final StudentService studentService;
     private final AssessmentService assessmentService;
     private final SubmissionRepository submissionRepository;
-    private static final int TOKEN_PREFIX_LENGTH = 7;
-
     @Value("${app.folder-path}")
     private String FOLDER_PATH;
     private static final Logger logger = LoggerFactory.getLogger(SubmissionServiceImplementation.class);

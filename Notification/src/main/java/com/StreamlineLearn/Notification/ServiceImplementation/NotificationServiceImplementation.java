@@ -47,6 +47,41 @@ public class NotificationServiceImplementation implements NotificationService {
         this.restTemplate = restTemplate;
     }
 
+    private static Notification getNotification(CourseDTO courseDTO, Instructor instructor) {
+        assert courseDTO != null;
+        String notificationContent = "Course '" + courseDTO.getCourseName() + "' created.\n";
+        notificationContent += "Description: " + courseDTO.getDescription() + "\n";
+        notificationContent += "Price: " + (courseDTO.getPrice().compareTo(BigDecimal.ZERO) > 0 ?
+                "$" + courseDTO.getPrice() : "Free");
+
+        // Create notification
+        Notification notification = new Notification();
+        notification.setContent(notificationContent);
+        notification.setType(NotificationType.COURSE_CREATION);
+
+        // Associate the instructor with the notification
+        notification.setInstructor(instructor);
+        return notification;
+    }
+
+    private static Notification getNotification(ResponseEntity<CourseDTO> response, Student student) {
+        CourseDTO courseDTO = response.getBody();
+
+        // Create notification content for student enrollment
+        assert courseDTO != null;
+        String notificationContent = "Student '" + student.getUserName() + "' enrolled in course " +
+                courseDTO.getCourseName() + ".";
+
+        // Create notification
+        Notification notification = new Notification();
+        notification.setContent(notificationContent);
+        notification.setType(NotificationType.STUDENT_ENROLLED);
+
+        // Associate the student with the notification
+        notification.setStudent(student);
+        return notification;
+    }
+
     @Override
     public void notifyCourseCreated(CourseSharedDto courseSharedDto) {
         // Get course details from course management service
@@ -61,24 +96,13 @@ public class NotificationServiceImplementation implements NotificationService {
 
             // Create notification content using course details
             assert courseDTO != null;
-            String notificationContent = "Course '" + courseDTO.getCourseName() + "' created.\n";
-            notificationContent += "Description: " + courseDTO.getDescription() + "\n";
-            notificationContent += "Price: " + (courseDTO.getPrice().compareTo(BigDecimal.ZERO) > 0 ?
-                    "$" + courseDTO.getPrice() : "Free");
-
-            // Create notification
-            Notification notification = new Notification();
-            notification.setContent(notificationContent);
-            notification.setType(NotificationType.COURSE_CREATION);
-            notification.setTimestamp(LocalDateTime.now());
-
-            // Associate the instructor with the notification
-            notification.setInstructor(instructor);
+            Notification notification = getNotification(courseDTO, instructor);
 
             // Save notification
             notificationRepository.save(notification);
         }
     }
+
 
 
     @Override
@@ -91,26 +115,13 @@ public class NotificationServiceImplementation implements NotificationService {
                 courseManagementServiceUrl + "/courses/" + enrolledStudentDto.getCourseId(), CourseDTO.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            CourseDTO courseDTO = response.getBody();
-
-            // Create notification content for student enrollment
-            assert courseDTO != null;
-            String notificationContent = "Student '" + student.getUserName() + "' enrolled in course " +
-                    courseDTO.getCourseName() + ".";
-
-            // Create notification
-            Notification notification = new Notification();
-            notification.setContent(notificationContent);
-            notification.setType(NotificationType.STUDENT_ENROLLED);
-            notification.setTimestamp(LocalDateTime.now());
-
-            // Associate the student with the notification
-            notification.setStudent(student);
+            Notification notification = getNotification(response, student);
 
             // Save notification
             notificationRepository.save(notification);
         }
     }
+
 
     @Override
     public List<Notification> getStudentNotifications(String authorizationHeader) {

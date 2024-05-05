@@ -3,21 +3,26 @@ package com.StreamlineLearn.DiscussionService.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 public class Discussion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String discussion;
-
+    @NotNull
     private String discussionTitle;
+    @NotNull
+    @Lob
+    private String discussion;
+    @CreationTimestamp
+    private Date creationDate;
+    @UpdateTimestamp
+    private Date lastUpdated;
 
     // Many-to-one relationship with Course
     @ManyToOne
@@ -69,6 +74,22 @@ public class Discussion {
 
     public void setDiscussionTitle(String discussionTitle) {
         this.discussionTitle = discussionTitle;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
     public Course getCourse() {

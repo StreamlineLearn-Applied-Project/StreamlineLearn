@@ -1,13 +1,18 @@
 package com.StreamlineLearn.CourseEnrollManagement.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.util.Date;
 
 @Entity
 public class Enrollment {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @CreationTimestamp
+    private Date enrolledDate;
 
     @ManyToOne
     @JoinColumn(name = "student_id")
@@ -26,7 +31,9 @@ public class Enrollment {
         this.student = student;
         this.course = course;
         this.paid = paid;
+        this.enrolledDate = new Date(); // Set the enrolledDate to the current date/time
     }
+
 
     public Long getId() {
         return id;
@@ -34,6 +41,14 @@ public class Enrollment {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Date getEnrolledDate() {
+        return enrolledDate;
+    }
+
+    public void setEnrolledDate(Date enrolledDate) {
+        this.enrolledDate = enrolledDate;
     }
 
     public Student getStudent() {
