@@ -1,4 +1,10 @@
-.list-row {
+.contents {
+  position: relative;
+  width:50%;
+  padding:2.5rem;
+}
+
+  .contents-list-row {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -6,9 +12,10 @@
     padding: 1rem;
     border-bottom: 1px solid #ccc;
     margin-right: 10%;
+    text-decoration: none;
   }
 
-  .list-row:hover {
+  .contents-list-row:hover {
     border-bottom: 2px solid var(--white);
     transition: all 0.1s;
   }

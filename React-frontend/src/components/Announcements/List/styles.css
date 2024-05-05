@@ -1,6 +1,6 @@
 .announcements {
   position: relative;
-  width:50%;
+  width:30%;
   padding:2.5rem;
 }
 
@@ -8,10 +8,12 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    border-bottom: 1px solid #ccc;
     padding-top: 1.5rem;
   }
 
   .announcements-list-row:hover {
+    border-bottom: 2px solid var(--white);
     transition: all 0.1s;
     text-decoration: none;
   }

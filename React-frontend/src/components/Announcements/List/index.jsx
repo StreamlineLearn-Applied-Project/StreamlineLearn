@@ -7,7 +7,7 @@ function AnnouncementList({ announcements, courseId }) {
         <div className='announcements'>
             <h1 style={{ textAlign: 'left', fontWeight: 'bold'}}>Announcements</h1>
             {announcements.map((announcement) => (
-                <Link to={`/courses/${courseId}/announcements/${announcement.id}`} key={announcement.id}>
+                <Link to={`/courses/${courseId}/announcements/${announcement.id}`} key={announcement.id} style={{ textDecoration: 'none' }}>
                     <td className='announcements-list-row'>
                         <div className='td-info'>
                             <p className='announcement-title'>

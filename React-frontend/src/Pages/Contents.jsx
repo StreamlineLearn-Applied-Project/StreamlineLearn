@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Common/Header';
+import Footer from '../components/Common/Footer';
 import { getCourseContents } from '../Api/contents';
 import ContentList from '../components/Contents/List';
 
@@ -60,8 +61,8 @@ function ContentsPage() {
     return (
       <div>
         <Header/>
-        <h1>Contents</h1>
         <ContentList contents={contents} courseId={courseId} />
+        <Footer/>
       </div>
     );
 }

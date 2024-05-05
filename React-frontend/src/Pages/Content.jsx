@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../components/Common/Header';
+import Footer from '../components/Common/Footer';
 import ContentDetails from '../components/Content';
 import { useParams } from 'react-router-dom';
 import { getContentById } from '../Api/contents';
@@ -49,8 +50,8 @@ function ContentPage() {
     return (
         <div>
             <Header/>
-            <h1>Content Details</h1>
             <ContentDetails content={content} />
+            <Footer/>
         </div>
     );
 }
