@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Common/Header';
+import Footer from '../components/Common/Footer';
 import { getDiscussionById } from '../Api/discussions'; // Import the appropriate API function
 import DiscussionDetails from '../components/Discussion'; // Import the DiscussionDetails component
 
@@ -49,10 +50,10 @@ function DiscussionPage() {
         <Header/>
         {discussion && (
           <div>
-            <h1>Discussion Details</h1>
             <DiscussionDetails discussion={discussion} />
           </div>
         )}
+        <Footer/>
       </div>
     );
 }
