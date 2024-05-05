@@ -11,7 +11,7 @@ public interface CourseService {
     Course createCourse(Course course, String token);
     List<Course> getAllTheCourse();
     Set<Course> getAllInstructorCourse(String authorizationHeader);
-    Optional<CourseDTO> getCourseById(Long id, String token);
+    Optional<Course> getCourseById(Long id, String token);
     boolean updateCourseById(Long id,Course course, String token);
     boolean deleteCourseById(Long id, String token);
 

@@ -61,6 +61,9 @@ function Header() {
                             <Link to="/home">
                                 <Button text={"Home"} outlined={true} />
                             </Link>
+                            <Link to="/logout">
+                                <Button text={"Log out"} outlined={true} />
+                            </Link>
                             {userRole === 'INSTRUCTOR' && (
                                 <Link to="/instructor-courses">
                                     <Button text={"Teachings"} outlined={true} />

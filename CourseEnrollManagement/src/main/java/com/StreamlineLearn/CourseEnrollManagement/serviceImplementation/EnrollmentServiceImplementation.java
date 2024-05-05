@@ -47,6 +47,13 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
                 throw new IllegalArgumentException("Course not found");
             }
 
+            // Check if the student is already enrolled in the course
+            boolean isAlreadyEnrolled = enrollmentRepository.existsByStudentAndCourse(student, course);
+            if (isAlreadyEnrolled) {
+                // Student is already enrolled in the course, return false
+                return false;
+            }
+
             // Create and save the enrollment
             Enrollment enrollment = new Enrollment(student, course, true);
             enrollmentRepository.save(enrollment);
@@ -65,8 +72,13 @@ public class EnrollmentServiceImplementation implements EnrollmentService {
     }
 
     public Boolean isStudentPaid(Long studentId, Long courseId) {
-        Optional<Enrollment> enrollment = enrollmentRepository.
-                findByStudentIdAndCourseId(studentId, courseId);
-        return enrollment.map(Enrollment::isPaid).orElse(false);
+        try {
+            Optional<Enrollment> enrollment = enrollmentRepository.findByStudentIdAndCourseId(studentId, courseId);
+            return enrollment.map(Enrollment::isPaid).orElse(false);
+        } catch (Exception ex) {
+            // Log the error and return false in case of any exception
+            logger.error("An error occurred while checking if the student is paid for the course", ex);
+            return false;
+        }
     }
 }

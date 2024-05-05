@@ -1,6 +1,5 @@
 package com.StreamlineLearn.AssessmentManagement.serviceImplementation;
 
-import com.StreamlineLearn.AssessmentManagement.dto.AssessmentDto;
 import com.StreamlineLearn.AssessmentManagement.exception.AssessmentException;
 import com.StreamlineLearn.AssessmentManagement.model.Assessment;
 import com.StreamlineLearn.AssessmentManagement.model.Course;
@@ -12,15 +11,12 @@ import com.StreamlineLearn.AssessmentManagement.service.CourseService;
 import com.StreamlineLearn.AssessmentManagement.service.KafkaProducerService;
 import com.StreamlineLearn.SharedModule.dto.CourseAssessmentDto;
 import com.StreamlineLearn.SharedModule.dto.UserSharedDto;
-import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
 import com.StreamlineLearn.SharedModule.service.EnrollmentService;
 import com.StreamlineLearn.SharedModule.service.JwtUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -125,8 +121,11 @@ public class AssessmentServiceImplementation implements AssessmentService {
                 return course.getAssessments().stream()
                         .filter(assessment -> assessment.getId().equals(assessmentId))
                         .map(assessment -> new Assessment(assessment.getId(),
-                                assessment.getTitle(),
+                                assessment.getAssessmentTitle(),
+                                assessment.getAssessmentDescription(),
                                 assessment.getPercentage(),
+                                assessment.getCreationDate(),
+                                assessment.getLastUpdated(),
                                 assessment.getCourse()))
                         .findFirst();
             }
@@ -154,7 +153,7 @@ public class AssessmentServiceImplementation implements AssessmentService {
                             .findFirst();
                     if (optionalAssessment.isPresent()) {
                         Assessment existingAssessment = optionalAssessment.get();
-                        existingAssessment.setTitle(assessment.getTitle());
+                        existingAssessment.setAssessmentTitle(assessment.getAssessmentTitle());
                         existingAssessment.setPercentage(assessment.getPercentage());
                         assessmentRepository.save(existingAssessment);
                         return true;

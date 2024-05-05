@@ -11,102 +11,123 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 @Service
 public class UserSignUpServiceImplementation implements UserSignUpService {
+    // Logger for logging errors and other messages
+    private static final Logger logger = LoggerFactory.getLogger(UserSignUpServiceImplementation.class);
+    // Dependencies
     private final StudentService studentService;
     private final AdministrativeService administrativeService;
     private final InstructorService instructorService;
     private final KafkaProducerService kafkaPublishingService;
 
+    // Constructor to inject dependencies
     public UserSignUpServiceImplementation(StudentService studentService,
                                            AdministrativeService administrativeService,
                                            InstructorService instructorService,
                                            KafkaProducerService kafkaPublishingService) {
-
         this.studentService = studentService;
         this.administrativeService = administrativeService;
         this.instructorService = instructorService;
         this.kafkaPublishingService = kafkaPublishingService;
     }
 
+    // Method to register a user
     @Override
     public void userRegister(UserDto userRequest) {
-        // Based on the role specified in the request, create the corresponding entity
-        Role role = Objects.requireNonNull(userRequest.getUser().getRole());
-        switch (role) {
-            case STUDENT:
-                Student student = userRequest.getStudent();
-                if (student != null) {
-                    Student newStudent = new Student();
-                    newStudent.setUser(userRequest.getUser());
-                    newStudent.setField(student.getField());
-                    newStudent.setEducation(student.getEducation());
-
-                    studentService.createStudent(newStudent);
-
-                    // Create a UserSharedDto object with the necessary student details
-                    UserSharedDto userSharedDto = new UserSharedDto();
-                    userSharedDto.setId(newStudent.getId());
-                    userSharedDto.setUserName(newStudent.getUser().getUsername());
-                    userSharedDto.setRole(role.name());
-
-                    // Publish the student details using the Kafka publishing service
-                    kafkaPublishingService.publishStudentDetails(userSharedDto);
-
-                } else {
-                    throw new IllegalArgumentException("Student object is null in the request");
-                }
-                break;
-
-            case INSTRUCTOR:
-                Instructor instructor = userRequest.getInstructor();
-                if (instructor != null) {
-                    Instructor newInstructor = new Instructor();
-                    newInstructor.setUser(userRequest.getUser());
-                    newInstructor.setDepartment(instructor.getDepartment());
-                    newInstructor.setExpertise(instructor.getExpertise());
-
-                    instructorService.createInstructor(newInstructor);
-
-                    // Create a UserSharedDto object with the necessary instructor details
-                    UserSharedDto instructorSharedDto = new UserSharedDto();
-                    instructorSharedDto.setId(newInstructor.getId());
-                    instructorSharedDto.setUserName(newInstructor.getUser().getUsername());
-                    instructorSharedDto.setRole(role.name());
-
-                    // Publish the instructor details using the Kafka publishing service
-                    kafkaPublishingService.publishInstructorDetails(instructorSharedDto);
-
-                } else {
-                    throw new IllegalArgumentException("Instructor object is null in the request");
-                }
-                break;
-
-            case ADMINISTRATIVE:
-                Administrative administrative = userRequest.getAdministrative();
-                if (administrative != null) {
-                    Administrative newAdministrative = new Administrative();
-                    newAdministrative.setUser(userRequest.getUser());
-                    newAdministrative.setPosition(administrative.getPosition());
-
-                    administrativeService.createAdministrative(newAdministrative);
-
-                    // Create a UserSharedDto object with the necessary administrative details
-                    UserSharedDto adminSharedDto = new UserSharedDto();
-                    adminSharedDto.setId(newAdministrative.getId());
-                    adminSharedDto.setUserName(newAdministrative.getUser().getUsername());
-                    adminSharedDto.setRole(role.name());
-
-                    // Publish the administrative details using the Kafka publishing service
-                    kafkaPublishingService.publishAdministrativeDetails(adminSharedDto);
-
-                } else {
-                    throw new IllegalArgumentException("Administrative object is null in the request");
-                }
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid role in the request");
+        try {
+            // Based on the role specified in the request, create the corresponding entity
+            Role role = Objects.requireNonNull(userRequest.getUser().getRole());
+            switch (role) {
+                case STUDENT:
+                    createStudent(userRequest);
+                    break;
+                case INSTRUCTOR:
+                    createInstructor(userRequest);
+                    break;
+                case ADMINISTRATIVE:
+                    createAdministrative(userRequest);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid role in the request");
+            }
+        } catch (Exception e) {
+            // Logging the error
+            logger.error("Error occurred while registering user: {}", e.getMessage());
+            // Throwing a runtime exception
+            throw new RuntimeException("Error occurred while registering user", e);
         }
     }
 
+    // Method to create a student entity and publish its details
+    private void createStudent(UserDto userRequest) {
+        Student student = userRequest.getStudent();
+        if (student != null) {
+            Student newStudent = new Student();
+            newStudent.setUser(userRequest.getUser());
+            newStudent.setField(student.getField());
+            newStudent.setEducation(student.getEducation());
+            studentService.createStudent(newStudent);
+            publishUserDetails(newStudent.getId(), newStudent.getUser().getUsername(), Role.STUDENT);
+        } else {
+            throw new IllegalArgumentException("Student object is null in the request");
+        }
+    }
+
+    // Method to create an instructor entity and publish its details
+    private void createInstructor(UserDto userRequest) {
+        Instructor instructor = userRequest.getInstructor();
+        if (instructor != null) {
+            Instructor newInstructor = new Instructor();
+            newInstructor.setUser(userRequest.getUser());
+            newInstructor.setDepartment(instructor.getDepartment());
+            newInstructor.setExpertise(instructor.getExpertise());
+            instructorService.createInstructor(newInstructor);
+            publishUserDetails(newInstructor.getId(), newInstructor.getUser().getUsername(), Role.INSTRUCTOR);
+        } else {
+            throw new IllegalArgumentException("Instructor object is null in the request");
+        }
+    }
+
+    // Method to create an administrative entity and publish its details
+    private void createAdministrative(UserDto userRequest) {
+        Administrative administrative = userRequest.getAdministrative();
+        if (administrative != null) {
+            Administrative newAdministrative = new Administrative();
+            newAdministrative.setUser(userRequest.getUser());
+            newAdministrative.setPosition(administrative.getPosition());
+            administrativeService.createAdministrative(newAdministrative);
+            publishUserDetails(newAdministrative.getId(), newAdministrative.getUser().getUsername(), Role.ADMINISTRATIVE);
+        } else {
+            throw new IllegalArgumentException("Administrative object is null in the request");
+        }
+    }
+
+    // Method to publish user details using Kafka publishing service
+    private void publishUserDetails(Long id, String userName, Role role) {
+        UserSharedDto userSharedDto = new UserSharedDto(id, userName, role.name());
+        try {
+            switch (role) {
+                case STUDENT:
+                    kafkaPublishingService.publishStudentDetails(userSharedDto);
+                    break;
+                case INSTRUCTOR:
+                    kafkaPublishingService.publishInstructorDetails(userSharedDto);
+                    break;
+                case ADMINISTRATIVE:
+                    kafkaPublishingService.publishAdministrativeDetails(userSharedDto);
+                    break;
+            }
+        } catch (Exception e) {
+            // Logging the error
+            logger.error("Error occurred while publishing user details: {}", e.getMessage());
+            // Throwing a runtime exception with
+            throw new RuntimeException("Error occurred while publishing user details", e);
+        }
+    }
 }
+

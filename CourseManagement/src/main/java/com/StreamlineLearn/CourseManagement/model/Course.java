@@ -1,7 +1,12 @@
 package com.StreamlineLearn.CourseManagement.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,9 +16,16 @@ public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
+    @NotNull
     private String courseName;
+    @NotNull
+    @Lob
     private String description;
     private BigDecimal price;
+    @CreationTimestamp
+    private Date creationDate;
+    @UpdateTimestamp
+    private Date lastUpdated;
 
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -23,6 +35,31 @@ public class Course {
 
     public Course() {
     }
+
+    public Course(Long id, String courseName,
+                  String description, Date creationDate,
+                  Date lastUpdated, Instructor instructor) {
+        Id = id;
+        this.courseName = courseName;
+        this.description = description;
+        this.creationDate = creationDate;
+        this.lastUpdated = lastUpdated;
+        this.instructor = instructor;
+    }
+
+    public Course(Long id, String courseName,
+                  String description, BigDecimal price,
+                  Date creationDate, Date lastUpdated,
+                  Instructor instructor) {
+        Id = id;
+        this.courseName = courseName;
+        this.description = description;
+        this.price = price;
+        this.creationDate = creationDate;
+        this.lastUpdated = lastUpdated;
+        this.instructor = instructor;
+    }
+
 
     public Long getId() {
         return Id;
@@ -54,6 +91,22 @@ public class Course {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
     public Instructor getInstructor() {

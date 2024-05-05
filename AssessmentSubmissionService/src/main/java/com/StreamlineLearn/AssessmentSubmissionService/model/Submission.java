@@ -6,7 +6,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
-// --------------Submission.java----------------------
 @Entity
 public class Submission {
     @Id

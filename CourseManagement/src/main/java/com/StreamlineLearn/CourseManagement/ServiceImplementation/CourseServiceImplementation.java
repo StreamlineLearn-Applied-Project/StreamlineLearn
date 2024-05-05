@@ -1,7 +1,6 @@
 package com.StreamlineLearn.CourseManagement.ServiceImplementation;
 
-import com.StreamlineLearn.CourseManagement.dto.CourseDTO;
-import com.StreamlineLearn.CourseManagement.exception.CourseCreationException;
+import com.StreamlineLearn.CourseManagement.exception.CourseException;
 import com.StreamlineLearn.CourseManagement.model.Course;
 import com.StreamlineLearn.CourseManagement.model.Instructor;
 import com.StreamlineLearn.CourseManagement.repository.CourseRepository;
@@ -9,7 +8,11 @@ import com.StreamlineLearn.CourseManagement.service.CourseService;
 import com.StreamlineLearn.CourseManagement.service.InstructorService;
 import com.StreamlineLearn.CourseManagement.service.KafkaProducerService;
 import com.StreamlineLearn.SharedModule.dto.CourseSharedDto;
-import com.StreamlineLearn.SharedModule.jwtUtil.SharedJwtService;
+import com.StreamlineLearn.SharedModule.dto.UserSharedDto;
+import com.StreamlineLearn.SharedModule.service.JwtUserService;
+import com.StreamlineLearn.SharedModule.sharedException.CourseNotFoundException;
+import com.StreamlineLearn.SharedModule.sharedException.UnauthorizedException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.slf4j.Logger;
@@ -24,30 +27,36 @@ import java.util.Set;
 public class CourseServiceImplementation implements CourseService {
     private final CourseRepository courseRepository;
     private final InstructorService instructorService;
-    private final SharedJwtService sharedJwtService;
+    private final JwtUserService jwtUserService;
     private final KafkaProducerService kafkaProducerService;
-    private static final int TOKEN_PREFIX_LENGTH = 7;
+    @Value("${enrollment.check.url}")
+    private String enrollmentCheckUrl;
     private static final Logger logger = LoggerFactory.getLogger(CourseServiceImplementation.class);
 
 
     public CourseServiceImplementation(CourseRepository courseRepository,
                                        InstructorService instructorService,
-                                       SharedJwtService sharedJwtService,
+                                       JwtUserService jwtUserService,
                                        KafkaProducerService kafkaProducerService) {
 
         this.courseRepository = courseRepository;
         this.instructorService = instructorService;
-        this.sharedJwtService = sharedJwtService;
-
+        this.jwtUserService = jwtUserService;
         this.kafkaProducerService = kafkaProducerService;
     }
 
+    private Instructor findInstructor(String authorizationHeader) {
+        // Extract the instructor's ID from the JWT token and find the instructor
+        UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
+
+        return instructorService.findInstructorById(userSharedDto.getId());
+    }
+
     @Override
-    public Course createCourse(Course course, String token) {
+    public Course createCourse(Course course, String authorizationHeader) {
         try {
             // Extract the instructor's ID from the JWT token and find the instructor
-            Instructor instructor = instructorService.findInstructorById(sharedJwtService
-                .extractRoleId(token.substring(TOKEN_PREFIX_LENGTH)));
+           Instructor instructor = findInstructor(authorizationHeader);
 
             // If no instructor is found, throw an exception
             if (instructor == null) {
@@ -73,108 +82,155 @@ public class CourseServiceImplementation implements CourseService {
             // Log the error and throw a custom exception of course creation fails
             logger.error("An error occurred while creating Course", ex);
             // Rethrow the exception or throw a custom exception
-            throw new CourseCreationException("Failed to create course: " + ex.getMessage());
+            throw new CourseException("Failed to create course: " + ex.getMessage());
         }
     }
 
     @Override
     public List<Course> getAllTheCourse() {
-        return courseRepository.findAll();
+        try {
+            return courseRepository.findAll();
+        } catch (Exception ex) {
+            logger.error("An error occurred while retrieving all courses", ex);
+            throw new CourseException("Failed to retrieve all courses", ex);
+        }
     }
+
 
     @Override
     public Set<Course> getAllInstructorCourse(String authorizationHeader) {
-        Instructor instructor = instructorService.findInstructorById(sharedJwtService.
-                extractRoleId(authorizationHeader.substring(TOKEN_PREFIX_LENGTH)));
+        try {
+            // Extract the instructor's ID from the JWT token and find the instructor
+            Instructor instructor = findInstructor(authorizationHeader);
 
-        if (instructor == null) {
-            throw new IllegalArgumentException("Instructor not found");
+            if (instructor == null) {
+                throw new IllegalArgumentException("Instructor not found");
+            }
+
+            // Returning the courses associated with the instructor
+            return instructor.getCourses();
+        } catch (Exception ex) {
+            logger.error("An error occurred while retrieving courses for the instructor", ex);
+            throw new CourseException("Failed to retrieve courses for the instructor", ex);
         }
-
-        // Returning the courses associated with the instructor
-        return instructor.getCourses();
-
     }
 
-    @Override
-    public Optional<CourseDTO> getCourseById(Long id, String token) {
-        Optional<Course> course = courseRepository.findById(id);
 
-        if (course.isEmpty()) {
+    @Override
+    public Optional<Course> getCourseById(Long id, String authorizationHeader) {
+        try {
+            Optional<Course> course = courseRepository.findById(id);
+
+            if (course.isEmpty()) {
+                return Optional.empty();
+            }
+
+            // If the token is null, return course details without authentication
+            if (authorizationHeader == null) {
+                return course;
+            }
+
+            // Extract the instructor's ID from the JWT token and find the instructor
+            UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
+
+            if ("INSTRUCTOR".equals(userSharedDto.getRole()) &&
+                    Objects.equals(course.get().getInstructor().getId(), userSharedDto.getId())) {
+
+                return Optional.of(new Course(course.get().getId(), course.get().getCourseName(),
+                        course.get().getDescription(), course.get().getPrice(),
+                        course.get().getCreationDate(), course.get().getLastUpdated(),
+                        course.get().getInstructor()));
+            }
+
+            if ("STUDENT".equals(userSharedDto.getRole())) {
+
+                RestTemplate restTemplate = new RestTemplate();
+                String enrolmentApiUrl = enrollmentCheckUrl
+                        .replace("{id}", String.valueOf(id))
+                        .replace("{userId}", String.valueOf(userSharedDto.getId()));
+
+                String apiResponse = restTemplate.getForObject(enrolmentApiUrl, String.class);
+
+                logger.info("API Response: {}", apiResponse);
+
+                if ("PAID".equals(apiResponse)) {
+                    return Optional.of(new Course(course.get().getId(), course.get().getCourseName(),
+                            course.get().getDescription(), course.get().getCreationDate(),
+                            course.get().getLastUpdated(), course.get().getInstructor()));
+                } else {
+                    return Optional.of(new Course(course.get().getId(), course.get().getCourseName(),
+                            course.get().getDescription(), course.get().getPrice(),
+                            course.get().getCreationDate(), course.get().getLastUpdated(),
+                            course.get().getInstructor()));
+
+                }
+            }
             return Optional.empty();
+        } catch (Exception ex) {
+            logger.error("An error occurred while retrieving course with ID: {}", id, ex);
+            throw new CourseException("Failed to retrieve course with ID: " + id, ex);
         }
+    }
 
-        // If token is null, return course details without authentication
-        if (token == null) {
-            return Optional.of(new CourseDTO(course.get().getCourseName(),
-                    course.get().getDescription(),
-                    course.get().getPrice()));
-        }
 
-        String role = sharedJwtService.extractRole(token.substring(TOKEN_PREFIX_LENGTH));
-        Long roleId = sharedJwtService.extractRoleId(token.substring(TOKEN_PREFIX_LENGTH));
 
-        if ("INSTRUCTOR".equals(role) && Objects.equals(course.get().getInstructor().getId(), roleId)) {
-            return Optional.of(new CourseDTO(course.get().getCourseName(),
-                    course.get().getDescription(),
-                    course.get().getPrice()));
-        }
 
-        if ("STUDENT".equals(role)) {
-            RestTemplate restTemplate = new RestTemplate();
-            String enrolmentApiUrl = "http://localhost:9090/courses/" + id + "/enrollments/check/" + roleId;
-            String apiResponse = restTemplate.getForObject(enrolmentApiUrl, String.class);
-            System.out.println("API Response: " + apiResponse);
-
-            if ("PAID".equals(apiResponse)) {
-                return Optional.of(new CourseDTO(course.get().getCourseName(),
-                        course.get().getDescription()));
-            } else {
-                return Optional.of(new CourseDTO(course.get().getCourseName(),
-                        course.get().getDescription(),
-                        course.get().getPrice()));
-
+    @Override
+    public boolean updateCourseById(Long id, Course course, String authorizationHeader) {
+        try {
+            Optional<Course> courseOptional = courseRepository.findById(id);
+            if (courseOptional.isEmpty()) {
+                throw new CourseNotFoundException("Course not found");
             }
+            // Extract the instructor's ID from the JWT token and find the instructor
+            Instructor instructor = findInstructor(authorizationHeader);
+            if (!Objects.equals(courseOptional.get().getInstructor().getId(), instructor.getId())) {
+                throw new UnauthorizedException("You are not authorized to update this course");
+            }
+            Course updateCourse = courseOptional.get();
+            updateCourse.setCourseName(course.getCourseName());
+            updateCourse.setDescription(course.getDescription());
+            updateCourse.setPrice(course.getPrice());
+            courseRepository.save(updateCourse);
+            return true;
+        } catch (CourseNotFoundException ex) {
+            logger.error("Course not found with ID: {}", id, ex);
+            throw ex;
+        } catch (UnauthorizedException ex) {
+            logger.error("Unauthorized access for updating course with ID: {}", id, ex);
+            throw ex;
+        } catch (Exception ex) {
+            logger.error("An error occurred while updating course with ID: {}", id, ex);
+            throw new CourseException("Failed to update course with ID: " + id, ex);
         }
-        return Optional.empty();
     }
 
 
 
     @Override
-    public boolean updateCourseById(Long id,Course course, String token) {
-        Optional<Course> courseOptional = courseRepository.findById(id);
-
-        Long instructorId = sharedJwtService.extractRoleId(token.substring(TOKEN_PREFIX_LENGTH));
-
-        if(courseOptional.isPresent()){
-            if (Objects.equals(courseOptional.get().getInstructor().getId(), instructorId)){
-                Course updateCourse = courseOptional.get();
-                updateCourse.setCourseName(course.getCourseName());
-                updateCourse.setDescription(course.getDescription());
-                updateCourse.setPrice(course.getPrice());
-
-                courseRepository.save(updateCourse);
-                return true;
+    public boolean deleteCourseById(Long id, String authorizationHeader) {
+        try {
+            Optional<Course> courseOptional = courseRepository.findById(id);
+            if (courseOptional.isEmpty()) {
+                throw new CourseNotFoundException("Course not found");
             }
-           return false;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean deleteCourseById(Long id, String token) {
-        Optional<Course> courseOptional = courseRepository.findById(id);
-        Long instructorId = sharedJwtService.extractRoleId(token.substring(TOKEN_PREFIX_LENGTH));
-
-        if(courseOptional.isPresent()){
-            if (Objects.equals(courseOptional.get().getInstructor().getId(), instructorId)) {
-                courseRepository.deleteById(id);
-                return true;
+            // Extract the instructor's ID from the JWT token and find the instructor
+            Instructor instructor = findInstructor(authorizationHeader);
+            if (!Objects.equals(courseOptional.get().getInstructor().getId(), instructor.getId())) {
+                throw new UnauthorizedException("You are not authorized to delete this course");
             }
-            return false;
+            courseRepository.deleteById(id);
+            return true;
+        } catch (CourseNotFoundException ex) {
+            logger.error("Course not found with ID: {}", id, ex);
+            throw ex;
+        } catch (UnauthorizedException ex) {
+            logger.error("Unauthorized access for deleting course with ID: {}", id, ex);
+            throw ex;
+        } catch (Exception ex) {
+            logger.error("An error occurred while deleting course with ID: {}", id, ex);
+            throw new CourseException("Failed to delete course with ID: " + id, ex);
         }
-        return false;
     }
 
 

@@ -120,7 +120,6 @@ public class FeedbackServiceImplementation implements FeedbackService {
             }
             // Update feedback
             existingFeedback.setFeedback(updatedFeedback.getFeedback());
-            existingFeedback.setDate(updatedFeedback.getDate());
             existingFeedback.setRating(updatedFeedback.getRating());
             feedbackRepository.save(existingFeedback);
 

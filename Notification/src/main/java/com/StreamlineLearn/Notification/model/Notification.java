@@ -4,9 +4,11 @@ import com.StreamlineLearn.Notification.enums.NotificationStatus;
 import com.StreamlineLearn.Notification.enums.NotificationType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,7 +21,8 @@ public class Notification {
     private String content;
     @Enumerated(EnumType.STRING)
     private NotificationType type;
-    private LocalDateTime timestamp;
+    @CreationTimestamp
+    private Date creationDate;
 
     // Many-to-many relationship with Student
     @ManyToMany
@@ -63,12 +66,12 @@ public class Notification {
         this.type = type;
     }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
+    public Date getCreationDate() {
+        return creationDate;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 
     public Set<Student> getStudents() {

@@ -38,15 +38,8 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
 
 
-# Management configurations
-management:
-  tracing:
-    sampling:
-      probability: 1.0
 
-# Logging configurations
-logging:
-  level:
-    root: info
-    org.springframework.cloud.gateway.route.RouteDefinitionLocator: INFO
-    org.springframework.cloud.gateway: TRACE
+enrollment:
+  check:
+    url: http://localhost:9090/courses/{id}/enrollments/check/{userId}
+
