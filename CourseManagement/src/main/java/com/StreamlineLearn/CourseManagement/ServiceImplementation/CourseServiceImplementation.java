@@ -2,7 +2,9 @@ package com.StreamlineLearn.CourseManagement.ServiceImplementation;
 
 import com.StreamlineLearn.CourseManagement.exception.CourseException;
 import com.StreamlineLearn.CourseManagement.model.Course;
+import com.StreamlineLearn.CourseManagement.model.CourseMedia;
 import com.StreamlineLearn.CourseManagement.model.Instructor;
+import com.StreamlineLearn.CourseManagement.repository.CourseMediaRepository;
 import com.StreamlineLearn.CourseManagement.repository.CourseRepository;
 import com.StreamlineLearn.CourseManagement.service.CourseService;
 import com.StreamlineLearn.CourseManagement.service.InstructorService;
@@ -17,7 +19,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -28,20 +35,25 @@ public class CourseServiceImplementation implements CourseService {
     private final CourseRepository courseRepository;
     private final InstructorService instructorService;
     private final JwtUserService jwtUserService;
+    private final CourseMediaRepository courseMediaRepository;
     private final KafkaProducerService kafkaProducerService;
     @Value("${enrollment.check.url}")
     private String enrollmentCheckUrl;
+    @Value("${app.folder-path}")
+    private String FOLDER_PATH;
     private static final Logger logger = LoggerFactory.getLogger(CourseServiceImplementation.class);
 
 
     public CourseServiceImplementation(CourseRepository courseRepository,
                                        InstructorService instructorService,
                                        JwtUserService jwtUserService,
+                                       CourseMediaRepository courseMediaRepository,
                                        KafkaProducerService kafkaProducerService) {
 
         this.courseRepository = courseRepository;
         this.instructorService = instructorService;
         this.jwtUserService = jwtUserService;
+        this.courseMediaRepository = courseMediaRepository;
         this.kafkaProducerService = kafkaProducerService;
     }
 
@@ -53,8 +65,9 @@ public class CourseServiceImplementation implements CourseService {
     }
 
     @Override
-    public Course createCourse(Course course, String authorizationHeader) {
+    public Course createCourse(Course course, MultipartFile file, String authorizationHeader) {
         try {
+            String mediaFilePath = FOLDER_PATH + file.getOriginalFilename();
             // Extract the instructor's ID from the JWT token and find the instructor
            Instructor instructor = findInstructor(authorizationHeader);
 
@@ -66,6 +79,24 @@ public class CourseServiceImplementation implements CourseService {
             // Set the instructor of the course and save the course to the repository
             course.setInstructor(instructor);
             courseRepository.save(course);
+
+            // Save the CourseMedia entity after the Content entity is saved
+            CourseMedia courseMedia = CourseMedia.builder()
+                    .mediaName(file.getOriginalFilename())
+                    .type(file.getContentType())
+                    .mediaFilePath(mediaFilePath)
+                    .course(course) // Set the saved course entity
+                    .build();
+            courseMedia = courseMediaRepository.save(courseMedia);
+
+            // Set the CourseMedia entity in the Content entity
+            course.setCourseMedia(courseMedia);
+            // Update the Course entity to reflect the relationship
+            course = courseRepository.save(course);
+
+            // Transfer the file
+            file.transferTo(new File(mediaFilePath));
+
 
             // Prepare a DTO to share course details via Kafka
             CourseSharedDto courseSharedDto = new CourseSharedDto();
@@ -117,9 +148,9 @@ public class CourseServiceImplementation implements CourseService {
 
 
     @Override
-    public Optional<Course> getCourseById(Long id, String authorizationHeader) {
+    public Optional<Course> getCourseById(Long courseId, String authorizationHeader) {
         try {
-            Optional<Course> course = courseRepository.findById(id);
+            Optional<Course> course = courseRepository.findById(courseId);
 
             if (course.isEmpty()) {
                 return Optional.empty();
@@ -136,17 +167,14 @@ public class CourseServiceImplementation implements CourseService {
             if ("INSTRUCTOR".equals(userSharedDto.getRole()) &&
                     Objects.equals(course.get().getInstructor().getId(), userSharedDto.getId())) {
 
-                return Optional.of(new Course(course.get().getId(), course.get().getCourseName(),
-                        course.get().getDescription(), course.get().getPrice(),
-                        course.get().getCreationDate(), course.get().getLastUpdated(),
-                        course.get().getInstructor()));
+                return course;
             }
 
             if ("STUDENT".equals(userSharedDto.getRole())) {
 
                 RestTemplate restTemplate = new RestTemplate();
                 String enrolmentApiUrl = enrollmentCheckUrl
-                        .replace("{id}", String.valueOf(id))
+                        .replace("{id}", String.valueOf(courseId))
                         .replace("{userId}", String.valueOf(userSharedDto.getId()));
 
                 String apiResponse = restTemplate.getForObject(enrolmentApiUrl, String.class);
@@ -156,19 +184,50 @@ public class CourseServiceImplementation implements CourseService {
                 if ("PAID".equals(apiResponse)) {
                     return Optional.of(new Course(course.get().getId(), course.get().getCourseName(),
                             course.get().getDescription(), course.get().getCreationDate(),
-                            course.get().getLastUpdated(), course.get().getInstructor()));
+                            course.get().getLastUpdated(), course.get().getInstructor(),
+                            course.get().getCourseMedia()));
                 } else {
-                    return Optional.of(new Course(course.get().getId(), course.get().getCourseName(),
-                            course.get().getDescription(), course.get().getPrice(),
-                            course.get().getCreationDate(), course.get().getLastUpdated(),
-                            course.get().getInstructor()));
+                    return course;
 
                 }
             }
             return Optional.empty();
         } catch (Exception ex) {
-            logger.error("An error occurred while retrieving course with ID: {}", id, ex);
-            throw new CourseException("Failed to retrieve course with ID: " + id, ex);
+            logger.error("An error occurred while retrieving course with ID: {}", courseId, ex);
+            throw new CourseException("Failed to retrieve course with ID: " + courseId, ex);
+        }
+    }
+
+    @Override
+    public byte[] getCourseMedia(Long courseId, String fileName) throws IOException {
+        try {
+            // Check if the course exists
+            Optional<Course> courseOptional = courseRepository.findById(courseId);
+            if (courseOptional.isEmpty()) {
+                throw new CourseNotFoundException("Course not found with ID: " + courseId);
+            }
+
+            // Query the CourseMedia repository based on courseId and fileName
+            Optional<CourseMedia> courseMediaOptional = courseMediaRepository.findByMediaName(fileName);
+
+            if (courseMediaOptional.isPresent()) {
+                String mediaFilePath = courseMediaOptional.get().getMediaFilePath();
+                return Files.readAllBytes(new File(mediaFilePath).toPath());
+            } else {
+                throw new FileNotFoundException("Media file not found: " + fileName);
+            }
+        } catch (IOException ex) {
+            // Log IO exceptions
+            logger.error("Error occurred while reading media file", ex);
+            throw ex;
+        } catch (CourseNotFoundException ex) {
+            // Log and rethrow CourseNotFoundException
+            logger.error(ex.getMessage(), ex);
+            throw ex;
+        } catch (Exception ex) {
+            // Log any unexpected exceptions and throw a generic CourseException
+            logger.error("An unexpected error occurred while getting course media", ex);
+            throw new CourseException("Failed to get course media: " + ex.getMessage(), ex);
         }
     }
 
@@ -176,7 +235,7 @@ public class CourseServiceImplementation implements CourseService {
 
 
     @Override
-    public boolean updateCourseById(Long id, Course course, String authorizationHeader) {
+    public boolean updateCourseById(Long id, Course course, MultipartFile file, String authorizationHeader) {
         try {
             Optional<Course> courseOptional = courseRepository.findById(id);
             if (courseOptional.isEmpty()) {
@@ -191,6 +250,48 @@ public class CourseServiceImplementation implements CourseService {
             updateCourse.setCourseName(course.getCourseName());
             updateCourse.setDescription(course.getDescription());
             updateCourse.setPrice(course.getPrice());
+
+            // Check if a new file is uploaded
+            if (file != null && !file.isEmpty()) {
+                String mediaFilePath = FOLDER_PATH + file.getOriginalFilename();
+
+                // Delete the previous file if it exists
+                if (updateCourse.getCourseMedia() != null) {
+                    String previousFilePath = updateCourse.getCourseMedia().getMediaFilePath();
+                    File previousFile = new File(previousFilePath);
+                    if (previousFile.exists()) {
+                        if (!previousFile.delete()) {
+                            logger.warn("Failed to delete previous file: {}", previousFilePath);
+                        }
+                    }
+                }
+
+                // Save the new file
+                file.transferTo(new File(mediaFilePath));
+
+                // Update the CourseMedia entity if it exists
+                if (updateCourse.getCourseMedia() != null) {
+                    CourseMedia existingCourseMedia = updateCourse.getCourseMedia();
+                    existingCourseMedia.setMediaName(file.getOriginalFilename());
+                    existingCourseMedia.setType(file.getContentType());
+                    existingCourseMedia.setMediaFilePath(mediaFilePath);
+                    // Save the updated CourseMedia entity
+                    courseMediaRepository.save(existingCourseMedia);
+                } else {
+                    // If no CourseMedia exists, create a new one
+                    CourseMedia courseMedia = CourseMedia.builder()
+                            .mediaName(file.getOriginalFilename())
+                            .type(file.getContentType())
+                            .mediaFilePath(mediaFilePath)
+                            .course(updateCourse)
+                            .build();
+                    // Save the new CourseMedia entity
+                    courseMediaRepository.save(courseMedia);
+                    // Set the CourseMedia entity in the Course entity
+                    updateCourse.setCourseMedia(courseMedia);
+                }
+            }
+
             courseRepository.save(updateCourse);
             return true;
         } catch (CourseNotFoundException ex) {

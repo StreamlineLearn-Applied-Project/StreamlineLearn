@@ -32,25 +32,31 @@ public class Course {
     @JoinColumn(name = "instructor_id")
     private Instructor instructor;
 
+    @OneToOne(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private CourseMedia courseMedia;
+
 
     public Course() {
     }
 
     public Course(Long id, String courseName,
                   String description, Date creationDate,
-                  Date lastUpdated, Instructor instructor) {
+                  Date lastUpdated, Instructor
+                          instructor, CourseMedia courseMedia) {
         Id = id;
         this.courseName = courseName;
         this.description = description;
         this.creationDate = creationDate;
         this.lastUpdated = lastUpdated;
         this.instructor = instructor;
+        this.courseMedia = courseMedia;
     }
 
     public Course(Long id, String courseName,
-                  String description, BigDecimal price,
-                  Date creationDate, Date lastUpdated,
-                  Instructor instructor) {
+                  String description,
+                  BigDecimal price, Date creationDate,
+                  Date lastUpdated, Instructor instructor,
+                  CourseMedia courseMedia) {
         Id = id;
         this.courseName = courseName;
         this.description = description;
@@ -58,8 +64,8 @@ public class Course {
         this.creationDate = creationDate;
         this.lastUpdated = lastUpdated;
         this.instructor = instructor;
+        this.courseMedia = courseMedia;
     }
-
 
     public Long getId() {
         return Id;
@@ -117,4 +123,11 @@ public class Course {
         this.instructor = instructor;
     }
 
+    public CourseMedia getCourseMedia() {
+        return courseMedia;
+    }
+
+    public void setCourseMedia(CourseMedia courseMedia) {
+        this.courseMedia = courseMedia;
+    }
 }
