@@ -97,8 +97,10 @@ const mockCourses = [
   return (
     <div>
       <Header/>
-      <Search search={search} onSearchChange={onSearchChange}/>
-      <TabsComponent courses={filteredCourses}/>
+      <div>
+        <Search search={search} onSearchChange={onSearchChange}/>
+        <TabsComponent courses={filteredCourses}/>
+      </div>
       <Footer />
     </div>
   )

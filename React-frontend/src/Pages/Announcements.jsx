@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import Header from '../components/Common/Header';
 import Footer from '../components/Common/Footer';
 import AnnouncementList from '../components/Announcements/List';
+import Sidebar from '../components/Common/Sidebar';
+import "../components/Common/Sidebar/styles.css";
 import { getCourseAnnouncements } from '../Api/announcements';
 
 function AnnouncementsPage() {
@@ -92,9 +94,14 @@ function AnnouncementsPage() {
 
     return (
         <div>
-          <Header/>
-          <AnnouncementList announcements={announcements} courseId={courseId} />
-          <Footer/>
+          <Header />
+            <div className="sidebar_container">
+                <Sidebar />
+                <div className="content">
+                    <AnnouncementList announcements={announcements} courseId={courseId} />
+                </div>
+            </div>
+            <Footer />
         </div>
       );
 }

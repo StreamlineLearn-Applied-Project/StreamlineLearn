@@ -1,0 +1,52 @@
+.sidebar_container {
+    display: flex;
+    width: 100%;
+    padding: 2rem;
+    margin:auto;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.sidebar {
+    flex: 0 0 0; /* Set sidebar width */
+    padding: 1rem;
+    display: flex;
+    width:250px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 3rem;
+    justify-content: flex-start;
+    align-items: center;
+    height: auto;
+    color: #0f1035;
+}
+
+.sidebar ul {
+    list-style-type: none; /* Remove bullet points */
+}
+
+.sidebar li {
+    margin-bottom: 15%; /* Add some spacing between list items */
+}
+
+.sidebar a {
+    text-decoration: none; /* Remove default underline */
+    color: inherit; /* Inherit text color */
+    padding: 0.5rem 1rem;
+    transition: color 0.3s ease;
+    margin: 1rem;
+}
+
+.sidebar a:hover {
+    color: #365486; /* Change text color on hover */
+}
+
+.sidebar .active {
+    background-color: #365486; /* Highlight background color */
+    color: #dcf2f1; /* Highlight text color */
+}
+
+.content {
+    flex: 1; /* Let the content fill remaining space */
+    padding: 20px;
+}

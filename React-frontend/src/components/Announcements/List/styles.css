@@ -1,22 +1,43 @@
 .announcements {
   position: relative;
-  width:30%;
-  padding:2.5rem;
+  width:70%;
+  padding:0.2rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .announcements-list-row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    border-bottom: 1px solid #ccc;
-    padding-top: 1.5rem;
-  }
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center; /* Vertically center items */
+  padding: 1rem; /* Uniform padding */
+  background-color: #ffffff; /* White background */
+  border-radius: 0.5rem; /* Rounded corners */
+  margin-top: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  transition: all 0.3s ease; /* Smooth transition */
+}
 
-  .announcements-list-row:hover {
-    border-bottom: 2px solid var(--white);
-    transition: all 0.1s;
-    text-decoration: none;
-  }
+.announcements-list-row:hover {
+  transform: translateY(-3px); /* Lift on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Increased shadow on hover */
+}
+
+.announcements-list-row:hover .announcement-title {
+  color: #365486; /* Change text color on hover */
+}
+
+.announcements-list-row .announcement-title {
+  font-size: 1rem; /* Adjust font size */
+  color: #0f1035; /* Default text color */
+  font-weight: bold; /* Bold text */
+}
+
+.announcements-list-row .announcement-description {
+  font-size: 0.9rem; /* Adjust font size */
+  color: #6c757d; /* Dim text color */
+}
 
   .announcement-title {
     margin: 0;

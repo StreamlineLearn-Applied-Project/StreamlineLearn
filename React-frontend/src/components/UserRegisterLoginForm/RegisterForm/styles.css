@@ -3,7 +3,6 @@
     margin: auto;
     margin-top: 12%;
     padding: 20px;
-    background-color: rgba(255, 255, 255, 0.2);
     box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.37);
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.18);
@@ -21,7 +20,7 @@
 .input-group input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #0F1035;
     border-radius: 5px;
     outline: none;
 }
@@ -51,7 +50,31 @@
 }
 
 .btn-primary {
-    background-color: #fff;
+    background-color: #0F1035;
+    border: 1px solid #000000;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.5) 0 2px 5px 0;
+    box-sizing: border-box;
+    color: #0f1111;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: 600;
+    font-family: "Amazon Ember",sans-serif;
+    font-size: 13px;
+    line-height: 29px;
+    padding: 0 10px 0 11px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: middle;
+    width: 100px;
+}
+
+.sign-up{
+    background-color: #0F1035;
     border: 1px solid #000000;
     border-radius: 8px;
     box-shadow: rgba(0, 0, 0, 0.5) 0 2px 5px 0;
@@ -75,6 +98,6 @@
 }
 
 .btn-primary:hover {
-    background-color: #000000;
+    background-color: #0F1035;
     text-decoration: none;
 }

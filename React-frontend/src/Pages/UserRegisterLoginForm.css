@@ -6,7 +6,6 @@
 }
 
 .container{
-    background-color: rgba(255, 255, 255, 0.2);
     width:450px;
     padding:1.5rem;
     margin:50px auto;
@@ -25,11 +24,10 @@ form{
     margin-bottom:0.4rem;
 }
 input{
-    color:white;
+    color:#0F1035;
     width:100%;
     background-color:transparent;
     border:none;
-    border-bottom:1px solid #757575;
     padding-left:1.5rem;
     font-size:15px;
 }
@@ -37,7 +35,7 @@ input{
 .transparent-dropdown {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #0F1035;
     border-radius: 5px;
     outline: none;
     background-color:transparent;
@@ -61,7 +59,6 @@ input{
 input:focus{
     background-color: transparent;
     outline:transparent;
-    border-bottom:2px solid hsl(327,90%,28%);
 }
 input::placeholder{
     color:white;
@@ -101,12 +98,12 @@ input:focus~label,input:not(:placeholder-shown)~label{
     border:none;
     width:100%;
     background:rgb(0, 0, 0);
-    color:white;
+    color:#0F1035;
     cursor:pointer;
     transition:0.9s;
 }
 .btn:hover{
-    background:#000000;
+    background:#0F1035;
 }
 .or{
     font-size:1.1rem;

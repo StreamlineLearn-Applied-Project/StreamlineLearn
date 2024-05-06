@@ -1,7 +1,7 @@
 .grey-wrapper{
     display: block;
     width: 100%;
-    background-color: var(--darkgrey);
+    background-color: #dcf2f1;
     margin: 1.5 rem auto;
     padding: 1rem 3rem;
     height: 15vh;

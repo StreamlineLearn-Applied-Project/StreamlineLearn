@@ -4,6 +4,9 @@
 .idea
 
 #dependencies
-React-frontend/node_modules
-
-
+React-frontend\node_modules
+node_modules
+node_modules\*
+React-frontend\node_modules\@mui
+React-frontend\node_modules\.vite\deps
+React-frontend/node_modules/.vite

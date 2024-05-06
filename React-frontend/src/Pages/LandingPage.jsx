@@ -10,28 +10,27 @@ function LandingPage() {
     <div>
         <Header/>
         <div className="landing-page-card">
-            <h1 style={{textAlign: 'left', fontWeight: 'bold', position: 'absolute', paddingTop: '5%', paddingRight: '1%', marginLeft: '42%'}}> Streamlinelearn</h1>
-            <h1 style={{textAlign: 'left', position: 'absolute', paddingTop: '12%', paddingRight: '1%', marginLeft: '42%'}}> Unlimited access to 7,000+ world-class courses, hands-on projects, and job-ready certificate programs</h1>
+            <h1 style={{textAlign: 'left', fontWeight: 'bold', color:'#DCF2F1', position: 'absolute', paddingTop: '5%', paddingRight: '1%', marginLeft: '42%'}}> Streamlinelearn</h1>
+            <h1 style={{textAlign: 'left', position: 'absolute', fontSize:'x-large', color:'#0F1035', paddingTop: '12%', paddingRight: '1%', marginLeft: '42%'}}> Dive into a world of endless learning, where expertise meets opportunity. Join us and unlock your potential today!</h1>
         </div>
+
         <div className="page-card">
-            <h3 style={{textAlign: 'center', paddingBottom: '2rem'}}>Learn from 275+ leading universities and companies</h3>
-            <p style={{backgroundImage: 'url("ecu.jpg")', backgroundSize: 'contain', backgroundPosition: 'center', backgroundSize: 'cover', height: '80px', width: '110px', marginLeft: '50%'}}></p>
+            <h3 style={{ textAlign: 'center', color: '#0F1035', fontSize: 'x-large', paddingBottom: '2rem' }}>Learn from the leading universities in Sri Lanka</h3>
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                <p style={{ backgroundImage: 'url("ACBT.jpg")', backgroundSize: 'cover', backgroundPosition: 'center', height: '80px', width: '150px', margin: '0 10px' }}></p>
+                <p style={{ backgroundImage: 'url("ecu.jpg")', backgroundSize: 'contain', backgroundPosition: 'center', height: '80px', width: '110px', margin: '0 10px' }}></p>
+            </div>
         </div>
-        <div>
-            <Carousel showArrows={true} infiniteLoop={true} autoPlay={true} interval={5000} showThumbs={false} className="carousel-container">
-                <div>
-                    <img src="CI1.jpg" alt="carousel_image_1"/>
-                    <p className="legend">Legend 1</p>
-                </div>
-                <div>
-                    <img src="CI2.jpeg" alt="carousel_image_2" />
-                    <p className="legend">Legend 2</p>
-                </div>
-                <div>
-                    <img src="CI3.jpg" alt="carousel_image_3" />
-                    <p className="legend">Legend 3</p>
-                </div>
-            </Carousel>
+
+        <div className="page-body">
+            <h3 style={{textAlign: 'center', color:'#DCF2F1', fontSize:'x-large', paddingBottom: '2rem'}}>About Us</h3>
+            <p style={{ textAlign: 'center', color: '#DCF2F1', fontSize: 'medium', lineHeight: '1.5' }}>
+            At StreamlineLearn, we believe in making education accessible to everyone, anywhere. Our platform offers a diverse range of courses from leading universities and companies, allowing learners to enhance their skills, pursue their passions, and achieve their goals.
+        <br /><br />
+        Whether you're looking to advance your career, explore new interests, or simply expand your knowledge, StreamlineLearn provides the tools and resources you need to succeed. Our user-friendly interface, interactive learning materials, and expert instructors ensure an engaging and effective learning experience for learners of all levels.
+        <br /><br />
+        Join our community of lifelong learners today and embark on a journey of discovery and growth with StreamlineLearn.
+            </p>
         </div>
         <Footer/>
     </div>
