@@ -3,8 +3,8 @@
     bottom: 0px;
     width: 100%;
     font-size: small;
-    color: #000;
+    color: #DCF2F1;
     padding: 0.5rem 3rem;
-    background-color: var(--darkgrey);
+    background-color: #365486;
     z-index: 1000;
 }

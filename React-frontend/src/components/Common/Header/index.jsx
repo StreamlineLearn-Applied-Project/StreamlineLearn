@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 function Header() {
     // State to track whether the screen size is in phone size range
     const [isPhoneSize, setIsPhoneSize] = useState(window.innerWidth <= 800);
-    const [darkMode, setDarkMode] = useState(localStorage.getItem("theme") === "dark" ? true : false);
+    const [lightMode, setLightMode] = useState(true);
     const userRole = localStorage.getItem('userRole'); // Get userRole from localStorage
 
     // Effect to add a resize listener and update the state when the screen size changes
@@ -27,13 +27,23 @@ function Header() {
         };
     }, []);
 
-    const changeMode = () => {
-        if (localStorage.getItem("theme") !== "dark") {
+    // Effect to set theme when component mounts
+    useEffect(() => {
+        const storedTheme = localStorage.getItem("theme");
+        if (storedTheme === "dark") {
             setDark();
         } else {
             setLight();
         }
-        setDarkMode(!darkMode);
+    }, []);
+
+    const changeMode = () => {
+        if (lightMode) {
+            setDark();
+        } else {
+            setLight();
+        }
+        setLightMode(!lightMode);
         toast.success("Theme Changed!");
     };
 
@@ -50,7 +60,7 @@ function Header() {
     return (
         <div className="navbar">
             <h1 className="logo">
-                StreamlineLearn<span style={{ color: "var(--blue)" }}>.</span>
+                <span style={{ color: "#DCF2F1" }}>StreamlineLearn<span style={{ color: "#7FC" }}>.</span></span>
             </h1>
 
             {/* Links */}
@@ -91,7 +101,7 @@ function Header() {
                             </Link>
                         </>
                     )}
-                    <Switch checked={darkMode} onClick={() => changeMode()} />
+                    {/* <Switch checked={darkMode} onClick={() => changeMode()} /> */}
                 </div>
             )}
 
@@ -106,6 +116,3 @@ function Header() {
 }
 
 export default Header;
-
-
-

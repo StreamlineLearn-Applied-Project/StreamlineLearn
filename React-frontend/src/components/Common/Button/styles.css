@@ -26,12 +26,12 @@
 }
 
 .btn-outlined {
-  background-color: #fff;
-  border: 1px solid #000000;
+  background-color: #DCF2F1;
+  border: 1px solid #0F1035;
   border-radius: 8px;
   box-shadow: rgba(0, 0, 0, 0.5) 0 2px 5px 0;
   box-sizing: border-box;
-  color: #0f1111;
+  color: #0F1035;
   cursor: pointer;
   display: inline-block;
   font-family: "Amazon Ember",sans-serif;
@@ -49,9 +49,9 @@
 }
 
 .btn-outlined:hover {
-  background-color: #000000;
+  background-color: #0F1035;
   text-decoration: none;
-  color: rgb(255, 255, 255);
+  color: #7FC7D9;
 }
 
 @media only screen and (max-width: 800px) {

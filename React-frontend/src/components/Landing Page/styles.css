@@ -10,7 +10,7 @@
 
 .landing-page-card {
     position: relative;
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: #7FC7D9;
     width:100%;
     padding:1.5rem;
     backdrop-filter: blur(10px);
@@ -22,10 +22,20 @@
 
 .page-card {
     position: relative;
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: #DCF2F1;
     width:100%;
     padding:1.5rem;
-    box-shadow:0 0px 5px rgba(0,0,1,0.9);
+    box-shadow:0 0px 5px rgba(0,0,0.3,0.5);
     backdrop-filter: blur(10px);
-    height: 27vH;
+    height: 30vH;
+}
+
+.page-body {
+    position: relative;
+    background-color: #0F1035;
+    width:100%;
+    padding:1.5rem;
+    box-shadow:0 0px 5px rgba(0,0,0.3,0.5);
+    backdrop-filter: blur(10px);
+    height: 50vH;
 }
