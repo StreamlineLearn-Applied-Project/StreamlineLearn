@@ -36,12 +36,13 @@
 .input-group {
     position: relative;
     margin-bottom: 20px;
+    color: #0F1035;
 }
 
 .input-group input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #0F1035;
     border-radius: 5px;
     outline: none;
 }
@@ -71,12 +72,12 @@
 }
 
 .btn-primary {
-    background-color: #fff;
-    border: 1px solid #000000;
+    background-color: #7FC7D9;
+    color: #0F1035;
+    border: 1px solid #0F1035;
     border-radius: 8px;
     box-shadow: rgba(0, 0, 0, 0.5) 0 2px 5px 0;
     box-sizing: border-box;
-    color: #000000;
     cursor: pointer;
     display: inline-block;
     font-weight: 600;
@@ -96,6 +97,7 @@
 }
 
 .btn-primary:hover {
-    background-color: #000000;
+    background-color: #365486;
+    color: #DCF2F1;
     text-decoration: none;
 }

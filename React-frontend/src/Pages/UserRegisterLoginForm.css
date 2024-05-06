@@ -25,7 +25,7 @@ form{
     margin-bottom:0.4rem;
 }
 input{
-    color:white;
+    color:#0F1035;
     width:100%;
     background-color:transparent;
     border:none;
@@ -37,7 +37,7 @@ input{
 .transparent-dropdown {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #0F1035;
     border-radius: 5px;
     outline: none;
     background-color:transparent;
@@ -101,12 +101,12 @@ input:focus~label,input:not(:placeholder-shown)~label{
     border:none;
     width:100%;
     background:rgb(0, 0, 0);
-    color:white;
+    color:#0F1035;
     cursor:pointer;
     transition:0.9s;
 }
 .btn:hover{
-    background:#000000;
+    background:#0F1035;
 }
 .or{
     font-size:1.1rem;

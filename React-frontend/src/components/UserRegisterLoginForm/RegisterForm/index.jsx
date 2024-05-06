@@ -9,7 +9,7 @@ function SignUpForm({ formData, handleInputChange, handleRoleChange, handleSubmi
     return (
         <div>
             <div className="container">
-                <h1 className="form-title">Sign Up</h1>
+                <h1 className="form-title" style={{color:'#365486'}}>Sign Up</h1>
                 <form onSubmit={handleSubmit}>
                     <div className="input-group">
                         <i className="fas fa-user"></i>
@@ -196,7 +196,7 @@ function SignUpForm({ formData, handleInputChange, handleRoleChange, handleSubmi
                     )}
 
                     <div style={{display: "flex", justifyContent: "center", paddingTop: "5%", paddingBottom: "10%"}}>
-                        <button type="submit" className="btn btn-primary">
+                        <button type="submit" className="btn-primary">
                             Sign Up
                         </button>
                     </div>

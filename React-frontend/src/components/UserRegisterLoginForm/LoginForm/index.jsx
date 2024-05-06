@@ -7,7 +7,7 @@ function LoginForm({ formProps }) {
     return (
         <div className="login-card">
             <div className="card-content">
-                <h2 className="form-title">Login</h2>
+                <h2 className="form-title" style={{color:'#365486'}}>Login</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="input-group">
                         <i className="fas fa-user"></i>
