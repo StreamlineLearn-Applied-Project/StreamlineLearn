@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  background-image: linear-gradient(to top, rgba(15, 16, 53, 0.3), rgba(127, 199, 217, 0.6)); /* Increased opacity */
+  background-image: linear-gradient(to top, rgba(15, 16, 53, 0.1), rgba(127, 199, 217, 0.1)); /* Increased opacity */
   border-radius: 0.8rem;
   border: 2px solid #ccc; /* Dark grey */
   cursor: pointer;
@@ -47,7 +47,7 @@
 }
 
 .grid-course_price {
-  color: #dcf2f1; /* Green */
+  color: #7fc7d9; /* Green */
   font-size: 1rem;
   font-weight: bold; /* Make price bold */
 }
