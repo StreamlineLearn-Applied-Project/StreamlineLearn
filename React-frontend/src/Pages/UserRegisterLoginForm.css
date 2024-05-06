@@ -6,7 +6,6 @@
 }
 
 .container{
-    background-color: rgba(255, 255, 255, 0.2);
     width:450px;
     padding:1.5rem;
     margin:50px auto;
@@ -29,7 +28,6 @@ input{
     width:100%;
     background-color:transparent;
     border:none;
-    border-bottom:1px solid #757575;
     padding-left:1.5rem;
     font-size:15px;
 }
@@ -61,7 +59,6 @@ input{
 input:focus{
     background-color: transparent;
     outline:transparent;
-    border-bottom:2px solid hsl(327,90%,28%);
 }
 input::placeholder{
     color:white;

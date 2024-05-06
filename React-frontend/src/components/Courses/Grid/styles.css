@@ -1,19 +1,21 @@
 .grid-container {
   width: 350px;
-  height: 400px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  background-color: var(--black);
+  background-image: linear-gradient(to top, rgba(15, 16, 53, 0.3), rgba(127, 199, 217, 0.6)); /* Increased opacity */
   border-radius: 0.8rem;
   border: 2px solid #ccc; /* Dark grey */
   cursor: pointer;
   padding: 1rem;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Add shadows for 3D effect */
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  transition: all 0.3s ease; /* Smooth transition */
 }
 
 .grid-container:hover {
-  border: 3px solid #696969;
+  border: 3px solid #365486;
   transition: all 0.1s;
 }
 
@@ -22,27 +24,30 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 1rem;
+  border: 2px solid #fff;
+  padding: 1rem;
+  border-radius: 0.8rem;
 }
 
-.course_name {
+.grid-course_name {
   margin: 0;
   font-weight: bold; /* Make course name bold */
-  color: var(--white);
+  color: #0f1035;;
   font-size: 3rem; /* Increase font size */
 }
 
-.course_description {
-  color: #666; /* Medium grey */
+.grid-course_description {
+  color: #365486; /* Medium grey */
   font-size: 1rem;
 }
 
-.course_instructor {
-  color: #999; /* Light grey */
+.grid-course_instructor {
+  color: #365486; /* Light grey */
   font-size: 1rem;
 }
 
-.course_price {
-  color: #4CAF50; /* Green */
+.grid-course_price {
+  color: #dcf2f1; /* Green */
   font-size: 1rem;
   font-weight: bold; /* Make price bold */
 }

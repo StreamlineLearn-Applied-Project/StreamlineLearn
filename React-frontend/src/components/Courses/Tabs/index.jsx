@@ -6,6 +6,8 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import Grid from '../Grid';
 import List from '../List';
+import GridOnIcon from '@mui/icons-material/GridOn';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 import "./styles.css";
 
 export default function TabsComponent({courses}) {
@@ -36,9 +38,9 @@ palette: {
       <TabContext value={value}>
         <div className='tab-container'>
           <TabList onChange={handleChange} variant='fullWidth'>
-              <Tab label="Grid " value="grid" sx={style}  style={{outline: "none", textDecoration: "none", color: "var(--white)"}}/>
-              <Tab label="List" value="list" sx={style}  style={{outline: "none", textDecoration: "none", color: "var(--white)"}}/>
-            </TabList>
+            <Tab icon={<GridOnIcon />} value="grid" sx={style}  style={{outline: "none", textDecoration: "none", color: "var(--white)"}}/>
+            <Tab icon={<ListAltIcon />} value="list" sx={style}  style={{outline: "none", textDecoration: "none", color: "var(--white)"}}/>
+          </TabList>
         </div>
         <TabPanel value="grid">
           <div className='grid-flex'>

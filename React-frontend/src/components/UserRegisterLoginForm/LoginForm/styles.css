@@ -7,7 +7,7 @@
     margin-top: 0px;
     padding: 20px;
     background-color: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    box-shadow: 0 8px 32px 0 rgba(15, 16, 53, 0.37);
     backdrop-filter: blur(10px);
     border-radius: 10px;
     border: 1px solid rgba(0, 0, 0, 0.18);
@@ -20,7 +20,6 @@
 
 .login-card {
     position: relative;
-    background-color: rgba(255, 255, 255, 0.2);
     width:450px;
     padding:1.5rem;
     margin:5% auto;

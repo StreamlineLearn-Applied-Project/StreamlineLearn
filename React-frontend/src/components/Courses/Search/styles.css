@@ -1,21 +1,30 @@
 .search-flex {
-    width: 60%;
+    width: 100%;
     display: flex;
     justify-content: flex-start;
     align-items: center;
     gap: 1rem;
     margin-left: auto;
     margin-right: auto;
-    background-color: var(--darkgrey);
+    background-color: #7fc7d9;
     padding: 1.5rem 3rem;
-    border-radius: 4rem;
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
+  }
+
+  .search-body {
+    width: 50%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #dcf2f1;
+    padding: 0.5rem 0.5rem;
+    border-radius: 3rem;
   }
   
   .search-input {
-    background-color: var(--darkgrey);
-    color: var(--grey);
+    background-color: #0F1035;
+    color: #0F1035;
     font-family: "Inter", sans-serif;
     font-size: 1.5rem;
     border: none;
@@ -27,5 +36,5 @@
   }
 
   input::placeholder{
-    color: var(--white);
+    color: #0F1035;
   }

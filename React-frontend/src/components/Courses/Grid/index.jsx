@@ -8,16 +8,16 @@ function Grid({ course }) {
       <Link to={`/courses/${course.id}`} style={{ textDecoration: 'none' }}>
         <div className='grid-container'>
           <div className='name-col'>
-            <p className='course_name'>
+            <p className='grid-course_name'>
               {course.courseName}
             </p>
-            <p className='course_description'>
+            <p className='grid-course_description'>
               {course.description}
             </p>
-            <p className='course_instructor'>
+            <p className='grid-course_instructor'>
               {course.instructor.username}
             </p>
-            <p className='course_price'>
+            <p className='grid-course_price'>
               $ {course.price}
             </p>
           </div>

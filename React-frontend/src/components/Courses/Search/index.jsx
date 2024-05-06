@@ -6,14 +6,15 @@ function Search({search, onSearchChange}) {
   
   return (
     <div className='search-flex'>
-        <SearchRoundedIcon style={{color: 'var(--white)'}}/>
+      <div className='search-body'>
+      <SearchRoundedIcon/>
         <input 
             placeholder='Search' 
             type='text' 
             value={search}
             onChange={(e)=> onSearchChange(e)}
-            style={{color: 'var(--white)'}}
         />
+      </div>
     </div>
   )
 }
