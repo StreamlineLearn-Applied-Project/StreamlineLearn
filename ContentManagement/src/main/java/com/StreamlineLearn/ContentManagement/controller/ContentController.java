@@ -32,7 +32,7 @@ public class ContentController {
     @IsInstructor // This is a custom annotation, presumably checking if the authenticated user is an instructor.
     public ResponseEntity<Content> createContent(@PathVariable Long courseId,
                                                  @RequestPart("content") String contentJson,
-                                                 @RequestPart("image") MultipartFile file,
+                                                 @RequestPart("media") MultipartFile file,
                                                  @RequestHeader("Authorization") String authorizationHeader)
             throws JsonProcessingException {
 
@@ -89,7 +89,7 @@ public class ContentController {
     public ResponseEntity<String> updateContentById(@PathVariable Long courseId,
                                                     @PathVariable Long contentId,
                                                     @RequestPart("content") String contentJson,
-                                                    @RequestPart(value = "file", required = false) MultipartFile file,
+                                                    @RequestPart(value = "media", required = false) MultipartFile file,
                                                     @RequestHeader("Authorization") String authorizationHeader) throws JsonProcessingException {
 
         // Convert JSON string to a Content object

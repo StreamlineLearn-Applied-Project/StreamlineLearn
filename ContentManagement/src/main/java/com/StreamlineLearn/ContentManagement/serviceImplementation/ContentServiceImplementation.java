@@ -80,7 +80,7 @@ public class ContentServiceImplementation implements ContentService {
     @Override
     public Content createContent(Long courseId, Content content, MultipartFile file, String authorizationHeader) {
         try {
-            String imageFilePath = FOLDER_PATH + file.getOriginalFilename();
+            String mediaFilePath = FOLDER_PATH + file.getOriginalFilename();
             // Retrieve the course by its ID
             Course course = courseService.getCourseByCourseId(courseId);
 
@@ -97,7 +97,7 @@ public class ContentServiceImplementation implements ContentService {
                 ContentMedia contentMedia = ContentMedia.builder()
                         .mediaName(file.getOriginalFilename())
                         .type(file.getContentType())
-                        .mediaFilePath(imageFilePath)
+                        .mediaFilePath(mediaFilePath)
                         .content(savedContent) // Set the saved Content entity
                         .build();
                 contentMedia = contentMediaRepository.save(contentMedia);
@@ -108,7 +108,7 @@ public class ContentServiceImplementation implements ContentService {
                 savedContent = contentRepository.save(savedContent);
 
                 // Transfer the file
-                file.transferTo(new File(imageFilePath));
+                file.transferTo(new File(mediaFilePath));
 
                 // Return the newly created content
                 return content;

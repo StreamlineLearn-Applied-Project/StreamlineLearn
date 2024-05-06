@@ -5,10 +5,13 @@ import com.StreamlineLearn.CourseManagement.dto.CourseDTO;
 import com.StreamlineLearn.CourseManagement.model.Course;
 import com.StreamlineLearn.CourseManagement.service.CourseService;
 import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,11 +32,14 @@ public class CourseController {
 
     @PostMapping("/create-course") //HTTP POST requests onto the createCourse method.
     @IsInstructor // This is a custom annotation, presumably checking if the authenticated user is an instructor.
-    public ResponseEntity<Course> createCourse(@Valid @RequestBody Course course,
-                                               @RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<Course> createCourse(@RequestPart("course") String courseJson,
+                                               @RequestPart("media") MultipartFile file,
+                                               @RequestHeader("Authorization") String authorizationHeader) throws JsonProcessingException {
+        // Convert JSON string to a Content object
+        Course course = new ObjectMapper().readValue(courseJson, Course.class);
 
         // calls the createCourse method in the CourseService with the provided Course and authorization header.
-        Course createdCourse = courseService.createCourse(course, authorizationHeader );
+        Course createdCourse = courseService.createCourse(course, file,  authorizationHeader );
 
         // This returns a ResponseEntity with the created Course and an HTTP status code
         // indicating that the course was successfully created.
@@ -63,9 +69,14 @@ public class CourseController {
     @PutMapping("/{courseId}")
     @IsInstructor
     public ResponseEntity<String> updateCourseById(@PathVariable Long courseId,
-                                                   @RequestBody Course course,
-                                                   @RequestHeader("Authorization") String authorizationHeader){
-        boolean courseUpdated = courseService.updateCourseById(courseId, course, authorizationHeader );
+                                                   @RequestPart("course") String courseJson,
+                                                   @RequestPart(value = "media", required = false) MultipartFile file,
+                                                   @RequestHeader("Authorization") String authorizationHeader) throws JsonProcessingException {
+
+        // Convert JSON string to a Content object
+        Course course = new ObjectMapper().readValue(courseJson, Course.class);
+
+        boolean courseUpdated = courseService.updateCourseById(courseId, course, file, authorizationHeader );
         if(courseUpdated){
         return new ResponseEntity<>("Course updated Successfully", HttpStatus.OK);
         }else {
