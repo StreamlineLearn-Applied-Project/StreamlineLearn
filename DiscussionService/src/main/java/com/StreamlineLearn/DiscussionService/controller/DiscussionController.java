@@ -97,7 +97,7 @@ public class DiscussionController {
         Boolean isDeleted = discussionService.deleteDiscussion(courseId, discussionId, authorizationHeader);
 
         // If the Discussion was deleted successfully, return a success message; otherwise, return 404
-        return isDeleted ? ResponseEntity.ok("Discussion updated Successfully") :
+        return isDeleted ? ResponseEntity.ok("Discussion deleted Successfully") :
                 ResponseEntity.notFound().build();
     }
 }
