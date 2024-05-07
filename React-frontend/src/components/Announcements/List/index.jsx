@@ -5,7 +5,6 @@ import "./styles.css";
 function AnnouncementList({ announcements, courseId }) {
     return (
         <div className='announcements'>
-            <h1 style={{ textAlign: 'left', color: '#0f1035', fontWeight: 'bold'}}>Announcements</h1>
             {announcements.map((announcement) => (
                 <Link to={`/courses/${courseId}/announcements/${announcement.id}`} key={announcement.id} style={{ textDecoration: 'none' }}>
                     <td className='announcements-list-row'>

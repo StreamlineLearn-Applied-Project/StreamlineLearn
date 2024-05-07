@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom';
 import Header from '../components/Common/Header';
 import Footer from '../components/Common/Footer';
 import { getAllDiscussions } from '../Api/discussions';
+import Sidebar from '../components/Common/Sidebar';
+import "../components/Common/Sidebar/styles.css";
 import DiscussionList from '../components/Discussions/List';
 
 function DiscussionsPage() {
@@ -88,7 +90,14 @@ function DiscussionsPage() {
     return (
       <div>
         <Header/>
-        <DiscussionList discussions={discussions} courseId={courseId} />
+        <div style={{ display: 'flex' }}>
+          <Sidebar />
+            <div className="sidebar_container-right">
+              <div className="content" style={{marginTop:'-3%'}}>
+                <DiscussionList discussions={discussions} courseId={courseId} />
+              </div>
+            </div>
+          </div>
         <Footer/>
       </div>
     );

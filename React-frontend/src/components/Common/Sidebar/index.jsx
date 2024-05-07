@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom';
 function Sidebar({ courseId }) {
     const location = useLocation();
     return (
-        <div className="sidebar-container">
+        <div className="sidebar_container-left">
             <div className="sidebar">
                 <ul>
                     <li className={location.pathname === `/courses/${courseId}/announcements` ? 'active' : ''}>
@@ -33,7 +33,6 @@ function Sidebar({ courseId }) {
                 </ul>
             </div>
         </div>
-
     );
 }
 

@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import Header from '../components/Common/Header';
 import Footer from '../components/Common/Footer';
 import { getAllFeedbacks } from '../Api/feedbacks';
+import Sidebar from '../components/Common/Sidebar';
+import "../components/Common/Sidebar/styles.css";
 import FeedbackList from '../components/Feedbacks/List';
 
 function FeedbacksPage() {
@@ -103,7 +105,14 @@ function FeedbacksPage() {
     return (
       <div>
         <Header/>
-        <FeedbackList feedbacks={feedbacks} courseId={courseId} />
+        <div style={{ display: 'flex' }}>
+        <Sidebar />
+            <div className="sidebar_container-right">
+              <div className="content" style={{marginTop:'-3%'}}>
+                <FeedbackList feedbacks={feedbacks} courseId={courseId} />
+              </div>
+            </div>
+        </div>
         <Footer/>
       </div>
     );
