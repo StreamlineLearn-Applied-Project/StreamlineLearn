@@ -232,12 +232,10 @@ public class CourseServiceImplementation implements CourseService {
     }
 
 
-
-
     @Override
-    public boolean updateCourseById(Long id, Course course, MultipartFile file, String authorizationHeader) {
+    public boolean updateCourseById(Long courseId, Course course, MultipartFile file, String authorizationHeader) {
         try {
-            Optional<Course> courseOptional = courseRepository.findById(id);
+            Optional<Course> courseOptional = courseRepository.findById(courseId);
             if (courseOptional.isEmpty()) {
                 throw new CourseNotFoundException("Course not found");
             }
@@ -295,14 +293,14 @@ public class CourseServiceImplementation implements CourseService {
             courseRepository.save(updateCourse);
             return true;
         } catch (CourseNotFoundException ex) {
-            logger.error("Course not found with ID: {}", id, ex);
+            logger.error("Course not found with ID: {}", courseId, ex);
             throw ex;
         } catch (UnauthorizedException ex) {
-            logger.error("Unauthorized access for updating course with ID: {}", id, ex);
+            logger.error("Unauthorized access for updating course with ID: {}", courseId, ex);
             throw ex;
         } catch (Exception ex) {
-            logger.error("An error occurred while updating course with ID: {}", id, ex);
-            throw new CourseException("Failed to update course with ID: " + id, ex);
+            logger.error("An error occurred while updating course with ID: {}", courseId, ex);
+            throw new CourseException("Failed to update course with ID: " + courseId, ex);
         }
     }
 

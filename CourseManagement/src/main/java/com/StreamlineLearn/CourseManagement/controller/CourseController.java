@@ -9,10 +9,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -28,6 +30,19 @@ public class CourseController {
     public CourseController(CourseService courseService) {
         this.courseService = courseService;
 
+    }
+
+    private MediaType determineMediaType(String fileName) {
+        // Implement logic to determine the media type based on the file extension
+        // Example: Check file extension and return the corresponding MediaType
+        if (fileName.endsWith(".mp4")) {
+            return MediaType.valueOf("video/mp4");
+        } else if (fileName.endsWith(".avi")) {
+            return MediaType.valueOf("video/x-video");
+        } else {
+            // Default to application/octet-stream for unknown types
+            return MediaType.APPLICATION_OCTET_STREAM;
+        }
     }
 
     @PostMapping("/create-course") //HTTP POST requests onto the createCourse method.
@@ -64,6 +79,18 @@ public class CourseController {
 
         return course.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/courses/{courseId}/media/{fileName}")
+    public ResponseEntity<byte[]> getCourseMedia(@PathVariable Long courseId,
+                                                 @PathVariable String fileName) throws IOException {
+        byte[] mediaData=courseService.getCourseMedia(courseId, fileName);
+        // Determine the appropriate media type based on the file extension
+        MediaType mediaType = determineMediaType(fileName);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(mediaType)
+                .body(mediaData);
+
     }
 
     @PutMapping("/{courseId}")

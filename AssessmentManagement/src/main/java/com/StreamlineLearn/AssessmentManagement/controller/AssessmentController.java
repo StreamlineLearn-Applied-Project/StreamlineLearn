@@ -1,16 +1,19 @@
 package com.StreamlineLearn.AssessmentManagement.controller;
 
-import com.StreamlineLearn.AssessmentManagement.dto.AssessmentDto;
+
 import com.StreamlineLearn.AssessmentManagement.model.Assessment;
 import com.StreamlineLearn.AssessmentManagement.service.AssessmentService;
 import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
 import com.StreamlineLearn.SharedModule.annotation.IsStudentOrInstructor;
-import jakarta.validation.Valid;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -30,11 +33,15 @@ public class AssessmentController {
     @PostMapping //HTTP POST requests onto the createAssessment method.
     @IsInstructor // This is a custom annotation, presumably checking if the authenticated user is an instructor.
     public ResponseEntity<Assessment> createAssessment(@PathVariable Long courseId,
-                                                   @Valid @RequestBody Assessment assessment,
-                                                   @RequestHeader("Authorization") String authorizationHeader){
+                                                       @RequestPart("assessment") String assessmentJson,
+                                                       @RequestPart("media") MultipartFile file,
+                                                       @RequestHeader("Authorization") String authorizationHeader) throws IOException {
+
+        // Convert JSON string to an Assessment object
+        Assessment assessment = new ObjectMapper().readValue(assessmentJson, Assessment.class);
 
         // calls the createAssessment method in the AssessmentService with the provided Assessment and authorization header.
-        Assessment createdAssessment = assessmentService.createAssessment(courseId, assessment, authorizationHeader );
+        Assessment createdAssessment = assessmentService.createAssessment(courseId, assessment, file, authorizationHeader);
 
         // This returns a ResponseEntity with the created Assessment and an HTTP status code
         // indicating that the assessment was successfully created.
@@ -64,17 +71,34 @@ public class AssessmentController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    // Endpoint to get assessment media by file name
+    @GetMapping("/media/{fileName}")
+    public ResponseEntity<byte[]> getAssessmentMedia(@PathVariable Long courseId,
+                                                     @PathVariable String fileName,
+                                                     @RequestHeader("Authorization") String authorizationHeader)
+            throws IOException {
+        byte[] mediaData = assessmentService.getAssessmentMedia(courseId, fileName, authorizationHeader);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.valueOf("image/png"))
+                .body(mediaData);
+    }
+
     // Endpoint to update an assessment by ID
     @PutMapping("/{assessmentId}")
     @IsInstructor // Custom annotation to check if the user is an instructor
     public ResponseEntity<String> updateAssessmentById(@PathVariable Long courseId,
                                                        @PathVariable Long assessmentId,
-                                                       @Valid @RequestBody Assessment assessment,
-                                                       @RequestHeader("Authorization") String authorizationHeader){
+                                                       @RequestPart("assessment") String assessmentJson,
+                                                       @RequestPart(value = "media", required = false) MultipartFile file,
+                                                       @RequestHeader("Authorization") String authorizationHeader) throws JsonProcessingException {
+
+        // Convert JSON string to an Assessment object
+        Assessment assessment = new ObjectMapper().readValue(assessmentJson, Assessment.class);
 
         // Call the service method to update the Assessment
         boolean assessmentUpdated = assessmentService
-                .updateAssessmentById(courseId, assessmentId, assessment, authorizationHeader);
+                .updateAssessmentById(courseId, assessmentId, assessment,file, authorizationHeader);
 
         // If the Assessment was updated successfully, return a success message; otherwise, return 404
         return assessmentUpdated ? ResponseEntity.ok("Assessment updated Successfully") :

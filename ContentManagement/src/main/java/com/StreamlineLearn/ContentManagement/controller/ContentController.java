@@ -33,8 +33,7 @@ public class ContentController {
     public ResponseEntity<Content> createContent(@PathVariable Long courseId,
                                                  @RequestPart("content") String contentJson,
                                                  @RequestPart("media") MultipartFile file,
-                                                 @RequestHeader("Authorization") String authorizationHeader)
-            throws JsonProcessingException {
+                                                 @RequestHeader("Authorization") String authorizationHeader) throws JsonProcessingException {
 
         // Convert JSON string to a Content object
         Content content = new ObjectMapper().readValue(contentJson, Content.class);
@@ -76,10 +75,10 @@ public class ContentController {
     public ResponseEntity<?> getContentMedia(@PathVariable Long courseId,
                                                          @PathVariable String fileName,
                                                          @RequestHeader("Authorization") String authorizationHeader) throws IOException {
-        byte[] imageData=contentService.getContentMedia(courseId, fileName, authorizationHeader);
+        byte[] mediaData=contentService.getContentMedia(courseId, fileName, authorizationHeader);
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("image/png"))
-                .body(imageData);
+                .body(mediaData);
 
     }
 
