@@ -5,7 +5,6 @@ import "./styles.css";
 function AssessmentList({ assessments, courseId }) {
     return (
         <div className='assesments'>
-            <h1 style={{ textAlign: 'left', fontWeight: 'bold', position: 'absolute'}}>Assessments</h1>
             <div style={{marginTop: '4%'}}>
                 {assessments.map((assessment) => (
                     <Link to={`/courses/${courseId}/assessments/${assessment.id}`} key={assessment.id} style={{ textDecoration: 'none' }}>

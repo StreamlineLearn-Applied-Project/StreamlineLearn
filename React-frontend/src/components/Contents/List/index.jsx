@@ -5,8 +5,7 @@ import './styles.css';
 function ContentList({ contents, courseId }) {
     return (
         <div className='contents'>
-            <h1 style={{ textAlign: 'left', fontWeight: 'bold', position: 'absolute'}}>Contents</h1>
-            <div style={{marginTop: '4%'}}>
+            <div>
                 {contents.map((content) => (
                     <Link to={`/courses/${courseId}/contents/${content.id}`} key={content.id} style={{ textDecoration: 'none' }}>
                         <div className='contents-list-row'>

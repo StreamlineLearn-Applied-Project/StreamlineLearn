@@ -1,27 +1,31 @@
-.sidebar_container {
-    display: flex;
-    width: 100%;
+.sidebar_container-left {
+    position: fixed;
+    top: 12%;
+    left: 0;
+    width: 20%;
+    height: 100vh; /* Set the height to fill the viewport */
+    overflow-y: auto; /* Allow vertical scrolling */
     padding: 2rem;
-    margin:auto;
+    display: flex;
+    flex-direction: column;
     justify-content: flex-start;
     align-items: center;
+    z-index: 1; 
 }
 
-.sidebar {
-    flex: 0 0 0; /* Set sidebar width */
-    padding: 1rem;
+.sidebar_container-right {
     display: flex;
-    width:250px;
+    flex-direction: column;
+    width: 80%;
     margin-left: auto;
-    margin-right: auto;
-    border-radius: 3rem;
+    position: relative;
+    top: 0;
     justify-content: flex-start;
-    align-items: center;
-    height: auto;
-    color: #0f1035;
+    align-items: flex-start;
 }
 
 .sidebar ul {
+    position: sticky;
     list-style-type: none; /* Remove bullet points */
 }
 
@@ -38,15 +42,18 @@
 }
 
 .sidebar a:hover {
-    color: #365486; /* Change text color on hover */
+    color: #478aff;
 }
 
 .sidebar .active {
     background-color: #365486; /* Highlight background color */
     color: #dcf2f1; /* Highlight text color */
+    font-weight: bold;
 }
 
 .content {
     flex: 1; /* Let the content fill remaining space */
     padding: 20px;
+    width: 100%;
+    margin-top: -7%;
 }

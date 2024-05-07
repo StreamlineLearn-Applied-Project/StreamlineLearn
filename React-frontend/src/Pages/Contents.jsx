@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import Header from '../components/Common/Header';
 import Footer from '../components/Common/Footer';
 import { getCourseContents } from '../Api/contents';
+import Sidebar from '../components/Common/Sidebar';
+import "../components/Common/Sidebar/styles.css";
 import ContentList from '../components/Contents/List';
 
 function ContentsPage() {
@@ -61,7 +63,14 @@ function ContentsPage() {
     return (
       <div>
         <Header/>
-        <ContentList contents={contents} courseId={courseId} />
+        <div style={{ display: 'flex' }}>
+            <Sidebar />
+            <div className="sidebar_container-right">
+                <div className="content" style={{marginTop:'-3%'}}>
+                    <ContentList contents={contents} courseId={courseId} />
+                </div>
+            </div>
+        </div>
         <Footer/>
       </div>
     );
