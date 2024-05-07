@@ -30,12 +30,16 @@ public class Assessment {
     @JoinColumn(name = "course_id")
     private Course course;
 
+    @OneToOne(mappedBy = "assessment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private AssessmentMedia assessmentMedia;
+
     public Assessment() {
     }
 
     public Assessment(Long id, String assessmentTitle,
                       String assessmentDescription, Integer percentage,
-                      Date creationDate, Date lastUpdated, Course course) {
+                      Date creationDate, Date lastUpdated,
+                      Course course, AssessmentMedia assessmentMedia) {
         this.id = id;
         this.assessmentTitle = assessmentTitle;
         this.assessmentDescription = assessmentDescription;
@@ -43,6 +47,7 @@ public class Assessment {
         this.creationDate = creationDate;
         this.lastUpdated = lastUpdated;
         this.course = course;
+        this.assessmentMedia = assessmentMedia;
     }
 
     public Long getId() {
@@ -99,5 +104,13 @@ public class Assessment {
 
     public void setCourse(Course course) {
         this.course = course;
+    }
+
+    public AssessmentMedia getAssessmentMedia() {
+        return assessmentMedia;
+    }
+
+    public void setAssessmentMedia(AssessmentMedia assessmentMedia) {
+        this.assessmentMedia = assessmentMedia;
     }
 }

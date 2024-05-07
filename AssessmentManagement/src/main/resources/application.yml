@@ -37,6 +37,17 @@ spring:
         # Database dialect
         dialect: org.hibernate.dialect.MySQL8Dialect
 
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+
+app:
+  folder-path: "C:\\Users\\Abish\\Desktop\\Image\\"
+
+
+
 
 
 

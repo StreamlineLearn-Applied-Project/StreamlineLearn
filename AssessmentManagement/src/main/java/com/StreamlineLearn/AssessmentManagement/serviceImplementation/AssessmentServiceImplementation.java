@@ -2,7 +2,9 @@ package com.StreamlineLearn.AssessmentManagement.serviceImplementation;
 
 import com.StreamlineLearn.AssessmentManagement.exception.AssessmentException;
 import com.StreamlineLearn.AssessmentManagement.model.Assessment;
+import com.StreamlineLearn.AssessmentManagement.model.AssessmentMedia;
 import com.StreamlineLearn.AssessmentManagement.model.Course;
+import com.StreamlineLearn.AssessmentManagement.repository.AssessmentMediaRepository;
 import com.StreamlineLearn.AssessmentManagement.repository.AssessmentRepository;
 import com.StreamlineLearn.AssessmentManagement.repository.CourseRepository;
 import com.StreamlineLearn.AssessmentManagement.service.AssessmentService;
@@ -13,10 +15,17 @@ import com.StreamlineLearn.SharedModule.dto.CourseAssessmentDto;
 import com.StreamlineLearn.SharedModule.dto.UserSharedDto;
 import com.StreamlineLearn.SharedModule.service.EnrollmentService;
 import com.StreamlineLearn.SharedModule.service.JwtUserService;
+import com.StreamlineLearn.SharedModule.sharedException.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Optional;
 import java.util.Set;
 
@@ -27,7 +36,9 @@ public class AssessmentServiceImplementation implements AssessmentService {
     private final AssessmentRepository assessmentRepository;
     private final CourseRepository courseRepository;
     private final KafkaProducerService kafkaProducerService;
-    private static final int TOKEN_PREFIX_LENGTH = 7;
+    private final AssessmentMediaRepository assessmentMediaRepository;
+    @Value("${app.folder-path}")
+    private String FOLDER_PATH;
 
     private final EnrollmentService enrollmentService;
     private static final Logger logger = LoggerFactory.getLogger(AssessmentServiceImplementation.class);
@@ -36,6 +47,7 @@ public class AssessmentServiceImplementation implements AssessmentService {
                                            AssessmentRepository assessmentRepository,
                                            CourseRepository courseRepository,
                                            KafkaProducerService kafkaProducerService,
+                                           AssessmentMediaRepository assessmentMediaRepository,
                                            EnrollmentService enrollmentService) {
 
         this.jwtUserService = jwtUserService;
@@ -43,6 +55,7 @@ public class AssessmentServiceImplementation implements AssessmentService {
         this.assessmentRepository = assessmentRepository;
         this.courseRepository = courseRepository;
         this.kafkaProducerService = kafkaProducerService;
+        this.assessmentMediaRepository = assessmentMediaRepository;
         this.enrollmentService = enrollmentService;
     }
 
@@ -62,15 +75,35 @@ public class AssessmentServiceImplementation implements AssessmentService {
 
     // Method to create an assessment
     @Override
-    public Assessment createAssessment(Long courseId, Assessment assessment, String authorizationHeader) {
+    public Assessment createAssessment(Long courseId, Assessment assessment, MultipartFile file, String authorizationHeader) {
         try {
+                String mediaFilePath = FOLDER_PATH + file.getOriginalFilename();
                 Course course = courseService.getCourseByCourseId(courseId);
                 UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
 
                 // Check if the course exists and if the logged-in instructor owns the course
                 if (course != null && course.getInstructor().getId().equals(userSharedDto.getId())) {
                     assessment.setCourse(course);
-                    assessmentRepository.save(assessment);
+                    // Save the Content entity first
+                    Assessment savedAssessment = assessmentRepository.save(assessment);
+
+                    // Save the AssessmentMedia entity after the Assessment entity is saved
+                    AssessmentMedia assessmentMedia = AssessmentMedia.builder()
+                            .mediaName(file.getOriginalFilename())
+                            .type(file.getContentType())
+                            .mediaFilePath(mediaFilePath)
+                            .assessment(savedAssessment)
+                            .build();
+                    assessmentMedia = assessmentMediaRepository.save(assessmentMedia);
+
+                    // Set the ContentMedia entity in the Content entity
+                    savedAssessment.setAssessmentMedia(assessmentMedia);
+                    // Update the Content entity to reflect the relationship
+                    savedAssessment = assessmentRepository.save(savedAssessment);
+
+                    // Transfer the file
+                    file.transferTo(new File(mediaFilePath));
+
                     // Publish course assessment details
                     CourseAssessmentDto courseAssessmentDto = new CourseAssessmentDto(userSharedDto.getId(),
                             courseId, assessment.getId());
@@ -126,7 +159,8 @@ public class AssessmentServiceImplementation implements AssessmentService {
                                 assessment.getPercentage(),
                                 assessment.getCreationDate(),
                                 assessment.getLastUpdated(),
-                                assessment.getCourse()))
+                                assessment.getCourse(),
+                                assessment.getAssessmentMedia()))
                         .findFirst();
             }
             return Optional.empty();
@@ -138,31 +172,92 @@ public class AssessmentServiceImplementation implements AssessmentService {
 
     }
 
-    // Method to update an Assessment by ID
+    // Method to retrieve AssessmentMedia
     @Override
-    public boolean updateAssessmentById(Long courseId, Long assessmentId, Assessment assessment, String authorizationHeader) {
+    public byte[] getAssessmentMedia(Long courseId, String fileName, String authorizationHeader) throws IOException {
         try {
             UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
             Course course = courseService.getCourseByCourseId(courseId);
 
-            if (course != null && isAuthorizedAsInstructor(userSharedDto.getRole(),
-                    userSharedDto.getId(), courseId))  {
-                    Optional<Assessment> optionalAssessment = course.getAssessments()
-                            .stream()
-                            .filter(a -> a.getId().equals(assessmentId))
-                            .findFirst();
-                    if (optionalAssessment.isPresent()) {
-                        Assessment existingAssessment = optionalAssessment.get();
-                        existingAssessment.setAssessmentTitle(assessment.getAssessmentTitle());
-                        existingAssessment.setPercentage(assessment.getPercentage());
-                        assessmentRepository.save(existingAssessment);
-                        return true;
-                    }
+            if (course != null && isAuthorizedAsInstructorOrStudent(userSharedDto.getRole(), userSharedDto.getId(), courseId)) {
+                Optional<AssessmentMedia> assessmentMedia = assessmentMediaRepository.findByMediaName(fileName);
+                if (assessmentMedia.isPresent()) {
+                    String mediaFilePath = assessmentMedia.get().getMediaFilePath();
+                    return Files.readAllBytes(new File(mediaFilePath).toPath());
+                } else {
+                    throw new FileNotFoundException("Media file not found: " + fileName);
+                }
+            } else {
+                throw new UnauthorizedException("User is not authorized to access media for this course");
             }
-            // Assessment not found in the course
-            return false;
+        } catch (IOException ex) {
+            // Log IO exceptions
+            logger.error("Error occurred while reading media file", ex);
+            throw ex;
+        } catch (UnauthorizedException ex) {
+            // Log and rethrow UnauthorizedException
+            logger.error(ex.getMessage(), ex);
+            throw ex;
+        } catch (Exception ex) {
+            // Log any unexpected exceptions and throw a generic AssessmentException
+            logger.error("An unexpected error occurred while getting assessment media", ex);
+            throw new AssessmentException("Failed to get assessment media: " + ex.getMessage(), ex);
+        }
+    }
 
-        }  catch (Exception ex) {
+    @Override
+    public boolean updateAssessmentById(Long courseId, Long assessmentId, Assessment assessment, MultipartFile file, String authorizationHeader) {
+        try {
+            UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
+            Course course = courseService.getCourseByCourseId(courseId);
+
+            if (course != null && isAuthorizedAsInstructor(userSharedDto.getRole(), userSharedDto.getId(), courseId)) {
+                Optional<Assessment> optionalAssessment = course.getAssessments().stream()
+                        .filter(a -> a.getId().equals(assessmentId))
+                        .findFirst();
+
+                if (optionalAssessment.isPresent()) {
+                    Assessment existingAssessment = optionalAssessment.get();
+                    existingAssessment.setAssessmentTitle(assessment.getAssessmentTitle());
+                    existingAssessment.setPercentage(assessment.getPercentage());
+
+                    // Check if a new file is uploaded
+                    if (file != null && !file.isEmpty()) {
+                        // Delete the previous file if it exists
+                        AssessmentMedia existingMedia = existingAssessment.getAssessmentMedia();
+                        if (existingMedia != null) {
+                            String previousFilePath = existingMedia.getMediaFilePath();
+                            File previousFile = new File(previousFilePath);
+                            if (previousFile.exists() && !previousFile.delete()) {
+                                logger.warn("Failed to delete previous file: {}", previousFilePath);
+                            }
+                        }
+
+                        // Save the new file
+                        String mediaFilePath = FOLDER_PATH + file.getOriginalFilename();
+                        file.transferTo(new File(mediaFilePath));
+
+                        // Update the AssessmentMedia entity or create a new one if it doesn't exist
+                        AssessmentMedia assessmentMedia = existingMedia != null ? existingMedia : new AssessmentMedia();
+                        assessmentMedia.setMediaName(file.getOriginalFilename());
+                        assessmentMedia.setType(file.getContentType());
+                        assessmentMedia.setMediaFilePath(mediaFilePath);
+                        assessmentMedia.setAssessment(existingAssessment);
+
+                        // Save or update the AssessmentMedia entity
+                        assessmentMediaRepository.save(assessmentMedia);
+
+                        // Set the AssessmentMedia entity in the Assessment entity
+                        existingAssessment.setAssessmentMedia(assessmentMedia);
+                    }
+
+                    // Save the updated assessment
+                    assessmentRepository.save(existingAssessment);
+                    return true;
+                }
+            }
+            return false;
+        } catch (Exception ex) {
             // Log any unexpected exceptions and throw a generic AssessmentException
             logger.error("An unexpected error occurred while updating Assessment by ID", ex);
             throw new AssessmentException("Failed to update Assessment by ID: " + ex.getMessage(), ex);
