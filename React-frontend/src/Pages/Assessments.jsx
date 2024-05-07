@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import Header from '../components/Common/Header';
 import Footer from '../components/Common/Footer';
 import AssessmentList from '../components/Assessments/List';
+import Sidebar from '../components/Common/Sidebar';
+import "../components/Common/Sidebar/styles.css";
 import { getCourseAssessments } from '../Api/assessments';
 
 function AssessmentsPage() {
@@ -94,7 +96,14 @@ function AssessmentsPage() {
     return (
       <div>
         <Header/>
-        <AssessmentList assessments={assessments} courseId={courseId} />
+        <div style={{ display: 'flex' }}>
+        <Sidebar />
+        <div className="sidebar_container-right">
+            <div className="content">
+                <AssessmentList assessments={assessments} courseId={courseId} />
+            </div>
+        </div>
+        </div>
         <Footer/>
       </div>
     );

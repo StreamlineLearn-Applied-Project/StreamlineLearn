@@ -94,11 +94,13 @@ function AnnouncementsPage() {
 
     return (
         <div>
-          <Header />
-            <div className="sidebar_container">
+            <Header />
+            <div style={{ display: 'flex' }}>
                 <Sidebar />
-                <div className="content">
-                    <AnnouncementList announcements={announcements} courseId={courseId} />
+                <div className="sidebar_container-right">
+                    <div className="content" style={{marginTop:'0%'}}>
+                        <AnnouncementList announcements={announcements} courseId={courseId} />
+                    </div>
                 </div>
             </div>
             <Footer />

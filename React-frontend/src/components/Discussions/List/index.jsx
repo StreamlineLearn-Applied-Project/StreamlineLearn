@@ -5,8 +5,7 @@ import "./styles.css";
 function DiscussionList({ discussions, courseId }) {
     return (
         <div className='discussions'>
-            <h1 style={{ textAlign: 'left', fontWeight: 'bold', position: 'absolute'}}>Discussions</h1>
-            <div style={{marginTop: '4%'}}>
+            <div>
                 {discussions.map((discussion) => (
                     <Link to={`/courses/${courseId}/discussions/${discussion.id}`} key={discussion.id} style={{ textDecoration: 'none' }}>
                         <div className="discussions-list-row">
