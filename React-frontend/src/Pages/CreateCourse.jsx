@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Common/Header';
+import Footer from '../components/Common/Footer';
 import CreateCourse from '../components/Course/CreateCourse'; // Import the new component
 
 function CreateCoursePage() {
@@ -45,6 +46,7 @@ function CreateCoursePage() {
     <div>
       <Header/>
       <CreateCourse courseData={courseData} /> {/* Use the new component */}
+      <Footer/>
     </div>
   );
 }
