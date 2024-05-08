@@ -1,10 +1,12 @@
 import React from 'react';
 import "./styles.css";
 import { Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 
-function Sidebar({ courseId }) {
+function Sidebar() {
     const location = useLocation();
+    const { courseId } = useParams();
     return (
         <div className="sidebar_container-left">
             <div className="sidebar">
@@ -17,9 +19,6 @@ function Sidebar({ courseId }) {
                     </li>
                     <li className={location.pathname === `/courses/${courseId}/assessments` ? 'active' : ''}>
                         <Link to={`/courses/${courseId}/assessments`}>Assessments</Link>
-                    </li>
-                    <li className={location.pathname === `/courses/${courseId}/grades` ? 'active' : ''}>
-                        <Link to={`/courses/${courseId}/grades`}>Grades</Link>
                     </li>
                     <li className={location.pathname === `/courses/${courseId}/discussions` ? 'active' : ''}>
                         <Link to={`/courses/${courseId}/discussions`}>Discussions</Link>

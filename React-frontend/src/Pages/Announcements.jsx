@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom'; // Import Link
 import Header from '../components/Common/Header';
 import Footer from '../components/Common/Footer';
 import AnnouncementList from '../components/Announcements/List';
@@ -95,16 +95,29 @@ function AnnouncementsPage() {
     return (
         <div>
             <Header />
+
             <div style={{ display: 'flex' }}>
+
                 <Sidebar />
+
                 <div className="sidebar_container-right">
+
                     <div className="content" style={{marginTop:'0%'}}>
+
+                        <Link to={`/courses/${courseId}/announcements/create-announcement`}>Create Announcement</Link>
+
                         <AnnouncementList announcements={announcements} courseId={courseId} />
+
                     </div>
+
                 </div>
+
             </div>
+
             <Footer />
+
         </div>
+        
       );
 }
 

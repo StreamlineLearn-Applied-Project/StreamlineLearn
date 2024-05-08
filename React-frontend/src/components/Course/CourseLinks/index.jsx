@@ -15,9 +15,6 @@ function CourseLinks({ courseId }) {
     <Link to={`/courses/${courseId}/assessments`}>
       <Button text={"Assessments"} outlined={true} />
     </Link>
-    <Link to={`/courses/${courseId}/grades`}>
-      <Button text={"Grades"} outlined={true} />
-    </Link>
     <Link to={`/courses/${courseId}/discussions`}>
       <Button text={"Discussions"} outlined={true} />
     </Link>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom'; // Import Link
 import Header from '../components/Common/Header';
 import Footer from '../components/Common/Footer';
 import AssessmentList from '../components/Assessments/List';
@@ -99,8 +99,12 @@ function AssessmentsPage() {
         <div style={{ display: 'flex' }}>
         <Sidebar />
         <div className="sidebar_container-right">
-            <div className="content">
+            <div className="content" style={{marginTop:'0%'}}
+            >
+            <Link to={`/courses/${courseId}/assessments/create-assessment`}>Create Assessment</Link>
+
                 <AssessmentList assessments={assessments} courseId={courseId} />
+
             </div>
         </div>
         </div>

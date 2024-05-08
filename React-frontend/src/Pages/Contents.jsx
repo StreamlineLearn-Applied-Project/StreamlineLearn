@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom'; // Import Link
 import Header from '../components/Common/Header';
 import Footer from '../components/Common/Footer';
 import { getCourseContents } from '../Api/contents';
+import { getUserInfo } from '../Api/user';
 import Sidebar from '../components/Common/Sidebar';
 import "../components/Common/Sidebar/styles.css";
 import ContentList from '../components/Contents/List';
@@ -10,6 +11,7 @@ import ContentList from '../components/Contents/List';
 function ContentsPage() {
     const { courseId } = useParams();
     const [contents, setContents] = useState([]);
+    const [userInfo, setUserInfo] = useState(null); // State to store user information
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -36,21 +38,33 @@ function ContentsPage() {
       // ... more content objects
   ];
 
-    useEffect(() => {
-        const token = localStorage.getItem('jwtToken');
-        setIsLoading(true);
-        getCourseContents(courseId, token)
-            .then(response => {
-                setContents(response.data);
-                setIsLoading(false);
-            })
-            .catch(error => {
-                console.error('There was an error!', error);
-                setError(error);
-                setIsLoading(false);
-                setContents(mockContents); // Use mockContents if there's an error (e.g., backend is not running)
-            });
+  useEffect(() => {
+    const token = localStorage.getItem('jwtToken');
+    setIsLoading(true);
+    // Retrieve user information using the getUserInfo function
+    getUserInfo(token)
+        .then(response => {
+            setUserInfo(response.data); // Set user information to state
+        })
+        .catch(error => {
+            console.error('Error fetching user information:', error);
+        });
+    
+    // Fetch course contents
+    getCourseContents(courseId, token)
+        .then(response => {
+            setContents(response.data);
+            setIsLoading(false);
+        })
+        .catch(error => {
+            console.error('There was an error!', error);
+            setError(error);
+            setIsLoading(false);
+            // Use mockContents if there's an error
+            setContents(mockContents); // Replace with actual mock data
+        });
     }, [courseId]);
+    
 
     // if (isLoading) {
     //     return <div>Loading...</div>;
@@ -66,8 +80,13 @@ function ContentsPage() {
         <div style={{ display: 'flex' }}>
             <Sidebar />
             <div className="sidebar_container-right">
-                <div className="content" style={{marginTop:'-3%'}}>
+
+                <div className="content" style={{marginTop:'0%'}}>
+
+                <Link to={`/courses/${courseId}/contents/create-content`}>Create Content</Link>
+
                     <ContentList contents={contents} courseId={courseId} />
+                    
                 </div>
             </div>
         </div>
