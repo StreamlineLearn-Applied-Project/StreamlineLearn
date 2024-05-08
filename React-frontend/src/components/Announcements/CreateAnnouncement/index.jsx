@@ -10,25 +10,25 @@ function CreateAnnouncement({ announcementData }) {
   } = announcementData;
 
   return (
-    <div>
-      <form onSubmit={handleCreateAnnouncement}>
-        <label>
-          Announcement Title:
-          <input
-            type="text"
-            value={announcementTitle}
-            onChange={e => setAnnouncementTitle(e.target.value)}
-          />
-        </label>
-        <label>
-          Announcement:
-          <textarea
-            value={announcement}
-            onChange={e => setAnnouncement(e.target.value)}
-          />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
+    <div className='page_body'>
+      <h3 style={{fontWeight:'bold', color:'#0F1035', textAlign:'left'}}>Add new announcement</h3>
+      <div className="card-content">
+          <form onSubmit={handleCreateAnnouncement}>
+          <div className="page_input">
+            <label>
+              Announcement Title:
+              <div className="input-group">
+              <input
+                type="text"
+                value={announcementTitle}
+                onChange={e => setAnnouncementTitle(e.target.value)}
+              />
+              </div>
+            </label>
+            </div>
+            <button type="submit" className="btn btn-primary">Create</button>
+          </form>
+    </div>
     </div>
   );
 }

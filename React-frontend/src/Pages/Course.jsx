@@ -70,11 +70,15 @@ function CoursePage() {
     <div>
       <Header/>
       {course && (
-        <div>
-          <CourseInfo course={course}/>
-          <CourseLinks courseId={courseId} />
-          <CourseDetails course={course} />
-          <CourseMedia course={course} />
+        <div className="course-container">
+          <div>
+            <CourseInfo course={course} />
+            <CourseLinks courseId={courseId} />
+          </div>
+          <div className='course-content'style={{display:'flex', padding:'1rem'}}>
+            <CourseMedia course={course} />
+            <CourseDetails course={course} />
+          </div>
         </div>
       )}
       <Footer/>

@@ -6,11 +6,11 @@ function CourseDetails({course}) {
 
   return (
     <div className='course-details'>
-        <p>Price: ${price}</p>
-        <p>Creation Date: {new Date(creationDate).toLocaleDateString()}</p>
-        <p>Last Updated: {new Date(lastUpdated).toLocaleDateString()}</p>
-        <p>Instructor: {instructor.username}</p>
-        <p>Media Name: {courseMedia.mediaName}</p>
+      <p>Price: ${price}</p>
+      <p>Creation Date: {new Date(creationDate).toLocaleDateString()}</p>
+      <p>Last Updated: {new Date(lastUpdated).toLocaleDateString()}</p>
+      <p>Instructor: {instructor.username}</p>
+      <p>Media Name: {courseMedia.mediaName}</p>
     </div>
   )
 }
