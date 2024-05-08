@@ -5,6 +5,7 @@ import com.StreamlineLearn.ContentManagement.model.Content;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
 import java.util.Set;
 
@@ -15,7 +16,7 @@ public interface ContentService {
 
     Optional<Content> getContentById(Long courseId, Long contentId, String authorizationHeader);
 
-    byte[] getContentMedia(Long courseId, String fileName, String authorizationHeader) throws IOException;
+    InputStream getContentMedia(Long courseId, String fileName, String authorizationHeader) throws IOException;
 
     boolean updateContentById(Long courseId, Long contentId, Content content, MultipartFile file, String authorizationHeader);
 

@@ -2,10 +2,17 @@ import axios from 'axios';
 
 const CONTENT_SERVICE_BASE_URL = import.meta.env.VITE_REACT_APP_CONTENT_SERVICE_BASE_URL;
 
-export function createContent(courseId, content, authToken) {
+export function createContent(courseId, content, file, authToken) {
     const authorizationHeader = `Bearer ${authToken}`;
-    return axios.post(`${CONTENT_SERVICE_BASE_URL}/courses/${courseId}/contents`, content, {
-        headers: { 'Authorization': authorizationHeader }
+    let formData = new FormData();
+    formData.append('content', JSON.stringify(content));
+    formData.append('media', file);
+
+    return axios.post(`${CONTENT_SERVICE_BASE_URL}/courses/${courseId}/contents`, formData, {
+        headers: { 
+            'Authorization': authorizationHeader,
+            'Content-Type': 'multipart/form-data'
+        }
     });
 }
 

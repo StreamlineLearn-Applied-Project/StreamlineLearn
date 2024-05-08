@@ -2,6 +2,7 @@ package com.StreamlineLearn.UserManagement.contrloller;
 
 
 import com.StreamlineLearn.SharedModule.annotation.IsAdministrative;
+import com.StreamlineLearn.SharedModule.dto.UserSharedDto;
 import com.StreamlineLearn.UserManagement.jwtUtil.JwtService;
 import com.StreamlineLearn.UserManagement.model.User;
 import com.StreamlineLearn.UserManagement.service.UserService;
@@ -48,6 +49,20 @@ public class UserController {
         // If the user is found and updated, return a response indicating that the user profile has been updated
         return userUpdated.map(user -> new ResponseEntity<>("User profile updated successfully", HttpStatus.OK)).orElseGet(() ->
                 new ResponseEntity<>(HttpStatus.NOT_FOUND)); // If the user is not found, return NOT_FOUND status
+    }
+
+    @GetMapping("/userInfo")
+    public ResponseEntity<UserSharedDto> getUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
+
+        String token = authorizationHeader.substring(7);
+        // Extract user information from the JWT token
+        String username = jwtService.extractUsername(token);
+        String role = jwtService.extractClaim(token, claims -> claims.get("role", String.class));
+        Long roleId = jwtService.extractClaim(token, claims -> claims.get("roleId", Long.class));
+
+        // Create and return the response object
+        UserSharedDto userInfoResponse = new UserSharedDto(roleId, username, role);
+        return ResponseEntity.ok(userInfoResponse);
     }
 
 

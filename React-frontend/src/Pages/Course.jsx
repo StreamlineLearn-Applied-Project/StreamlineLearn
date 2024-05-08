@@ -4,27 +4,48 @@ import Header from '../components/Common/Header';
 import Footer from '../components/Common/Footer';
 import CourseInfo from '../components/Course/CourseInfo';
 import CourseLinks from '../components/Course/CourseLinks';
+import CourseDetails from '../components/Course/CourseDetails';
+import CourseMedia from '../components/Course/CourseMedia';
 import { getCourseById } from '../Api/courses';
 
 
 function CoursePage() {
+
+  // Mock Course Data
+  const mockCourse = {
+    id: 1,
+    courseName: 'Mock Course',
+    description: 'This is a mock course description.',
+    price: 123.00,
+    creationDate: '2024-05-07T23:20:04.230+00:00',
+    lastUpdated: '2024-05-07T23:20:04.230+00:00',
+    instructor: {
+      id: 1,
+      username: 'mockInstructor',
+      role: 'INSTRUCTOR'
+    },
+    courseMedia: {
+      id: 1,
+      mediaName: 'mockMedia.png',
+      type: 'image/png',
+      mediaFilePath: 'mock/path/to/media.png',
+      creationDate: '2024-05-07T23:20:04.270+00:00',
+      lastUpdated: '2024-05-07T23:20:04.270+00:00'
+    }
+  };
+  
   
   const { courseId } = useParams();
   const [course, setCourse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Mock course data
-  const mockCourse = {
-    courseId: 1,
-    courseName: 'Mock Course',
-    description: 'This is a mock course description.',
-    // Add more mock data if needed
-  };
+
 
   useEffect(() => {
     setIsLoading(true);
-    getCourseById(courseId)
+    const token = localStorage.getItem('jwtToken');
+    getCourseById(courseId, token)
       .then(response => {
         setCourse(response.data);
         setIsLoading(false);
@@ -50,8 +71,10 @@ function CoursePage() {
       <Header/>
       {course && (
         <div>
-          <CourseInfo heading={course.courseName} desc={course.description}/>
-          <CourseLinks courseId={courseId} /> 
+          <CourseInfo course={course}/>
+          <CourseLinks courseId={courseId} />
+          <CourseDetails course={course} />
+          <CourseMedia course={course} />
         </div>
       )}
       <Footer/>

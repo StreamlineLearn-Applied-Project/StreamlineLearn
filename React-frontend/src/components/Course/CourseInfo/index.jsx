@@ -1,14 +1,16 @@
 import React from 'react';
 import './styles.css';
 
-function CourseInfo({heading, desc}) {
+function CourseInfo({course}) {
+  const { courseName, description, price, creationDate, lastUpdated, instructor, courseMedia } = course;
+
   return (
     <div className='grey-wrapper'>
         <h2>
-            {heading}
+            {courseName}
         </h2>
         <p>
-            {desc}
+            {description}
         </p>
     </div>
   )

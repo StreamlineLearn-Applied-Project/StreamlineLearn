@@ -8,6 +8,7 @@ import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -81,16 +83,15 @@ public class CourseController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/courses/{courseId}/media/{fileName}")
-    public ResponseEntity<byte[]> getCourseMedia(@PathVariable Long courseId,
-                                                 @PathVariable String fileName) throws IOException {
-        byte[] mediaData=courseService.getCourseMedia(courseId, fileName);
+    @GetMapping("/{courseId}/media/{fileName}")
+    public ResponseEntity<InputStreamResource> getCourseMedia(@PathVariable Long courseId,
+                                                              @PathVariable String fileName) throws IOException {
+        InputStream mediaStream = courseService.getCourseMedia(courseId, fileName);
         // Determine the appropriate media type based on the file extension
         MediaType mediaType = determineMediaType(fileName);
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.ok()
                 .contentType(mediaType)
-                .body(mediaData);
-
+                .body(new InputStreamResource(mediaStream));
     }
 
     @PutMapping("/{courseId}")

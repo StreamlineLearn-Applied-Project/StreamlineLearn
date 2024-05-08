@@ -93,7 +93,7 @@ function DiscussionsPage() {
         <div style={{ display: 'flex' }}>
           <Sidebar />
             <div className="sidebar_container-right">
-              <div className="content" style={{marginTop:'-3%'}}>
+              <div className="content" style={{marginTop:'0%'}}>
                 <DiscussionList discussions={discussions} courseId={courseId} />
               </div>
             </div>

@@ -18,9 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.Optional;
 import java.util.Set;
@@ -173,7 +171,7 @@ public class ContentServiceImplementation implements ContentService {
     }
 
     @Override
-    public byte[] getContentMedia(Long courseId, String fileName, String authorizationHeader) throws IOException {
+    public InputStream getContentMedia(Long courseId, String fileName, String authorizationHeader) throws IOException {
         try {
             UserSharedDto userSharedDto = jwtUserService.extractJwtUser(authorizationHeader);
             Course course = courseService.getCourseByCourseId(courseId);
@@ -183,7 +181,7 @@ public class ContentServiceImplementation implements ContentService {
                 Optional<ContentMedia> contentMedia = contentMediaRepository.findByMediaName(fileName);
                 if (contentMedia.isPresent()) {
                     String mediaFilePath = contentMedia.get().getMediaFilePath();
-                    return Files.readAllBytes(new File(mediaFilePath).toPath());
+                    return new FileInputStream(new File(mediaFilePath));
                 } else {
                     throw new FileNotFoundException("Media file not found: " + fileName);
                 }

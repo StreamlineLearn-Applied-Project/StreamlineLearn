@@ -2,7 +2,7 @@ import React from 'react';
 import "./styles.css";
 
 function CreateCourse({ courseData }) {
-  const { courseName, setCourseName, description, setDescription, price, setPrice, handleCreateCourse } = courseData;
+  const { courseName, setCourseName, description, setDescription, price, setPrice, file, handleFileChange, handleCreateCourse } = courseData;
 
   return (
     <div className='page_body'><h3 style={{fontWeight:'bold', color:'#0F1035', textAlign:'left'}}>Add new course</h3>
@@ -30,6 +30,13 @@ function CreateCourse({ courseData }) {
               </div>
             </label>
             <br />
+            <label>
+              Course Media:
+              <div className="input-group">
+              <input type="file" onChange={handleFileChange} required />
+              </div>
+            </label>
+            <br />
             <button type="submit" className="btn btn-primary">Create</button>
         </div>
       </form>
@@ -39,3 +46,4 @@ function CreateCourse({ courseData }) {
 }
 
 export default CreateCourse;
+

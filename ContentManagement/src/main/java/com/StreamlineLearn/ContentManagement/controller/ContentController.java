@@ -6,6 +6,7 @@ import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
 import com.StreamlineLearn.SharedModule.annotation.IsStudentOrInstructor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
 import java.util.Set;
 
@@ -28,6 +30,18 @@ public class ContentController {
         this.contentService = contentService;
     }
 
+    private MediaType determineMediaType(String fileName) {
+        // Implement logic to determine the media type based on the file extension
+        // Example: Check file extension and return the corresponding MediaType
+        if (fileName.endsWith(".mp4")) {
+            return MediaType.valueOf("video/mp4");
+        } else if (fileName.endsWith(".avi")) {
+            return MediaType.valueOf("video/x-video");
+        } else {
+            // Default to application/octet-stream for unknown types
+            return MediaType.APPLICATION_OCTET_STREAM;
+        }
+    }
     @PostMapping //HTTP POST requests onto the createContent method.
     @IsInstructor // This is a custom annotation, presumably checking if the authenticated user is an instructor.
     public ResponseEntity<Content> createContent(@PathVariable Long courseId,
@@ -72,14 +86,15 @@ public class ContentController {
     }
 
     @GetMapping("/fileSystem/{fileName}")
-    public ResponseEntity<?> getContentMedia(@PathVariable Long courseId,
-                                                         @PathVariable String fileName,
-                                                         @RequestHeader("Authorization") String authorizationHeader) throws IOException {
-        byte[] mediaData=contentService.getContentMedia(courseId, fileName, authorizationHeader);
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("image/png"))
-                .body(mediaData);
-
+    public ResponseEntity<InputStreamResource> getContentMedia(@PathVariable Long courseId,
+                                                               @PathVariable String fileName,
+                                                               @RequestHeader("Authorization") String authorizationHeader) throws IOException {
+        InputStream mediaStream = contentService.getContentMedia(courseId, fileName, authorizationHeader);
+        // Determine the appropriate media type based on the file extension
+        MediaType mediaType = determineMediaType(fileName);
+        return ResponseEntity.ok()
+                .contentType(mediaType)
+                .body(new InputStreamResource(mediaStream));
     }
 
     // Endpoint to update a content by ID
