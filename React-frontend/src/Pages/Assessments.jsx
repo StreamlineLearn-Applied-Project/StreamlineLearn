@@ -101,9 +101,14 @@ function AssessmentsPage() {
         <div className="sidebar_container-right">
             <div className="content" style={{marginTop:'0%'}}
             >
-            <Link to={`/courses/${courseId}/assessments/create-assessment`}>Create Assessment</Link>
 
-                <AssessmentList assessments={assessments} courseId={courseId} />
+<div className="button-container">
+                        <button className="btn btn-primary">
+                        <Link to={`/courses/${courseId}/assessments/create-assessment`} style={{textDecoration:'none'}}>Create New</Link>
+                        </button>
+                    </div>
+
+                <AssessmentList assessments={assessments} courseId={courseId} style={{paddingTop:'0'}}/>
 
             </div>
         </div>

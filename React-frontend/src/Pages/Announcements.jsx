@@ -104,7 +104,11 @@ function AnnouncementsPage() {
 
                     <div className="content" style={{marginTop:'0%'}}>
 
-                        <Link to={`/courses/${courseId}/announcements/create-announcement`}>Create Announcement</Link>
+                    <div className="button-container">
+                        <button className="btn btn-primary">
+                            <Link to={`/courses/${courseId}/announcements/create-announcement`} style={{textDecoration:'none'}}>Create New</Link>
+                        </button>
+                    </div>
 
                         <AnnouncementList announcements={announcements} courseId={courseId} />
 

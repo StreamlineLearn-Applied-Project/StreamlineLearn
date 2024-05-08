@@ -83,7 +83,12 @@ function ContentsPage() {
 
                 <div className="content" style={{marginTop:'0%'}}>
 
-                <Link to={`/courses/${courseId}/contents/create-content`}>Create Content</Link>
+                <div className="button-container">
+                        <button className="btn btn-primary">
+                        <Link to={`/courses/${courseId}/contents/create-content `} style={{textDecoration:'none'}}>Create New</Link>
+                        </button>
+                    </div>
+                
 
                     <ContentList contents={contents} courseId={courseId} />
                     
