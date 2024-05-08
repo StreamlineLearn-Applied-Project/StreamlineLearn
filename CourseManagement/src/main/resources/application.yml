@@ -24,7 +24,7 @@ spring:
     # Hibernate configurations
     hibernate:
       # DDL auto setting
-      ddl-auto: create-drop
+      ddl-auto: update
     # Show SQL queries
     show-sql: true
     # Hibernate properties
