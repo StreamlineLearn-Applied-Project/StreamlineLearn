@@ -21,9 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Objects;
@@ -199,7 +197,7 @@ public class CourseServiceImplementation implements CourseService {
     }
 
     @Override
-    public byte[] getCourseMedia(Long courseId, String fileName) throws IOException {
+    public InputStream getCourseMedia(Long courseId, String fileName) throws IOException {
         try {
             // Check if the course exists
             Optional<Course> courseOptional = courseRepository.findById(courseId);
@@ -212,7 +210,8 @@ public class CourseServiceImplementation implements CourseService {
 
             if (courseMediaOptional.isPresent()) {
                 String mediaFilePath = courseMediaOptional.get().getMediaFilePath();
-                return Files.readAllBytes(new File(mediaFilePath).toPath());
+//                return Files.readAllBytes(new File(mediaFilePath).toPath());
+                return new FileInputStream(new File(mediaFilePath));
             } else {
                 throw new FileNotFoundException("Media file not found: " + fileName);
             }
