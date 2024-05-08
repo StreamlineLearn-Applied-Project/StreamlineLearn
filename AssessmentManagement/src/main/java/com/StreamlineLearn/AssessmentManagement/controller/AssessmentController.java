@@ -7,6 +7,7 @@ import com.StreamlineLearn.SharedModule.annotation.IsInstructor;
 import com.StreamlineLearn.SharedModule.annotation.IsStudentOrInstructor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,23 @@ public class AssessmentController {
     public AssessmentController(AssessmentService assessmentService) {
         this.assessmentService = assessmentService;
     }
+
+    private String determineContentType(String fileName) {
+        String extension = FilenameUtils.getExtension(fileName);
+
+        return switch (extension.toLowerCase()) {
+            case "txt" -> "text/plain";
+            case "pdf" -> "application/pdf";
+            case "doc" -> "application/msword";
+            case "docx" -> "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            case "xls" -> "application/vnd.ms-excel";
+            case "xlsx" -> "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            case "ppt" -> "application/vnd.ms-powerpoint";
+            case "pptx" -> "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+            default -> "application/octet-stream"; // Fallback to "application/octet-stream"
+        };
+    }
+
 
     // Endpoint to create a new assessment
     @PostMapping //HTTP POST requests onto the createAssessment method.
@@ -75,13 +93,16 @@ public class AssessmentController {
     @GetMapping("/media/{fileName}")
     public ResponseEntity<byte[]> getAssessmentMedia(@PathVariable Long courseId,
                                                      @PathVariable String fileName,
-                                                     @RequestHeader("Authorization") String authorizationHeader)
-            throws IOException {
-        byte[] mediaData = assessmentService.getAssessmentMedia(courseId, fileName, authorizationHeader);
+                                                     @RequestHeader("Authorization") String authorizationHeader) throws IOException {
+        byte[] fileContent = assessmentService.getAssessmentMedia(courseId, fileName, authorizationHeader);
 
+        // Determine a content type based on the file's extension
+        String contentType = determineContentType(fileName);
+
+        // Return the media data with the determined content type
         return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("image/png"))
-                .body(mediaData);
+                .contentType(MediaType.valueOf(contentType))
+                .body(fileContent);
     }
 
     // Endpoint to update an assessment by ID
